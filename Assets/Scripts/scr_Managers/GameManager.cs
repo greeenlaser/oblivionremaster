@@ -19,57 +19,72 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public string parentPath;
     [HideInInspector] public string gamePath;
     [HideInInspector] public string savePath;
+    [HideInInspector] public string settingsPath;
     [HideInInspector] public string debugFilePath;
 
     //private variables
     private int currentScene;
-    private float timer;
-    private float deltaTime;
     private string day;
     private string month;
     private string year;
     private DateTime now;
+
+    //scripts
+    private Manager_Settings SettingsScript;
+    private UI_PauseMenu PauseMenuScript;
+    private Player_Stats PlayerStatsScript;
+    private Player_Movement PlayerMovementScript;
+    private Player_Camera PlayerCameraScript;
 
     private void Awake()
     {
         parentPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\My Games";
         gamePath = parentPath + @"\OblivionUnity";
         savePath = gamePath + @"\Game saves";
+        settingsPath = gamePath + @"\Settings";
 
-        //enable or disable vsync
-        if (enableVSync)
+        //create game directories
+        CreatePaths();
+
+        //get debug file path
+        DirectoryInfo dir = new(gamePath);
+        FileInfo[] files = dir.GetFiles();
+        foreach (FileInfo file in files)
         {
-            QualitySettings.vSyncCount = 1;
+            if (file.Name.Contains("DebugFile_"))
+            {
+                debugFilePath = file.FullName;
+                break;
+            }
         }
-        else
-        {
-            QualitySettings.vSyncCount = 0;
-        }
-        //set resolution to 1080p and enable fullscreen mode
-        Screen.SetResolution(1920, 1080, FullScreenMode.FullScreenWindow);
+
+        //start recieving unity logs
+        Application.logMessageReceived += GetComponent<Manager_Console>().HandleLog;
+
+        SettingsScript = GetComponent<Manager_Settings>();
+        SettingsScript.AssignSettings();
 
         currentScene = SceneManager.GetActiveScene().buildIndex;
 
         if (currentScene == 0)
         {
-            //create game directories
-            CreatePaths();
             //create debug file
             CreateDebugFile();
         }
         else if (currentScene == 1)
         {
-            //get debug file path
-            DirectoryInfo dir = new(gamePath);
-            FileInfo[] files = dir.GetFiles();
-            foreach (FileInfo file in files)
-            {
-                if (file.Name.Contains("DebugFile_"))
-                {
-                    debugFilePath = file.FullName;
-                    break;
-                }
-            }
+            PauseMenuScript = GetComponent<UI_PauseMenu>();
+            PlayerStatsScript = thePlayer.GetComponent<Player_Stats>();
+            PlayerMovementScript = thePlayer.GetComponent<Player_Movement>();
+            PlayerCameraScript = thePlayer.GetComponentInChildren<Player_Camera>();
+
+            //disable player movement
+            PlayerMovementScript.canMove = false;
+            PlayerCameraScript.isCamEnabled = false;
+
+            //temporarily reset player stats
+            //to their default values every time game is launched
+            PlayerStatsScript.ResetStats();
         }
     }
 
@@ -77,19 +92,16 @@ public class GameManager : MonoBehaviour
     {
         //automatically update game version name
         UpdateVersionDate();
-    }
 
-    private void Update()
-    {
-        deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
-        float msec = Mathf.FloorToInt(deltaTime * 1000.0f);
-        float fps = Mathf.FloorToInt(1.0f / deltaTime);
-
-        timer += Time.unscaledDeltaTime;
-        if (timer > 0.1f)
+        if (currentScene == 1)
         {
-            GetComponent<Manager_UIReuse>().txt_FPS.text = fps + " (" + msec + ")";
-            timer = 0;
+            //unpause game
+            PauseMenuScript.UnpauseGame();
+
+            //temporarily enable player movement every time
+            //at the beginning of the game once everything else has finished loading
+            PlayerMovementScript.LoadPlayer();
+            PlayerCameraScript.isCamEnabled = true;
         }
     }
 
@@ -109,6 +121,11 @@ public class GameManager : MonoBehaviour
         if (!Directory.Exists(savePath))
         {
             Directory.CreateDirectory(savePath);
+        }
+        //create settings path folder
+        if (!Directory.Exists(settingsPath))
+        {
+            Directory.CreateDirectory(settingsPath);
         }
     }
 
@@ -206,13 +223,12 @@ public class GameManager : MonoBehaviour
         //delete old debug file if player switched to main menu scene
         if (currentScene == 0)
         {
-            DirectoryInfo dir = new(gamePath);
-            FileInfo[] files = dir.GetFiles();
-            foreach (FileInfo file in files)
+            string[] files = Directory.GetFiles(gamePath);
+            foreach (string file in files)
             {
-                if (file.Name.Contains("DebugFile_"))
+                if (file.Contains("DebugFile_"))
                 {
-                    file.Delete();
+                    File.Delete(file);
                     break;
                 }
             }
@@ -227,7 +243,7 @@ public class GameManager : MonoBehaviour
         //using a text editor to write new text to new debug file in the debug file path
         using StreamWriter debugFile = File.CreateText(debugFilePath);
 
-        debugFile.WriteLine("Debug information file for " + GetComponent<Manager_UIReuse>().txt_GameVersion.text + "_" + date);
+        debugFile.WriteLine("Debug information file for " + str_GameVersion);
         debugFile.WriteLine("");
 
         //add user cpu

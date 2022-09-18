@@ -7,30 +7,25 @@ using TMPro;
 
 public class UI_MainMenu : MonoBehaviour
 {
-    [Header("UI")]
+    [Header("Main menu UI")]
     [SerializeField] private GameObject par_MMContent;
     [SerializeField] private GameObject par_LoadContent;
     [SerializeField] private GameObject par_SettingsContent;
     [SerializeField] private GameObject par_CreditsContent;
+    [SerializeField] private Button btn_ReturnToMM;
     [SerializeField] private Button btn_ContinueOrNewGame;
     [SerializeField] private Button btn_Load;
     [SerializeField] private Button btn_Settings;
     [SerializeField] private Button btn_Credits;
     [SerializeField] private Button btn_Quit;
-    [SerializeField] private Button btn_ReturnToMM;
-
-    //private variables
-    private UI_Confirmation ConfirmationScript;
 
     private void Awake()
     {
-        ConfirmationScript = GetComponent<UI_Confirmation>();
-
         btn_ContinueOrNewGame.onClick.AddListener(ContinueOrStartNewGame);
         btn_Load.onClick.AddListener(ShowLoadContent);
         btn_Settings.onClick.AddListener(ShowSettings);
         btn_Credits.onClick.AddListener(ShowCredits);
-        btn_Quit.onClick.AddListener(delegate { QuitGame(false); });
+        btn_Quit.onClick.AddListener(QuitGame);
         btn_ReturnToMM.onClick.AddListener(ShowMMContent);
 
         //temporarily always naming the continue or new game button as "Start new game"
@@ -38,6 +33,11 @@ public class UI_MainMenu : MonoBehaviour
 
         //main menu is always displayed at start
         ShowMMContent();
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        Time.timeScale = 1;
     }
 
     //closes all other UI that may be active and enables main menu UI
@@ -50,6 +50,7 @@ public class UI_MainMenu : MonoBehaviour
 
         par_MMContent.SetActive(true);
     }
+
     //loads latest save or starts a new game if none exist,
     //button text is also changed accordingly
     //TODO: add save system to change button text and load latest save
@@ -85,17 +86,8 @@ public class UI_MainMenu : MonoBehaviour
         btn_ReturnToMM.gameObject.SetActive(true);
     }
     //quits the game
-    public void QuitGame(bool confirmedAction)
+    public void QuitGame()
     {
-        if (!confirmedAction)
-        {
-            //open the confirmation UI to let the player confirm
-            //if they actually want to quit the game or not
-            ConfirmationScript.RecieveData(gameObject, "mainMenuScript", "quit");
-        }
-        else
-        {
-            Application.Quit();
-        }
+        Application.Quit();
     }
 }
