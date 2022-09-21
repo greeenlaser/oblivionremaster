@@ -77,8 +77,7 @@ public class GameManager : MonoBehaviour
 
             PauseMenuScript.canUnpause = true;
 
-            //temporarily reset player stats
-            //to their default values every time game is launched
+            //player stats are always set to default before save is loaded
             PlayerStatsScript.ResetStats();
         }
     }

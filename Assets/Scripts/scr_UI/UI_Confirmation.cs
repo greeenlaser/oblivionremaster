@@ -33,11 +33,11 @@ public class UI_Confirmation : MonoBehaviour
 
     caller object is the actual gameobject calling this method
     caller name is the name of the script calling this method
-    action is what the caller script needs confirmation for
+    key is the action or thing that needs to be accessed/edited etc
     */
     public void RecieveData(GameObject callerObject, 
                             string callerName, 
-                            string action)
+                            string key)
     {
         //resets confirmation UI
         UIReuseScript.ClearConfirmationUI();
@@ -52,7 +52,7 @@ public class UI_Confirmation : MonoBehaviour
             {
                 //the player wants to go back to
                 //the main menu from the pause menu
-                if (action == "returnToMM")
+                if (key == "returnToMM")
                 {
                     UIReuseScript.txt_Confirmation.text = "Are you sure you want to go back to the main menu? Unsaved content will be lost.";
 
@@ -66,7 +66,7 @@ public class UI_Confirmation : MonoBehaviour
                     UIReuseScript.btn_Confirm2.onClick.AddListener(delegate { PauseMenuScript.ReturnToMM(true); });
                 }
                 //the player wants to quit the game
-                else if (action == "quit")
+                else if (key == "quit")
                 {
                     UIReuseScript.txt_Confirmation.text = "Are you sure you want to quit the game? Unsaved content will be lost.";
 
@@ -83,7 +83,7 @@ public class UI_Confirmation : MonoBehaviour
                 }
             }
             //the save script
-            else if (callerName == "saveScript")
+            else if (key == "saveScript")
             {
                 UIReuseScript.txt_Confirmation.text = "Are you sure you want to load this save? Unsaved content will be lost.";
 
@@ -91,12 +91,12 @@ public class UI_Confirmation : MonoBehaviour
                 UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Save game and load";
 
                 UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { SavingScript.CreateSaveFile(""); } );
-                UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { SavingScript.CreateLoadFile(action); });
+                UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { SavingScript.CreateLoadFile(key); });
 
                 UIReuseScript.btn_Confirm2.gameObject.SetActive(true);
                 UIReuseScript.btn_Confirm2.GetComponentInChildren<TMP_Text>().text = "Load without saving";
 
-                UIReuseScript.btn_Confirm2.onClick.AddListener(delegate { SavingScript.CreateLoadFile(action); });
+                UIReuseScript.btn_Confirm2.onClick.AddListener(delegate { SavingScript.CreateLoadFile(key); });
             }
         }
     }

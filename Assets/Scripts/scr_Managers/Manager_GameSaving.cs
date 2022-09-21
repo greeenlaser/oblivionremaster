@@ -382,16 +382,6 @@ public class Manager_GameSaving : MonoBehaviour
 
         if (str_SaveFileName != "")
         {
-            //stupid workaround for a dumb bug i cant figure out right now
-            /*
-            if (!str_SaveFileName.Contains("Game saves"))
-            {
-                string[] splitSaveFileName = str_SaveFileName.Split("\\");
-                string updatedLastValue = @"\Game saves" + splitSaveFileName[^1];
-                str_SaveFileName.Replace("\\", updatedLastValue);
-            }
-            */
-
             Debug.Log(str_SaveFileName);
 
             foreach (string line in File.ReadLines(str_SaveFileName))
@@ -400,8 +390,6 @@ public class Manager_GameSaving : MonoBehaviour
                 if (line.Contains(':')
                     && line.Contains('_'))
                 {
-                    Debug.Log(line);
-
                     string[] valueSplit = line.Split(':');
                     string[] values = valueSplit[1].Split(',');
                     //split type between _

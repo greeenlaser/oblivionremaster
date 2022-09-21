@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using TMPro;
 
 public class UI_MainMenu : MonoBehaviour
 {
@@ -35,9 +34,6 @@ public class UI_MainMenu : MonoBehaviour
         btn_Quit.onClick.AddListener(QuitGame);
         btn_ReturnToMM.onClick.AddListener(ShowMMContent);
 
-        //temporarily always naming the continue or new game button as "Start new game"
-        btn_ContinueOrNewGame.GetComponentInChildren<TMP_Text>().text = "Start new game";
-
         //main menu is always displayed at start
         ShowMMContent();
 
@@ -60,14 +56,12 @@ public class UI_MainMenu : MonoBehaviour
 
     //loads latest save or starts a new game if none exist,
     //button text is also changed accordingly
-    //TODO: add save system to change button text and load latest save
     //if save exists or start new game if none exist
     public void ContinueOrStartNewGame()
     {
         SceneManager.LoadScene(1);
     }
     //shows game saves
-    //TODO: create save and load system to list all game saves
     public void ShowLoadContent()
     {
         par_MMContent.SetActive(false);
@@ -80,7 +74,6 @@ public class UI_MainMenu : MonoBehaviour
         btn_ReturnToMM.gameObject.SetActive(true);
     }
     //shows only a few settings available through the main menu
-    //TODO: create game settings system to list available settings
     public void ShowSettings()
     {
         par_MMContent.SetActive(false);

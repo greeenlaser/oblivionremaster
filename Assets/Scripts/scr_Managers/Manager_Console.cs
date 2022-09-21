@@ -20,7 +20,6 @@ public class Manager_Console : MonoBehaviour
     private string input;
     private string output;
     private string lastOutput;
-    private readonly char[] separators = new char[] { ' ' };
     private int currentSelectedInsertedCommand;
     private int currentScene;
     private GameManager GameManagerScript;
@@ -47,7 +46,6 @@ public class Manager_Console : MonoBehaviour
             PlayerStatsScript = thePlayer.GetComponent<Player_Stats>();
         }
 
-        //debug menu is temporarily open when game is launched
         debugMenuEnabled = true;
     }
 
@@ -150,7 +148,7 @@ public class Manager_Console : MonoBehaviour
     private void CheckInsertedText()
     {
         //splits each word as its own and adds to separated words list
-        foreach (string word in input.Split(separators, StringSplitOptions.RemoveEmptyEntries))
+        foreach (string word in input.Split(' ', StringSplitOptions.RemoveEmptyEntries))
         {
             separatedWords.Add(word);
         }
@@ -187,7 +185,6 @@ public class Manager_Console : MonoBehaviour
                 {
                     Command_ToggleDebugMenu();
                 }
-                /*
                 //show all saves
                 else if (separatedWords[0] == "sas"
                          && separatedWords.Count == 1)
@@ -223,7 +220,6 @@ public class Manager_Console : MonoBehaviour
                 {
                     Command_DeleteAllSaves();
                 }
-                */
                 //quit game
                 else if (separatedWords[0] == "quit"
                          && separatedWords.Count == 1)
@@ -343,9 +339,9 @@ public class Manager_Console : MonoBehaviour
             CreateNewConsoleLine("---GLOBAL COMMANDS---.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("clear - clear console log.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("tdm - toggle debug menu.", "CONSOLE_INFO_MESSAGE");
-            //CreateNewConsoleLine("sas - show all game saves.", "CONSOLE_INFO_MESSAGE");
-            //CreateNewConsoleLine("save savename - save game with save name (GAME SCENE ONLY).", "CONSOLE_INFO_MESSAGE");
-            //CreateNewConsoleLine("load loadname - load game with game save name.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("sas - show all game saves.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("save savename - save game with save name (GAME SCENE ONLY).", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("load loadname - load game with game save name.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("restart - restart the game from the beginning.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("das - delete all game saves.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("quit - quit game.", "CONSOLE_INFO_MESSAGE");
@@ -404,7 +400,6 @@ public class Manager_Console : MonoBehaviour
         }
     }
 
-    /*
     //list all game saves
     private void Command_ShowAllSaves()
     {
@@ -499,7 +494,6 @@ public class Manager_Console : MonoBehaviour
             CreateNewConsoleLine("Error: " + path + " has no save files to delete!", "CONSOLE_ERROR_MESSAGE");
         }
     }
-    */
 
     //quit game
     private void Command_Quit()
