@@ -17,8 +17,6 @@ public class Player_Camera : MonoBehaviour
 
     private void Awake()
     {
-        PlayerStatsScript = transform.parent.GetComponent<Player_Stats>();
-
         StartCoroutine(Wait());
     }
 
@@ -42,6 +40,8 @@ public class Player_Camera : MonoBehaviour
     {
         yield return new WaitForSeconds(0.2f);
         isCamEnabled = true;
+
+        PlayerStatsScript = transform.parent.GetComponent<Player_Stats>();
 
         sensX = PlayerStatsScript.cameraMoveSpeed;
         sensY = PlayerStatsScript.cameraMoveSpeed;

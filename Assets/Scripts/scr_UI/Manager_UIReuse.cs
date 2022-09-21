@@ -6,6 +6,14 @@ using TMPro;
 
 public class Manager_UIReuse : MonoBehaviour
 {
+    [Header("Load UI")]
+    public TMP_Text txt_SaveName;
+    public TMP_Text txt_SaveDate;
+    public TMP_Text txt_SaveCoordinates;
+    public Button btn_LoadGame;
+    public Button btn_SaveButtonTemplate;
+    public Transform par_SaveButtons;
+
     [Header("Console UI")]
     public GameObject par_Console;
     public TMP_InputField consoleInputField;
@@ -34,5 +42,16 @@ public class Manager_UIReuse : MonoBehaviour
         btn_Confirm2.gameObject.SetActive(false);
 
         par_Confirmation.SetActive(false);
+    }
+
+    //clears selected save UI
+    public void ClearSaveData()
+    {
+        txt_SaveName.text = "";
+        txt_SaveDate.text = "";
+        txt_SaveCoordinates.text = "";
+
+        btn_LoadGame.onClick.RemoveAllListeners();
+        btn_LoadGame.interactable = false;
     }
 }

@@ -19,8 +19,15 @@ public class UI_MainMenu : MonoBehaviour
     [SerializeField] private Button btn_Credits;
     [SerializeField] private Button btn_Quit;
 
+    //private variables
+    private Manager_GameSaving SavingScript;
+    private Manager_UIReuse UIReuseScript;
+
     private void Awake()
     {
+        SavingScript = GetComponent<Manager_GameSaving>();
+        UIReuseScript = GetComponent<Manager_UIReuse>();
+
         btn_ContinueOrNewGame.onClick.AddListener(ContinueOrStartNewGame);
         btn_Load.onClick.AddListener(ShowLoadContent);
         btn_Settings.onClick.AddListener(ShowSettings);
@@ -64,8 +71,12 @@ public class UI_MainMenu : MonoBehaviour
     public void ShowLoadContent()
     {
         par_MMContent.SetActive(false);
-
         par_LoadContent.SetActive(true);
+
+        SavingScript.ShowGameSaves();
+
+        UIReuseScript.ClearSaveData();
+
         btn_ReturnToMM.gameObject.SetActive(true);
     }
     //shows only a few settings available through the main menu

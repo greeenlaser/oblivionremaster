@@ -42,10 +42,12 @@ public class Player_Movement : MonoBehaviour
                 break;
             }
         }
+
+        LoadPlayer();
     }
 
     //load player data at the beginning of the game
-    public void LoadPlayer()
+    private void LoadPlayer()
     {
         currentSpeed = PlayerStatsScript.walkSpeed;
         canMove = true;

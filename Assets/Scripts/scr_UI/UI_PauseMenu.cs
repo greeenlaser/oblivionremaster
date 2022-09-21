@@ -13,24 +13,37 @@ public class UI_PauseMenu : MonoBehaviour
     [SerializeField] private GameObject par_SettingsContent;
     [SerializeField] private Button btn_ReturnToPM;
     [SerializeField] private Button btn_ReturnToGame;
+    [SerializeField] private Button btn_Save;
     [SerializeField] private Button btn_Load;
     [SerializeField] private Button btn_Settings;
     [SerializeField] private Button btn_ReturnToMM;
     [SerializeField] private Button btn_Quit;
+
+    [Header("Scripts")]
+    [SerializeField] private GameObject thePlayer;
 
     //public but hidden variables
     [HideInInspector] public bool canUnpause;
     [HideInInspector] public bool isPaused;
 
     //private variables
+    private Manager_GameSaving SavingScript;
     private UI_Confirmation ConfirmationScript;
+    private Manager_UIReuse UIReuseScript;
+    private Player_Movement PlayerMovementScript;
+    private Player_Camera PlayerCameraScript;
 
     private void Awake()
     {
+        SavingScript = GetComponent<Manager_GameSaving>();
         ConfirmationScript = GetComponent<UI_Confirmation>();
+        UIReuseScript = GetComponent<Manager_UIReuse>();
+        PlayerMovementScript = thePlayer.GetComponent<Player_Movement>();
+        PlayerCameraScript = thePlayer.GetComponentInChildren<Player_Camera>();
 
         btn_ReturnToPM.onClick.AddListener(ShowPMContent);
         btn_ReturnToGame.onClick.AddListener(UnpauseGame);
+        btn_Save.onClick.AddListener(delegate { SavingScript.CreateSaveFile(""); });
         btn_Load.onClick.AddListener(ShowLoadContent);
         btn_Settings.onClick.AddListener(ShowSettingsContent);
         btn_ReturnToMM.onClick.AddListener(delegate { ReturnToMM(false); });
@@ -66,12 +79,15 @@ public class UI_PauseMenu : MonoBehaviour
     //unpauses the game
     public void UnpauseGame()
     {
-        par_PauseMenu.SetActive(false);
+        ClosePMContent();
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
         Time.timeScale = 1;
+
+        PlayerMovementScript.canMove = true;
+        PlayerCameraScript.isCamEnabled = true;
 
         isPaused = false;
     }
@@ -80,10 +96,15 @@ public class UI_PauseMenu : MonoBehaviour
     {
         ShowPMContent();
         PauseWithoutUI();
+
+        isPaused = true;
     }
     //only pauses the game without opening the UI
     public void PauseWithoutUI()
     {
+        PlayerMovementScript.canMove = false;
+        PlayerCameraScript.isCamEnabled = false;
+
         Time.timeScale = 0;
 
         Cursor.lockState = CursorLockMode.None;
@@ -117,6 +138,10 @@ public class UI_PauseMenu : MonoBehaviour
     {
         par_PMContent.SetActive(false);
         par_LoadContent.SetActive(true);
+
+        SavingScript.ShowGameSaves();
+
+        UIReuseScript.ClearSaveData();
 
         btn_ReturnToPM.gameObject.SetActive(true);
     }

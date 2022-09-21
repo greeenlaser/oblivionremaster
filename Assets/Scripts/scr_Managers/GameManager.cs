@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using UnityEngine;
-using TMPro;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.Collections;
@@ -31,13 +30,15 @@ public class GameManager : MonoBehaviour
 
     //scripts
     private Manager_Settings SettingsScript;
+    private Manager_GameSaving SavingScript;
     private UI_PauseMenu PauseMenuScript;
     private Player_Stats PlayerStatsScript;
-    private Player_Movement PlayerMovementScript;
-    private Player_Camera PlayerCameraScript;
 
     private void Awake()
     {
+        //start recieving unity logs
+        Application.logMessageReceived += GetComponent<Manager_Console>().HandleLog;
+
         parentPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\My Games";
         gamePath = parentPath + @"\OblivionUnity";
         savePath = gamePath + @"\Game saves";
@@ -58,9 +59,6 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        //start recieving unity logs
-        Application.logMessageReceived += GetComponent<Manager_Console>().HandleLog;
-
         SettingsScript = GetComponent<Manager_Settings>();
         SettingsScript.AssignSettings();
 
@@ -73,14 +71,11 @@ public class GameManager : MonoBehaviour
         }
         else if (currentScene == 1)
         {
+            SavingScript = GetComponent<Manager_GameSaving>();
             PauseMenuScript = GetComponent<UI_PauseMenu>();
             PlayerStatsScript = thePlayer.GetComponent<Player_Stats>();
-            PlayerMovementScript = thePlayer.GetComponent<Player_Movement>();
-            PlayerCameraScript = thePlayer.GetComponentInChildren<Player_Camera>();
 
-            //disable player movement
-            PlayerMovementScript.canMove = false;
-            PlayerCameraScript.isCamEnabled = false;
+            PauseMenuScript.canUnpause = true;
 
             //temporarily reset player stats
             //to their default values every time game is launched
@@ -95,13 +90,8 @@ public class GameManager : MonoBehaviour
 
         if (currentScene == 1)
         {
-            //unpause game
-            PauseMenuScript.UnpauseGame();
-
-            //temporarily enable player movement every time
-            //at the beginning of the game once everything else has finished loading
-            PlayerMovementScript.LoadPlayer();
-            PlayerCameraScript.isCamEnabled = true;
+            //load expected save if any exists
+            SavingScript.ReadLoadFile();
         }
     }
 
