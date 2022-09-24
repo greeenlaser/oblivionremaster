@@ -11,11 +11,13 @@ public class UI_PauseMenu : MonoBehaviour
     [SerializeField] private GameObject par_PMContent;
     [SerializeField] private GameObject par_LoadContent;
     [SerializeField] private GameObject par_SettingsContent;
+    [SerializeField] private GameObject par_KeyBindingsContent;
     [SerializeField] private Button btn_ReturnToPM;
     [SerializeField] private Button btn_ReturnToGame;
     [SerializeField] private Button btn_Save;
     [SerializeField] private Button btn_Load;
     [SerializeField] private Button btn_Settings;
+    [SerializeField] private Button btn_KeyBindings;
     [SerializeField] private Button btn_ReturnToMM;
     [SerializeField] private Button btn_Quit;
 
@@ -24,11 +26,13 @@ public class UI_PauseMenu : MonoBehaviour
 
     //public but hidden variables
     [HideInInspector] public bool canUnpause;
+    [HideInInspector] public bool canTogglePMUI;
     [HideInInspector] public bool isPaused;
 
     //private variables
     private Manager_GameSaving SavingScript;
     private UI_Confirmation ConfirmationScript;
+    private Manager_KeyBindings KeyBindingsScript;
     private Manager_UIReuse UIReuseScript;
     private Player_Movement PlayerMovementScript;
     private Player_Camera PlayerCameraScript;
@@ -37,6 +41,7 @@ public class UI_PauseMenu : MonoBehaviour
     {
         SavingScript = GetComponent<Manager_GameSaving>();
         ConfirmationScript = GetComponent<UI_Confirmation>();
+        KeyBindingsScript = GetComponent<Manager_KeyBindings>();
         UIReuseScript = GetComponent<Manager_UIReuse>();
         PlayerMovementScript = thePlayer.GetComponent<Player_Movement>();
         PlayerCameraScript = thePlayer.GetComponentInChildren<Player_Camera>();
@@ -46,18 +51,20 @@ public class UI_PauseMenu : MonoBehaviour
         btn_Save.onClick.AddListener(delegate { SavingScript.CreateSaveFile(""); });
         btn_Load.onClick.AddListener(ShowLoadContent);
         btn_Settings.onClick.AddListener(ShowSettingsContent);
+        btn_KeyBindings.onClick.AddListener(ShowKeyBindingsContent);
         btn_ReturnToMM.onClick.AddListener(delegate { ReturnToMM(false); });
         btn_Quit.onClick.AddListener(delegate { QuitGame(false); });
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (KeyBindingsScript.GetButtonDown("TogglePauseMenu"))
         {
             isPaused = !isPaused;
         }
 
         if (isPaused
+            && canTogglePMUI
             && !par_PauseMenu.activeInHierarchy)
         {
             PauseWithUI();
@@ -119,6 +126,7 @@ public class UI_PauseMenu : MonoBehaviour
 
         par_LoadContent.SetActive(false);
         par_SettingsContent.SetActive(false);
+        par_KeyBindingsContent.SetActive(false);
 
         btn_ReturnToPM.gameObject.SetActive(false);
     }
@@ -127,6 +135,7 @@ public class UI_PauseMenu : MonoBehaviour
     {
         par_LoadContent.SetActive(false);
         par_SettingsContent.SetActive(false);
+        par_KeyBindingsContent.SetActive(false);
 
         btn_ReturnToPM.gameObject.SetActive(false);
 
@@ -150,6 +159,16 @@ public class UI_PauseMenu : MonoBehaviour
     {
         par_PMContent.SetActive(false);
         par_SettingsContent.SetActive(true);
+
+        btn_ReturnToPM.gameObject.SetActive(true);
+    }
+    //shows all key bindings
+    public void ShowKeyBindingsContent()
+    {
+        par_PMContent.SetActive(false);
+        par_KeyBindingsContent.SetActive(true);
+
+        KeyBindingsScript.ShowGeneralKeyBindings();
 
         btn_ReturnToPM.gameObject.SetActive(true);
     }

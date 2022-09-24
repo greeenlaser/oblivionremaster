@@ -22,32 +22,34 @@ public class Manager_GameSaving : MonoBehaviour
     private int currentScene;
     private readonly List<Button> saveButtons = new();
     private GameManager GameManagerScript;
+    private Manager_KeyBindings KeyBindingsScript;
     private Manager_UIReuse UIReuseScript;
-    private Player_Stats PlayerStatsSript;
+    private Player_Stats PlayerStatsScript;
 
     private void Awake()
     {
         GameManagerScript = GetComponent<GameManager>();
+        KeyBindingsScript = GetComponent<Manager_KeyBindings>();
         UIReuseScript = GetComponent<Manager_UIReuse>();
 
         currentScene = SceneManager.GetActiveScene().buildIndex;
 
         if (currentScene == 1)
         {
-            PlayerStatsSript = thePlayer.GetComponent<Player_Stats>();
+            PlayerStatsScript = thePlayer.GetComponent<Player_Stats>();
         }
     }
 
     private void Update()
     {
         //save the game
-        if (Input.GetKeyDown(KeyCode.F5)
+        if (KeyBindingsScript.GetButtonDown("Save")
             && currentScene == 1)
         {
             CreateSaveFile("");
         }
         //load the latest save
-        if (Input.GetKeyDown(KeyCode.F9)
+        if (KeyBindingsScript.GetButtonDown("Load")
             && currentScene == 1)
         {
             CreateLoadFile("");
@@ -253,18 +255,18 @@ public class Manager_GameSaving : MonoBehaviour
         saveFile.WriteLine("pv_PlayerCameraRotation: " + camRotX + ", " + camRotY + ", " + camRotZ);
         saveFile.WriteLine("");
 
-        saveFile.WriteLine("pv_MouseSpeed: " + PlayerStatsSript.cameraMoveSpeed);
-        saveFile.WriteLine("pv_FieldOfView: " + PlayerStatsSript.fieldOfView);
+        saveFile.WriteLine("pv_MouseSpeed: " + PlayerStatsScript.cameraMoveSpeed);
+        saveFile.WriteLine("pv_FieldOfView: " + PlayerStatsScript.fieldOfView);
         saveFile.WriteLine("");
 
         saveFile.WriteLine("---PLAYER STATS---");
-        saveFile.WriteLine("ps_MaxHealth: " + PlayerStatsSript.maxHealth);
-        saveFile.WriteLine("ps_Health: " + PlayerStatsSript.currentHealth);
-        saveFile.WriteLine("ps_MaxStamina: " + PlayerStatsSript.maxStamina);
-        saveFile.WriteLine("ps_Stamina: " + PlayerStatsSript.currentStamina);
-        saveFile.WriteLine("ps_MaxMagicka: " + PlayerStatsSript.maxMagicka);
-        saveFile.WriteLine("ps_Magicka: " + PlayerStatsSript.currentMagicka);
-        saveFile.WriteLine("ps_MaxInvSpace: " + PlayerStatsSript.maxInvSpace);
+        saveFile.WriteLine("ps_MaxHealth: " + PlayerStatsScript.maxHealth);
+        saveFile.WriteLine("ps_Health: " + PlayerStatsScript.currentHealth);
+        saveFile.WriteLine("ps_MaxStamina: " + PlayerStatsScript.maxStamina);
+        saveFile.WriteLine("ps_Stamina: " + PlayerStatsScript.currentStamina);
+        saveFile.WriteLine("ps_MaxMagicka: " + PlayerStatsScript.maxMagicka);
+        saveFile.WriteLine("ps_Magicka: " + PlayerStatsScript.currentMagicka);
+        saveFile.WriteLine("ps_MaxInvSpace: " + PlayerStatsScript.maxInvSpace);
 
         Debug.Log("Sucessfully saved game to " + str_SaveFilePath + "!");
     }
@@ -373,7 +375,8 @@ public class Manager_GameSaving : MonoBehaviour
         string[] files = Directory.GetFiles(GameManagerScript.savePath);
         foreach (string file in files)
         {
-            if (file.Contains(saveFileName))
+            if (saveFileName != ""
+                && file.Contains(saveFileName))
             {
                 str_SaveFileName = GameManagerScript.savePath + @"\" + saveFileName;
                 break;
@@ -382,8 +385,6 @@ public class Manager_GameSaving : MonoBehaviour
 
         if (str_SaveFileName != "")
         {
-            Debug.Log(str_SaveFileName);
-
             foreach (string line in File.ReadLines(str_SaveFileName))
             {
                 //split full line between :
@@ -432,13 +433,13 @@ public class Manager_GameSaving : MonoBehaviour
                         else if (typeName == "FieldOfView")
                         {
                             float fov = float.Parse(values[0]);
-                            PlayerStatsSript.fieldOfView = fov;
+                            PlayerStatsScript.fieldOfView = fov;
                             thePlayer.GetComponentInChildren<Camera>().fieldOfView = fov;
                         }
                         else if (typeName == "MouseSpeed")
                         {
                             float mouseSpeed = float.Parse(values[0]);
-                            PlayerStatsSript.cameraMoveSpeed = (int)mouseSpeed;
+                            PlayerStatsScript.cameraMoveSpeed = (int)mouseSpeed;
                             thePlayer.GetComponentInChildren<Player_Camera>().sensX = mouseSpeed;
                             thePlayer.GetComponentInChildren<Player_Camera>().sensY = mouseSpeed;
                         }
@@ -451,32 +452,42 @@ public class Manager_GameSaving : MonoBehaviour
 
                         if (typeName == "MaxHealth")
                         {
-                            PlayerStatsSript.maxHealth = floatVal;
+                            PlayerStatsScript.maxHealth = floatVal;
                         }
                         else if (typeName == "Health")
                         {
-                            PlayerStatsSript.currentHealth = floatVal;
+                            PlayerStatsScript.currentHealth = floatVal;
                         }
                         else if (typeName == "MaxStamina")
                         {
-                            PlayerStatsSript.maxStamina = floatVal;
+                            PlayerStatsScript.maxStamina = floatVal;
                         }
                         else if (typeName == "Stamina")
                         {
-                            PlayerStatsSript.currentStamina = floatVal;
+                            PlayerStatsScript.currentStamina = floatVal;
                         }
                         else if (typeName == "MaxMagicka")
                         {
-                            PlayerStatsSript.maxMagicka = floatVal;
+                            PlayerStatsScript.maxMagicka = floatVal;
                         }
                         else if (typeName == "Magicka")
                         {
-                            PlayerStatsSript.currentMagicka = floatVal;
+                            PlayerStatsScript.currentMagicka = floatVal;
                         }
                         else if (typeName == "MaxInvSpace")
                         {
-                            PlayerStatsSript.maxInvSpace = intVal;
+                            PlayerStatsScript.maxInvSpace = intVal;
                         }
+
+                        PlayerStatsScript.UpdateBar(PlayerStatsScript.healthBar,
+                                                   (int)PlayerStatsScript.currentHealth,
+                                                   (int)PlayerStatsScript.maxHealth);
+                        PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar,
+                                                   (int)PlayerStatsScript.currentStamina,
+                                                   (int)PlayerStatsScript.maxStamina);
+                        PlayerStatsScript.UpdateBar(PlayerStatsScript.magickaBar,
+                                                   (int)PlayerStatsScript.currentMagicka,
+                                                   (int)PlayerStatsScript.maxMagicka);
                     }
                 }
             }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player_Stats : MonoBehaviour
 {
@@ -38,6 +39,11 @@ public class Player_Stats : MonoBehaviour
     [HideInInspector] public int maxInvSpace;
     [HideInInspector] public int invSpace;
 
+    [Header("Main player UI")]
+    public Slider healthBar;
+    public Slider staminaBar;
+    public Slider magickaBar;
+
     [Header("Scripts")]
     [SerializeField] private GameObject par_Managers;
 
@@ -62,5 +68,35 @@ public class Player_Stats : MonoBehaviour
 
         maxInvSpace = defaultMaxInvSpace;
         invSpace = 0;
+
+        UpdateBar(healthBar,
+                  (int)currentHealth,
+                  (int)maxHealth);
+        UpdateBar(staminaBar,
+                  (int)currentStamina,
+                  (int)maxStamina);
+        UpdateBar(magickaBar,
+                  (int)currentMagicka,
+                  (int)maxMagicka);
+    }
+
+    //update players health/stamina/magicka bar UI
+    public void UpdateBar(Slider bar, int currentValue, int maxValue)
+    {
+        if (bar == healthBar)
+        {
+            healthBar.maxValue = maxHealth;
+            healthBar.value = currentHealth;
+        }
+        else if (bar == staminaBar)
+        {
+            staminaBar.maxValue = maxStamina;
+            staminaBar.value = currentStamina;
+        }
+        else if (bar == magickaBar)
+        {
+            magickaBar.maxValue = maxMagicka;
+            magickaBar.value = currentMagicka;
+        }
     }
 }

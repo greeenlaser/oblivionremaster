@@ -9,6 +9,7 @@ public class UI_Confirmation : MonoBehaviour
     //private variables
     private UI_PauseMenu PauseMenuScript;
     private Manager_GameSaving SavingScript;
+    private Manager_KeyBindings KeyBindingsScript;
     private Manager_UIReuse UIReuseScript;
 
     private void Awake()
@@ -20,6 +21,7 @@ public class UI_Confirmation : MonoBehaviour
         if (currentSceneIndex == 1)
         {
             PauseMenuScript = GetComponent<UI_PauseMenu>();
+            KeyBindingsScript = GetComponent<Manager_KeyBindings>();
         }
 
         UIReuseScript.btn_Cancel.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
@@ -57,6 +59,7 @@ public class UI_Confirmation : MonoBehaviour
                     UIReuseScript.txt_Confirmation.text = "Are you sure you want to go back to the main menu? Unsaved content will be lost.";
 
                     UIReuseScript.btn_Confirm1.gameObject.SetActive(true);
+                    UIReuseScript.btn_Confirm1.transform.localPosition = new(-150, -79, 0);
                     UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Save and go";
                     UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { SavingScript.CreateSaveFile(""); });
                     UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { PauseMenuScript.ReturnToMM(true); });
@@ -71,8 +74,8 @@ public class UI_Confirmation : MonoBehaviour
                     UIReuseScript.txt_Confirmation.text = "Are you sure you want to quit the game? Unsaved content will be lost.";
 
                     UIReuseScript.btn_Confirm1.gameObject.SetActive(true);
+                    UIReuseScript.btn_Confirm1.transform.localPosition = new(-150, -79, 0);
                     UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Save game and quit";
-
                     UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { SavingScript.CreateSaveFile(""); });
                     UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { PauseMenuScript.QuitGame(true); });
 
@@ -83,13 +86,13 @@ public class UI_Confirmation : MonoBehaviour
                 }
             }
             //the save script
-            else if (key == "saveScript")
+            else if (callerName == "saveScript")
             {
                 UIReuseScript.txt_Confirmation.text = "Are you sure you want to load this save? Unsaved content will be lost.";
 
                 UIReuseScript.btn_Confirm1.gameObject.SetActive(true);
+                UIReuseScript.btn_Confirm1.transform.localPosition = new(-150, -79, 0);
                 UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Save game and load";
-
                 UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { SavingScript.CreateSaveFile(""); } );
                 UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { SavingScript.CreateLoadFile(key); });
 
@@ -97,6 +100,18 @@ public class UI_Confirmation : MonoBehaviour
                 UIReuseScript.btn_Confirm2.GetComponentInChildren<TMP_Text>().text = "Load without saving";
 
                 UIReuseScript.btn_Confirm2.onClick.AddListener(delegate { SavingScript.CreateLoadFile(key); });
+            }
+            //the key bindings script
+            else if (callerName == "keyBindingsScript")
+            {
+                UIReuseScript.txt_Confirmation.text = "Are you sure you want to reset the key bindings?";
+
+                UIReuseScript.btn_Confirm1.gameObject.SetActive(true);
+                UIReuseScript.btn_Confirm1.transform.localPosition = new(0, -79, 0);
+                UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Reset";
+
+                UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { KeyBindingsScript.ResetKeyBindings(true); });
+                UIReuseScript.btn_Confirm1.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
             }
         }
     }

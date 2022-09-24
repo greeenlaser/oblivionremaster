@@ -7,6 +7,9 @@ public class Player_Movement : MonoBehaviour
     [Header("Assignables")]
     [SerializeField] private LayerMask groundMask;
 
+    [Header("Scripts")]
+    [SerializeField] private GameObject par_Managers;
+
     //public but hidden variables
     [HideInInspector] public bool canMove;
     [HideInInspector] public bool canSprint;
@@ -25,12 +28,16 @@ public class Player_Movement : MonoBehaviour
     private Camera PlayerCamera;
     private CharacterController CharacterController;
     private GameObject checkSphere;
-    private Player_Stats PlayerStatsScript;
     //private float minVelocity;
+
+    //scripts
+    private Player_Stats PlayerStatsScript;
+    private Manager_KeyBindings KeyBindingsScript;
 
     private void Awake()
     {
         PlayerStatsScript = GetComponent<Player_Stats>();
+        KeyBindingsScript = par_Managers.GetComponent<Manager_KeyBindings>();
 
         PlayerCamera = GetComponentInChildren<Camera>();
         CharacterController = GetComponent<CharacterController>();
@@ -129,15 +136,11 @@ public class Player_Movement : MonoBehaviour
         //get all velocity of the controller
         Vector3 horizontalVelocity = transform.right * x + transform.forward * z;
 
-        //sprinting
-        if (Input.GetKeyDown(KeyCode.LeftShift)
-            && canSprint)
+        //enable/disable sprinting
+        if (KeyBindingsScript.GetButtonDown("Sprint")
+            && PlayerStatsScript.currentStamina >= Time.deltaTime * 10)
         {
             isSprinting = true;
-        }
-        if (Input.GetKeyUp(KeyCode.LeftShift))
-        {
-            isSprinting = false;
         }
         if (isSprinting
             && horizontalVelocity.magnitude > 0.3f)
@@ -145,6 +148,10 @@ public class Player_Movement : MonoBehaviour
             //Debug.Log("Player is sprinting!");
 
             currentSpeed = PlayerStatsScript.sprintSpeed;
+            PlayerStatsScript.currentStamina -= Time.deltaTime * 10;
+            PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar,
+                                        (int)PlayerStatsScript.currentStamina,
+                                        (int)PlayerStatsScript.maxStamina);
 
             if (isCrouching)
             {
@@ -161,62 +168,87 @@ public class Player_Movement : MonoBehaviour
         {
             isSprinting = false;
         }
-        else if (!isSprinting)
+        else if (!isSprinting
+                 && !isJumping)
         {
+            if (PlayerStatsScript.currentStamina <= PlayerStatsScript.maxStamina)
+            {
+                if (horizontalVelocity.magnitude < 0.3f)
+                {
+                    PlayerStatsScript.currentStamina += Time.deltaTime * 2;
+                }
+                else
+                {
+                    PlayerStatsScript.currentStamina += Time.deltaTime * 0.5f;
+                }
+                PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar,
+                                            (int)PlayerStatsScript.currentStamina,
+                                            (int)PlayerStatsScript.maxStamina);
+            }
+
             if (!isCrouching)
             {
                 currentSpeed = PlayerStatsScript.walkSpeed;
             }
         }
 
-        //jumping
-        if (Input.GetKey(KeyCode.Space)
+        //enable/disable jumping
+        if (KeyBindingsScript.GetButtonDown("Jump")
             && isGrounded
             && !isJumping
-            && canJump)
+            && canJump
+            && PlayerStatsScript.currentStamina >= 10)
         {
+            PlayerStatsScript.currentStamina -= 10;
+            PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar,
+                                        (int)PlayerStatsScript.currentStamina,
+                                        (int)PlayerStatsScript.maxStamina);
+
             velocity.y = Mathf.Sqrt(PlayerStatsScript.jumpHeight * -5.2f * gravity);
             CharacterController.stepOffset = 0;
             isJumping = true;
         }
-        else if (isGrounded
-                 && isJumping)
+        //stop jumping
+        if (isGrounded
+             && isJumping)
         {
             CharacterController.stepOffset = 0.3f;
             isJumping = false;
         }
 
-        //crouching
-        if (Input.GetKeyDown(KeyCode.LeftControl)
-            && isGrounded
-            && canCrouch)
+        //enable/disable crouching
+        if (KeyBindingsScript.GetButtonDown("Crouch"))
         {
-            isCrouching = !isCrouching;
-
-            if (isSprinting)
+            if (isGrounded
+                && canCrouch)
             {
-                isSprinting = false;
-            }
+                isCrouching = !isCrouching;
 
-            if (isCrouching)
-            {
-                //Debug.Log("Player is crouching!");
+                if (isSprinting)
+                {
+                    isSprinting = false;
+                }
 
-                currentSpeed = PlayerStatsScript.crouchSpeed;
+                if (isCrouching)
+                {
+                    //Debug.Log("Player is crouching!");
 
-                CharacterController.height = originalHeight / 2;
+                    currentSpeed = PlayerStatsScript.crouchSpeed;
 
-                PlayerCamera.transform.localPosition = PlayerStatsScript.cameraCrouchHeight;
-            }
-            else if (!isCrouching)
-            {
-                //Debug.Log("Player is no longer crouching...");
+                    CharacterController.height = originalHeight / 2;
 
-                currentSpeed = PlayerStatsScript.walkSpeed;
+                    PlayerCamera.transform.localPosition = PlayerStatsScript.cameraCrouchHeight;
+                }
+                else if (!isCrouching)
+                {
+                    //Debug.Log("Player is no longer crouching...");
 
-                CharacterController.height = originalHeight;
+                    currentSpeed = PlayerStatsScript.walkSpeed;
 
-                PlayerCamera.transform.localPosition = PlayerStatsScript.cameraWalkHeight;
+                    CharacterController.height = originalHeight;
+
+                    PlayerCamera.transform.localPosition = PlayerStatsScript.cameraWalkHeight;
+                }
             }
         }
     }

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class Manager_Console : MonoBehaviour
@@ -13,6 +14,7 @@ public class Manager_Console : MonoBehaviour
     [SerializeField] private GameObject thePlayer;
 
     //public but hidden variables
+    [HideInInspector] public bool canToggleConsole;
     [HideInInspector] public bool isConsoleOpen;
 
     //private variables
@@ -22,9 +24,6 @@ public class Manager_Console : MonoBehaviour
     private string lastOutput;
     private int currentSelectedInsertedCommand;
     private int currentScene;
-    private GameManager GameManagerScript;
-    private UI_PauseMenu PauseMenuScript;
-    private Manager_UIReuse UIReuseScript;
     private readonly List<string> separatedWords = new();
     private readonly List<GameObject> createdTexts = new();
     private readonly List<string> insertedCommands = new();
@@ -33,10 +32,17 @@ public class Manager_Console : MonoBehaviour
     private bool debugMenuEnabled;
     private Player_Stats PlayerStatsScript;
 
+    //scripts
+    private GameManager GameManagerScript;
+    private UI_PauseMenu PauseMenuScript;
+    private Manager_KeyBindings KeyBindingsScript;
+    private Manager_UIReuse UIReuseScript;
+
     private void Awake()
     {
         GameManagerScript = GetComponent<GameManager>();
         PauseMenuScript = GetComponent<UI_PauseMenu>();
+        KeyBindingsScript = GetComponent<Manager_KeyBindings>();
         UIReuseScript = GetComponent<Manager_UIReuse>();
 
         currentScene = SceneManager.GetActiveScene().buildIndex;
@@ -52,12 +58,14 @@ public class Manager_Console : MonoBehaviour
     private void Start()
     {
         CreateNewConsoleLine("Game version " + UIReuseScript.txt_GameVersion.text, "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Loaded scene " + SceneManager.GetActiveScene().name + " (" + currentScene + ")", "CONSOLE_INFO_MESSAGE");
         CreateNewConsoleLine("Type help to list all commands ", "CONSOLE_INFO_MESSAGE");
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.PageUp))
+        if (KeyBindingsScript.GetButtonDown("ToggleConsole")
+            && canToggleConsole)
         {
             isConsoleOpen = !isConsoleOpen;
         }
@@ -185,13 +193,19 @@ public class Manager_Console : MonoBehaviour
                 {
                     Command_ToggleDebugMenu();
                 }
+
                 //show all saves
                 else if (separatedWords[0] == "sas"
                          && separatedWords.Count == 1)
                 {
                     Command_ShowAllSaves();
                 }
-                
+                //delete all saves
+                else if (separatedWords[0] == "das"
+                         && separatedWords.Count == 1)
+                {
+                    Command_DeleteAllSaves();
+                }
                 //save with save name
                 else if (separatedWords[0] == "save"
                          && separatedWords.Count == 2
@@ -207,18 +221,32 @@ public class Manager_Console : MonoBehaviour
                 {
                     Command_LoadWithName();
                 }
+
+                //reset all key bindings to default values
+                else if (separatedWords[0] == "resetkeybindings"
+                         && separatedWords.Count == 1)
+                {
+                    Command_ResetKeyBindings();
+                }
+                //list all key bindings and their values
+                else if (separatedWords[0] == "showkeybindings"
+                         && separatedWords.Count == 1)
+                {
+                    Command_ShowKeyBindings();
+                }
+                //set keybindingname to keybindingvalue
+                else if (separatedWords[0] == "setkeybinding"
+                         && separatedWords.Count == 3)
+                {
+                    Command_SetKeyBinding();
+                }
+
                 //restart game from the beginning
                 else if (separatedWords[0] == "restart"
                          && separatedWords.Count == 1)
                 //&& PlayerHealthScript.isPlayerAlive)
                 {
                     Command_Restart();
-                }
-                //delete all saves
-                else if (separatedWords[0] == "das"
-                         && separatedWords.Count == 1)
-                {
-                    Command_DeleteAllSaves();
                 }
                 //quit game
                 else if (separatedWords[0] == "quit"
@@ -270,7 +298,7 @@ public class Manager_Console : MonoBehaviour
                         insertedCommands.Add(input);
                         currentSelectedInsertedCommand = insertedCommands.Count - 1;
 
-                        CreateNewConsoleLine("Error: Unknown or incorrect command or command is disabled (either player is dead or this command is not allowed in main menu)! Type help to list all commands.", "CONSOLE_ERROR_MESSAGE");
+                        CreateNewConsoleLine("Error: Unknown or incorrect command or command is disabled (either player is dead or this command is not allowed in this scene)! Type help to list all commands.", "CONSOLE_ERROR_MESSAGE");
                     }
                 }
 
@@ -305,7 +333,7 @@ public class Manager_Console : MonoBehaviour
                         insertedCommands.Add(input);
                         currentSelectedInsertedCommand = insertedCommands.Count - 1;
 
-                        CreateNewConsoleLine("Error: Unknown or incorrect command or command is disabled (either player is dead or this command is not allowed in main menu)! Type help to list all commands.", "CONSOLE_ERROR_MESSAGE");
+                        CreateNewConsoleLine("Error: Unknown or incorrect command or command is disabled (either player is dead or this command is not allowed in this scene)! Type help to list all commands.", "CONSOLE_ERROR_MESSAGE");
                     }
                 }
 
@@ -314,7 +342,7 @@ public class Manager_Console : MonoBehaviour
                     insertedCommands.Add(input);
                     currentSelectedInsertedCommand = insertedCommands.Count - 1;
 
-                    CreateNewConsoleLine("Error: Unknown or incorrect command or command is disabled (either player is dead or this command is not allowed in main menu)! Type help to list all commands.", "CONSOLE_ERROR_MESSAGE");
+                    CreateNewConsoleLine("Error: Unknown or incorrect command or command is disabled (either player is dead or this command is not allowed in this scene)! Type help to list all commands.", "CONSOLE_ERROR_MESSAGE");
                 }
             }
         }
@@ -339,12 +367,19 @@ public class Manager_Console : MonoBehaviour
             CreateNewConsoleLine("---GLOBAL COMMANDS---.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("clear - clear console log.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("tdm - toggle debug menu.", "CONSOLE_INFO_MESSAGE");
+
             CreateNewConsoleLine("sas - show all game saves.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("das - delete all game saves.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("save savename - save game with save name (GAME SCENE ONLY).", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("load loadname - load game with game save name.", "CONSOLE_INFO_MESSAGE");
+
+            CreateNewConsoleLine("resetkeybindings - reset all key bindings to default values.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("showkeybindings - list all key bindings and their current values.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("setkeybinding keybindingname keybindingvalue - set keybindingname to keybindingvalue.", "CONSOLE_INFO_MESSAGE");
+
             CreateNewConsoleLine("restart - restart the game from the beginning.", "CONSOLE_INFO_MESSAGE");
-            CreateNewConsoleLine("das - delete all game saves.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("quit - quit game.", "CONSOLE_INFO_MESSAGE");
+
             CreateNewConsoleLine("help player - list all player commands.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("help target - list all target commands.", "CONSOLE_INFO_MESSAGE");
         }
@@ -366,7 +401,6 @@ public class Manager_Console : MonoBehaviour
             }
         }
     }
-
     //clear console log
     private void Command_ClearConsole()
     {
@@ -380,7 +414,6 @@ public class Manager_Console : MonoBehaviour
         }
         createdTexts.Clear();
     }
-
     //toggle debug menu
     public void Command_ToggleDebugMenu()
     {
@@ -439,40 +472,6 @@ public class Manager_Console : MonoBehaviour
             CreateNewConsoleLine("Error: Cannot find game saves folder!", "CONSOLE_ERROR_MESSAGE");
         }
     }
-
-
-    //save game with name
-    private void Command_SaveWithName()
-    {
-        //save the potential save name
-        string saveName = separatedWords[1];
-        GetComponent<Manager_GameSaving>().CreateSaveFile(saveName);
-    }
-    //load game save with name
-    private void Command_LoadWithName()
-    {
-        string path = GameManagerScript.savePath;
-        if (File.Exists(path + @"\" + separatedWords[1] + ".txt"))
-        {
-            GetComponent<Manager_GameSaving>().CreateLoadFile(separatedWords[1] + ".txt");
-        }
-        else
-        {
-            CreateNewConsoleLine("Error: Save file " + separatedWords[1] + " does not exist!", "CONSOLE_ERROR_MESSAGE");
-        }
-    }
-    //restart game from beginning
-    private void Command_Restart()
-    {
-        string loadFilePath = GameManagerScript.gamePath + @"\loadfile.txt";
-
-        //using a text editor to write text to the game save file in the saved file path
-        using StreamWriter loadFile = File.CreateText(loadFilePath);
-
-        loadFile.WriteLine("restart");
-
-        SceneManager.LoadScene(1);
-    }
     //delete all game saves
     private void Command_DeleteAllSaves()
     {
@@ -494,7 +493,127 @@ public class Manager_Console : MonoBehaviour
             CreateNewConsoleLine("Error: " + path + " has no save files to delete!", "CONSOLE_ERROR_MESSAGE");
         }
     }
+    //save game with name
+    private void Command_SaveWithName()
+    {
+        //save the potential save name
+        string saveName = separatedWords[1];
+        GetComponent<Manager_GameSaving>().CreateSaveFile(saveName);
+    }
+    //load game save with name
+    private void Command_LoadWithName()
+    {
+        string path = GameManagerScript.savePath;
+        if (File.Exists(path + @"\" + separatedWords[1] + ".txt"))
+        {
+            GetComponent<Manager_GameSaving>().CreateLoadFile(separatedWords[1] + ".txt");
+        }
+        else
+        {
+            CreateNewConsoleLine("Error: Save file " + separatedWords[1] + " does not exist!", "CONSOLE_ERROR_MESSAGE");
+        }
+    }
 
+    //reset all key bindings to default values
+    private void Command_ResetKeyBindings()
+    {
+        KeyBindingsScript.ResetKeyBindings(true);
+        CreateNewConsoleLine("Successfully reset " + KeyBindingsScript.KeyBindings.Count + " key bindings!", "CONSOLE_SUCCESS_MESSAGE");
+    }
+    //list all key bindings and their values
+    private void Command_ShowKeyBindings()
+    {
+        CreateNewConsoleLine("---KEY BINDINGS---", "CONSOLE_INFO_MESSAGE");
+        foreach (KeyValuePair<string, KeyCode> dict in KeyBindingsScript.KeyBindings)
+        {
+            string key = dict.Key;
+            KeyCode value = dict.Value;
+            CreateNewConsoleLine(key + ": " + value.ToString().Replace("KeyCode.", ""), "CONSOLE_INFO_MESSAGE");
+        }
+    }
+    //set keybindingname to keybindingvalue
+    private void Command_SetKeyBinding()
+    {
+        string userKey = separatedWords[1];
+        KeyCode userValue = (KeyCode)Enum.Parse(typeof(KeyCode), separatedWords[2]);
+
+        bool foundCorrectValue = false;
+
+        foreach (KeyValuePair<string, KeyCode> dict in KeyBindingsScript.KeyBindings)
+        {
+            string key = dict.Key;
+            if (userKey == key)
+            {
+                userKey = key;
+                foundCorrectValue = true;
+                break;
+            }
+        }
+
+        if (foundCorrectValue)
+        {
+            KeyBindingsScript.KeyBindings[userKey] = userValue;
+
+            List<GameObject> allKeyParents = new();
+            foreach (GameObject buttonParent in KeyBindingsScript.generalKeyParents)
+            {
+                allKeyParents.Add(buttonParent);
+            }
+            foreach (GameObject buttonParent in KeyBindingsScript.movementKeyParents)
+            {
+                allKeyParents.Add(buttonParent);
+            }
+            foreach (GameObject buttonParent in KeyBindingsScript.combatKeyParents)
+            {
+                allKeyParents.Add(buttonParent);
+            }
+
+            foreach (GameObject buttonParent in allKeyParents)
+            {
+                Button button = buttonParent.GetComponentInChildren<Button>();
+                TMP_Text buttonText = button.GetComponentInChildren<TMP_Text>();
+                UI_AssignKey AssignScript = button.GetComponentInChildren<UI_AssignKey>();
+
+                if (AssignScript.str_Info == userKey)
+                {
+                    buttonText.text = userValue.ToString().Replace("KeyCode.", "");
+
+                    if (KeyBindingsScript.generalKeyParents.Contains(buttonParent))
+                    {
+                        KeyBindingsScript.RebuildKeyBindingsList("general");
+                    }
+                    else if (KeyBindingsScript.movementKeyParents.Contains(buttonParent))
+                    {
+                        KeyBindingsScript.RebuildKeyBindingsList("movement");
+                    }
+                    else if (KeyBindingsScript.combatKeyParents.Contains(buttonParent))
+                    {
+                        KeyBindingsScript.RebuildKeyBindingsList("combat");
+                    }
+
+                    CreateNewConsoleLine("Successfully set " + userKey + "s keycode to " + userValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    break;
+                }
+            }
+        }
+        else
+        {
+            CreateNewConsoleLine("Error: Inserted key binding name " + userKey + " or key binding value " + userValue.ToString().Replace("KeyCode.", "") + " does not exist! Type showkeybindings to list all key bindings.", "CONSOLE_ERROR_MESSAGE");
+        }
+    }
+
+    //restart game from beginning
+    private void Command_Restart()
+    {
+        string loadFilePath = GameManagerScript.gamePath + @"\loadfile.txt";
+
+        //using a text editor to write text to the game save file in the saved file path
+        using StreamWriter loadFile = File.CreateText(loadFilePath);
+
+        loadFile.WriteLine("restart");
+
+        SceneManager.LoadScene(1);
+    }
     //quit game
     private void Command_Quit()
     {
@@ -647,32 +766,71 @@ public class Manager_Console : MonoBehaviour
                 else if (statName == "maxhealth")
                 {
                     PlayerStatsScript.maxHealth = (int)statValue;
+                    PlayerStatsScript.UpdateBar(PlayerStatsScript.healthBar,
+                                                (int)PlayerStatsScript.currentHealth,
+                                                (int)PlayerStatsScript.maxHealth);
                     CreateNewConsoleLine("Sucessfully set player max health to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "currenthealth")
                 {
-                    PlayerStatsScript.currentHealth = (int)statValue;
-                    CreateNewConsoleLine("Sucessfully set player current health to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    if (statValue > PlayerStatsScript.maxHealth)
+                    {
+                        CreateNewConsoleLine("Error: Player health must be less than or equal to max health!", "CONSOLE_ERROR_MESSAGE");
+                    }
+                    else
+                    {
+                        PlayerStatsScript.currentHealth = (int)statValue;
+                        PlayerStatsScript.UpdateBar(PlayerStatsScript.healthBar,
+                                                    (int)PlayerStatsScript.currentHealth,
+                                                    (int)PlayerStatsScript.maxHealth);
+                        CreateNewConsoleLine("Sucessfully set player current health to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    }
                 }
                 else if (statName == "maxstamina")
                 {
                     PlayerStatsScript.maxStamina = (int)statValue;
+                    PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar,
+                                                (int)PlayerStatsScript.currentStamina,
+                                                (int)PlayerStatsScript.maxStamina);
                     CreateNewConsoleLine("Sucessfully set player max stamina to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "currentstamina")
                 {
-                    PlayerStatsScript.currentStamina = (int)statValue;
-                    CreateNewConsoleLine("Sucessfully set player current stamina to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    if (statValue > PlayerStatsScript.maxStamina)
+                    {
+                        CreateNewConsoleLine("Error: Player stamina must be less than or equal to max stamina!", "CONSOLE_ERROR_MESSAGE");
+                    }
+                    else
+                    {
+                        PlayerStatsScript.currentStamina = (int)statValue;
+                        PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar,
+                                                    (int)PlayerStatsScript.currentStamina,
+                                                    (int)PlayerStatsScript.maxStamina);
+                        CreateNewConsoleLine("Sucessfully set player current stamina to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    }
                 }
                 else if (statName == "maxmagicka")
                 {
                     PlayerStatsScript.maxMagicka = (int)statValue;
+                    PlayerStatsScript.UpdateBar(PlayerStatsScript.magickaBar,
+                                                (int)PlayerStatsScript.currentMagicka,
+                                                (int)PlayerStatsScript.maxStamina);
                     CreateNewConsoleLine("Sucessfully set player max magicka to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "currentmagicka")
                 {
-                    PlayerStatsScript.currentMagicka = (int)statValue;
-                    CreateNewConsoleLine("Sucessfully set player current magicka to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    if (statValue > PlayerStatsScript.maxMagicka)
+                    {
+                        CreateNewConsoleLine("Error: Player magicka must be less than or equal to max magicka!", "CONSOLE_ERROR_MESSAGE");
+                    }
+                    else
+                    {
+                        PlayerStatsScript.currentMagicka = (int)statValue;
+                        PlayerStatsScript.UpdateBar(PlayerStatsScript.magickaBar,
+                                                    (int)PlayerStatsScript.currentMagicka,
+                                                    (int)PlayerStatsScript.maxStamina);
+                        CreateNewConsoleLine("Sucessfully set player current magicka to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    }
                 }
                 else if (statName == "maxinvspace")
                 {
@@ -717,7 +875,7 @@ public class Manager_Console : MonoBehaviour
                     StartCoroutine(ConsoleSetupWait());
                 }
 
-                NewUnitylogMessage();
+                NewUnitylogMessage(unusedStackString, type);
             }
         }
     }
@@ -738,7 +896,7 @@ public class Manager_Console : MonoBehaviour
         }
     }
 
-    private void NewUnitylogMessage()
+    private void NewUnitylogMessage(string unusedStackString, LogType type)
     {
         string resultMessage;
 
@@ -746,7 +904,7 @@ public class Manager_Console : MonoBehaviour
             || output.Contains("CS")
             || output.Contains("Error"))
         {
-            resultMessage = "UNITY_ERROR_MESSAGE";
+            resultMessage = "UNITY_ERROR_MESSAGE] [" + unusedStackString + "] [" + type + "]";
         }
         else
         {

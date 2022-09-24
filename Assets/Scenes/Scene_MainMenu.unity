@@ -1535,6 +1535,7 @@ GameObject:
   - component: {fileID: 720376262}
   - component: {fileID: 720376265}
   - component: {fileID: 720376268}
+  - component: {fileID: 720376270}
   - component: {fileID: 720376269}
   - component: {fileID: 720376266}
   - component: {fileID: 720376267}
@@ -1574,6 +1575,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3762db0c22be230419e6823ce4258512, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  par_KeyAssign: {fileID: 0}
+  txt_AssignKey: {fileID: 0}
   txt_SaveName: {fileID: 949640660}
   txt_SaveDate: {fileID: 949640659}
   txt_SaveCoordinates: {fileID: 41695565}
@@ -1660,6 +1663,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   par_Managers: {fileID: 720376261}
   thePlayer: {fileID: 0}
+  canToggleConsole: 0
   isConsoleOpen: 0
 --- !u!114 &720376268
 MonoBehaviour:
@@ -1691,6 +1695,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   thePlayer: {fileID: 0}
   allowGameLoadBypass: 0
+--- !u!114 &720376270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 720376261}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1e7bb3493d757640b1f9481b47bd93f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  btn_SaveKeyBindings: {fileID: 0}
+  btn_ResetKeyBindings: {fileID: 0}
+  par_GeneralKeyBindingsParent: {fileID: 0}
+  btn_ShowGeneralKeyBindings: {fileID: 0}
+  generalKeyParents: []
+  par_MovementKeyBindingsParent: {fileID: 0}
+  btn_ShowMovementKeyBindings: {fileID: 0}
+  movementKeyParents: []
+  par_CombatKeyBindingsParent: {fileID: 0}
+  btn_ShowCombatKeyBindings: {fileID: 0}
+  combatKeyParents: []
 --- !u!1 &756988145
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,6 +6,10 @@ using TMPro;
 
 public class Manager_UIReuse : MonoBehaviour
 {
+    [Header("Key assign UI")]
+    public GameObject par_KeyAssign;
+    public TMP_Text txt_AssignKey;
+
     [Header("Load UI")]
     public TMP_Text txt_SaveName;
     public TMP_Text txt_SaveDate;

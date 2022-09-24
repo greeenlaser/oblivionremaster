@@ -32,6 +32,8 @@ public class GameManager : MonoBehaviour
     private Manager_Settings SettingsScript;
     private Manager_GameSaving SavingScript;
     private UI_PauseMenu PauseMenuScript;
+    private Manager_KeyBindings KeyBindingsScript;
+    private Manager_Console ConsoleScript;
     private Player_Stats PlayerStatsScript;
 
     private void Awake()
@@ -60,10 +62,13 @@ public class GameManager : MonoBehaviour
         }
 
         SettingsScript = GetComponent<Manager_Settings>();
+        KeyBindingsScript = GetComponent<Manager_KeyBindings>();
+        SavingScript = GetComponent<Manager_GameSaving>();
+        ConsoleScript = GetComponent<Manager_Console>();
+
         SettingsScript.AssignSettings();
 
         currentScene = SceneManager.GetActiveScene().buildIndex;
-
         if (currentScene == 0)
         {
             //create debug file
@@ -71,11 +76,12 @@ public class GameManager : MonoBehaviour
         }
         else if (currentScene == 1)
         {
-            SavingScript = GetComponent<Manager_GameSaving>();
             PauseMenuScript = GetComponent<UI_PauseMenu>();
+
             PlayerStatsScript = thePlayer.GetComponent<Player_Stats>();
 
             PauseMenuScript.canUnpause = true;
+            PauseMenuScript.canTogglePMUI = true;
 
             //player stats are always set to default before save is loaded
             PlayerStatsScript.ResetStats();
@@ -84,6 +90,8 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        KeyBindingsScript.LoadKeyBindings();
+
         //automatically update game version name
         UpdateVersionDate();
 
@@ -91,7 +99,13 @@ public class GameManager : MonoBehaviour
         {
             //load expected save if any exists
             SavingScript.ReadLoadFile();
+
+            //quickly pause and unpause to prevent game pause issues
+            PauseMenuScript.PauseWithoutUI();
+            PauseMenuScript.UnpauseGame();
         }
+
+        ConsoleScript.canToggleConsole = true;
     }
 
     public void CreatePaths()
