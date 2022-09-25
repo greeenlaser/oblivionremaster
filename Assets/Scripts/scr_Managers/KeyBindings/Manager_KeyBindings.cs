@@ -98,21 +98,17 @@ public class Manager_KeyBindings : MonoBehaviour
     public void RebuildKeyBindingsList(string targetKeyBindingParentName)
     {
         //only lists all key bindings from selected key bindings parent
-        GameObject targetKeyBindingsParent = null;
         List<GameObject> keyParents = null;
         if (targetKeyBindingParentName == "general")
         {
-            targetKeyBindingsParent = par_GeneralKeyBindingsParent;
             keyParents = generalKeyParents;
         }
         else if (targetKeyBindingParentName == "movement")
         {
-            targetKeyBindingsParent = par_MovementKeyBindingsParent;
             keyParents = movementKeyParents;
         }
         else if (targetKeyBindingParentName == "combat")
         {
-            targetKeyBindingsParent = par_CombatKeyBindingsParent;
             keyParents = combatKeyParents;
         }
 
@@ -223,6 +219,7 @@ public class Manager_KeyBindings : MonoBehaviour
             //if they actually want to reset the key bindings or not
             ConfirmationScript.RecieveData(gameObject,
                                            "keyBindingsScript",
+                                           "",
                                            "");
         }
         else
@@ -380,8 +377,6 @@ public class Manager_KeyBindings : MonoBehaviour
                     }
                 }
             }
-
-            Debug.Log("Successfully loaded " + KeyBindings.Count + " key bindings!");
         }
         else
         {

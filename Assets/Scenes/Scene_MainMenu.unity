@@ -1183,6 +1183,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 494324407}
   m_CullTransparentMesh: 1
+--- !u!114 &518308529 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7182938211410170865, guid: 074b96c3524858349a136b830933d01f, type: 3}
+  m_PrefabInstance: {fileID: 949640653}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &573494693
 GameObject:
   m_ObjectHideFlags: 0
@@ -1580,9 +1591,23 @@ MonoBehaviour:
   txt_SaveName: {fileID: 949640660}
   txt_SaveDate: {fileID: 949640659}
   txt_SaveCoordinates: {fileID: 41695565}
-  btn_LoadGame: {fileID: 949640658}
+  saveImage: {fileID: 518308529}
+  btn_LoadSave: {fileID: 949640658}
+  btn_DeleteSave: {fileID: 830308384}
   btn_SaveButtonTemplate: {fileID: 949640657}
   par_SaveButtons: {fileID: 949640656}
+  btn_ApplySettings: {fileID: 0}
+  btn_SaveSettings: {fileID: 0}
+  btn_ResetSettings: {fileID: 0}
+  btn_ShowGeneralSettings: {fileID: 0}
+  btn_ShowGraphicsSettings: {fileID: 0}
+  btn_ShowAudioSettings: {fileID: 0}
+  par_GeneralSettingsParent: {fileID: 0}
+  par_GraphicsSettingsParent: {fileID: 0}
+  par_AudioSettingsParent: {fileID: 0}
+  generalSettingsParents: []
+  graphicsSettingsParents: []
+  audioSettingsParents: []
   par_Console: {fileID: 1003422822}
   consoleInputField: {fileID: 1003422820}
   txt_InsertedTextTemplate: {fileID: 1003422819}
@@ -1681,6 +1706,8 @@ MonoBehaviour:
   def_EnableVsync: 1
   user_Resolution: 0
   def_Resolution: 2
+  user_FullScreenMode: 0
+  def_FullScreenMode: 3
 --- !u!114 &720376269
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1694,6 +1721,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   thePlayer: {fileID: 0}
+  canvas: {fileID: 0}
   allowGameLoadBypass: 0
 --- !u!114 &720376270
 MonoBehaviour:
@@ -1905,6 +1933,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &830308384 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2607496534327689197, guid: 074b96c3524858349a136b830933d01f, type: 3}
+  m_PrefabInstance: {fileID: 949640653}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &949640653

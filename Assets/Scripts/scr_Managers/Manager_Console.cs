@@ -36,6 +36,8 @@ public class Manager_Console : MonoBehaviour
     private GameManager GameManagerScript;
     private UI_PauseMenu PauseMenuScript;
     private Manager_KeyBindings KeyBindingsScript;
+    private Manager_GameSaving GameSavingScript;
+    private Manager_Settings SettingsScript;
     private Manager_UIReuse UIReuseScript;
 
     private void Awake()
@@ -43,6 +45,8 @@ public class Manager_Console : MonoBehaviour
         GameManagerScript = GetComponent<GameManager>();
         PauseMenuScript = GetComponent<UI_PauseMenu>();
         KeyBindingsScript = GetComponent<Manager_KeyBindings>();
+        GameSavingScript = GetComponent<Manager_GameSaving>();
+        SettingsScript = GetComponent<Manager_Settings>();
         UIReuseScript = GetComponent<Manager_UIReuse>();
 
         currentScene = SceneManager.GetActiveScene().buildIndex;
@@ -57,8 +61,8 @@ public class Manager_Console : MonoBehaviour
 
     private void Start()
     {
-        CreateNewConsoleLine("Game version " + UIReuseScript.txt_GameVersion.text, "CONSOLE_INFO_MESSAGE");
         CreateNewConsoleLine("Loaded scene " + SceneManager.GetActiveScene().name + " (" + currentScene + ")", "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Game version " + UIReuseScript.txt_GameVersion.text, "CONSOLE_INFO_MESSAGE");
         CreateNewConsoleLine("Type help to list all commands ", "CONSOLE_INFO_MESSAGE");
     }
 
@@ -199,6 +203,12 @@ public class Manager_Console : MonoBehaviour
                          && separatedWords.Count == 1)
                 {
                     Command_ShowAllSaves();
+                }
+                //delete selected save
+                else if (separatedWords[0] == "deletesave"
+                         && separatedWords.Count == 2)
+                {
+                    Command_DeleteSave();
                 }
                 //delete all saves
                 else if (separatedWords[0] == "das"
@@ -369,6 +379,7 @@ public class Manager_Console : MonoBehaviour
             CreateNewConsoleLine("tdm - toggle debug menu.", "CONSOLE_INFO_MESSAGE");
 
             CreateNewConsoleLine("sas - show all game saves.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("deletesave savename - delete selected save.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("das - delete all game saves.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("save savename - save game with save name (GAME SCENE ONLY).", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("load loadname - load game with game save name.", "CONSOLE_INFO_MESSAGE");
@@ -456,10 +467,6 @@ public class Manager_Console : MonoBehaviour
                         string saveName = Path.GetFileName(save);
                         CreateNewConsoleLine(saveName.Replace(".txt", ""), "CONSOLE_INFO_MESSAGE");
                     }
-                    else
-                    {
-                        CreateNewConsoleLine("Error: Invalid save file extention type found at " + path + "!", "CONSOLE_ERROR_MESSAGE");
-                    }
                 }
             }
             else
@@ -471,6 +478,11 @@ public class Manager_Console : MonoBehaviour
         {
             CreateNewConsoleLine("Error: Cannot find game saves folder!", "CONSOLE_ERROR_MESSAGE");
         }
+    }
+    //delete selected save
+    private void Command_DeleteSave()
+    {
+        GameSavingScript.DeleteSave(separatedWords[1]);
     }
     //delete all game saves
     private void Command_DeleteAllSaves()
@@ -683,8 +695,8 @@ public class Manager_Console : MonoBehaviour
         CreateNewConsoleLine("", "CONSOLE_INFO_MESSAGE");
 
         CreateNewConsoleLine("---PLAYER CAMERA---", "CONSOLE_INFO_MESSAGE");
-        CreateNewConsoleLine("cameramovespeed: " + PlayerStatsScript.cameraMoveSpeed, "CONSOLE_INFO_MESSAGE");
-        CreateNewConsoleLine("fov: " + PlayerStatsScript.fieldOfView, "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("cameramovespeed: " + SettingsScript.user_MouseSpeed, "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("fov: " + SettingsScript.user_FieldOfView, "CONSOLE_INFO_MESSAGE");
         CreateNewConsoleLine("", "CONSOLE_INFO_MESSAGE");
 
         CreateNewConsoleLine("---PLAYER STATS---", "CONSOLE_INFO_MESSAGE");
@@ -745,7 +757,7 @@ public class Manager_Console : MonoBehaviour
                 }
                 else if (statName == "cameramovespeed")
                 {
-                    PlayerStatsScript.cameraMoveSpeed = (int)statValue;
+                    SettingsScript.user_MouseSpeed = (int)statValue;
                     thePlayer.GetComponentInChildren<Player_Camera>().sensX = (int)statValue;
                     thePlayer.GetComponentInChildren<Player_Camera>().sensY = (int)statValue;
                 }
@@ -754,7 +766,7 @@ public class Manager_Console : MonoBehaviour
                     if (statValue >= 70
                         && statValue <= 110)
                     {
-                        PlayerStatsScript.fieldOfView = (int)statValue;
+                        SettingsScript.user_FieldOfView = (int)statValue;
                         thePlayer.GetComponentInChildren<Camera>().fieldOfView = (int)statValue;
                         CreateNewConsoleLine("Sucessfully set player field of view to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                     }
@@ -766,9 +778,7 @@ public class Manager_Console : MonoBehaviour
                 else if (statName == "maxhealth")
                 {
                     PlayerStatsScript.maxHealth = (int)statValue;
-                    PlayerStatsScript.UpdateBar(PlayerStatsScript.healthBar,
-                                                (int)PlayerStatsScript.currentHealth,
-                                                (int)PlayerStatsScript.maxHealth);
+                    PlayerStatsScript.UpdateBar(PlayerStatsScript.healthBar);
                     CreateNewConsoleLine("Sucessfully set player max health to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "currenthealth")
@@ -780,18 +790,14 @@ public class Manager_Console : MonoBehaviour
                     else
                     {
                         PlayerStatsScript.currentHealth = (int)statValue;
-                        PlayerStatsScript.UpdateBar(PlayerStatsScript.healthBar,
-                                                    (int)PlayerStatsScript.currentHealth,
-                                                    (int)PlayerStatsScript.maxHealth);
+                        PlayerStatsScript.UpdateBar(PlayerStatsScript.healthBar);
                         CreateNewConsoleLine("Sucessfully set player current health to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                     }
                 }
                 else if (statName == "maxstamina")
                 {
                     PlayerStatsScript.maxStamina = (int)statValue;
-                    PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar,
-                                                (int)PlayerStatsScript.currentStamina,
-                                                (int)PlayerStatsScript.maxStamina);
+                    PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar);
                     CreateNewConsoleLine("Sucessfully set player max stamina to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "currentstamina")
@@ -803,18 +809,14 @@ public class Manager_Console : MonoBehaviour
                     else
                     {
                         PlayerStatsScript.currentStamina = (int)statValue;
-                        PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar,
-                                                    (int)PlayerStatsScript.currentStamina,
-                                                    (int)PlayerStatsScript.maxStamina);
+                        PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar);
                         CreateNewConsoleLine("Sucessfully set player current stamina to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                     }
                 }
                 else if (statName == "maxmagicka")
                 {
                     PlayerStatsScript.maxMagicka = (int)statValue;
-                    PlayerStatsScript.UpdateBar(PlayerStatsScript.magickaBar,
-                                                (int)PlayerStatsScript.currentMagicka,
-                                                (int)PlayerStatsScript.maxStamina);
+                    PlayerStatsScript.UpdateBar(PlayerStatsScript.magickaBar);
                     CreateNewConsoleLine("Sucessfully set player max magicka to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "currentmagicka")
@@ -826,9 +828,7 @@ public class Manager_Console : MonoBehaviour
                     else
                     {
                         PlayerStatsScript.currentMagicka = (int)statValue;
-                        PlayerStatsScript.UpdateBar(PlayerStatsScript.magickaBar,
-                                                    (int)PlayerStatsScript.currentMagicka,
-                                                    (int)PlayerStatsScript.maxStamina);
+                        PlayerStatsScript.UpdateBar(PlayerStatsScript.magickaBar);
                         CreateNewConsoleLine("Sucessfully set player current magicka to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                     }
                 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,6 +11,7 @@ public class UI_Confirmation : MonoBehaviour
     private UI_PauseMenu PauseMenuScript;
     private Manager_GameSaving SavingScript;
     private Manager_KeyBindings KeyBindingsScript;
+    private Manager_Settings SettingsScript;
     private Manager_UIReuse UIReuseScript;
 
     private void Awake()
@@ -17,6 +19,7 @@ public class UI_Confirmation : MonoBehaviour
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
 
         SavingScript = GetComponent<Manager_GameSaving>();
+        SettingsScript = GetComponent<Manager_Settings>();
         UIReuseScript = GetComponent<Manager_UIReuse>();
         if (currentSceneIndex == 1)
         {
@@ -39,7 +42,8 @@ public class UI_Confirmation : MonoBehaviour
     */
     public void RecieveData(GameObject callerObject, 
                             string callerName, 
-                            string key)
+                            string key,
+                            string optionalAction)
     {
         //resets confirmation UI
         UIReuseScript.ClearConfirmationUI();
@@ -88,18 +92,31 @@ public class UI_Confirmation : MonoBehaviour
             //the save script
             else if (callerName == "saveScript")
             {
-                UIReuseScript.txt_Confirmation.text = "Are you sure you want to load this save? Unsaved content will be lost.";
+                if (optionalAction == "load")
+                {
+                    UIReuseScript.txt_Confirmation.text = "Are you sure you want to load this save? Unsaved content will be lost.";
 
-                UIReuseScript.btn_Confirm1.gameObject.SetActive(true);
-                UIReuseScript.btn_Confirm1.transform.localPosition = new(-150, -79, 0);
-                UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Save game and load";
-                UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { SavingScript.CreateSaveFile(""); } );
-                UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { SavingScript.CreateLoadFile(key); });
+                    UIReuseScript.btn_Confirm1.gameObject.SetActive(true);
+                    UIReuseScript.btn_Confirm1.transform.localPosition = new(-150, -79, 0);
+                    UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Save game and load";
+                    UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { SavingScript.CreateSaveFile(""); });
+                    UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { SavingScript.CreateLoadFile(key); });
 
-                UIReuseScript.btn_Confirm2.gameObject.SetActive(true);
-                UIReuseScript.btn_Confirm2.GetComponentInChildren<TMP_Text>().text = "Load without saving";
+                    UIReuseScript.btn_Confirm2.gameObject.SetActive(true);
+                    UIReuseScript.btn_Confirm2.GetComponentInChildren<TMP_Text>().text = "Load without saving";
 
-                UIReuseScript.btn_Confirm2.onClick.AddListener(delegate { SavingScript.CreateLoadFile(key); });
+                    UIReuseScript.btn_Confirm2.onClick.AddListener(delegate { SavingScript.CreateLoadFile(key); });
+                }
+                else if (optionalAction == "delete")
+                {
+                    UIReuseScript.txt_Confirmation.text = "Are you sure you want to delete this save?";
+
+                    UIReuseScript.btn_Confirm1.gameObject.SetActive(true);
+                    UIReuseScript.btn_Confirm1.transform.localPosition = new(0, -79, 0);
+                    UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Delete";
+                    UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { SavingScript.DeleteSave(key); });
+                    UIReuseScript.btn_Confirm1.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
+                }
             }
             //the key bindings script
             else if (callerName == "keyBindingsScript")
@@ -111,6 +128,18 @@ public class UI_Confirmation : MonoBehaviour
                 UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Reset";
 
                 UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { KeyBindingsScript.ResetKeyBindings(true); });
+                UIReuseScript.btn_Confirm1.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
+            }
+            //the settings script
+            else if (callerName == "settingsScript")
+            {
+                UIReuseScript.txt_Confirmation.text = "Are you sure you want to reset the settings?";
+
+                UIReuseScript.btn_Confirm1.gameObject.SetActive(true);
+                UIReuseScript.btn_Confirm1.transform.localPosition = new(0, -79, 0);
+                UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Reset";
+
+                UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { SettingsScript.ResetSettings(true); });
                 UIReuseScript.btn_Confirm1.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
             }
         }

@@ -149,9 +149,7 @@ public class Player_Movement : MonoBehaviour
 
             currentSpeed = PlayerStatsScript.sprintSpeed;
             PlayerStatsScript.currentStamina -= Time.deltaTime * 10;
-            PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar,
-                                        (int)PlayerStatsScript.currentStamina,
-                                        (int)PlayerStatsScript.maxStamina);
+            PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar);
 
             if (isCrouching)
             {
@@ -181,9 +179,7 @@ public class Player_Movement : MonoBehaviour
                 {
                     PlayerStatsScript.currentStamina += Time.deltaTime * 0.5f;
                 }
-                PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar,
-                                            (int)PlayerStatsScript.currentStamina,
-                                            (int)PlayerStatsScript.maxStamina);
+                PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar);
             }
 
             if (!isCrouching)
@@ -200,9 +196,7 @@ public class Player_Movement : MonoBehaviour
             && PlayerStatsScript.currentStamina >= 10)
         {
             PlayerStatsScript.currentStamina -= 10;
-            PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar,
-                                        (int)PlayerStatsScript.currentStamina,
-                                        (int)PlayerStatsScript.maxStamina);
+            PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar);
 
             velocity.y = Mathf.Sqrt(PlayerStatsScript.jumpHeight * -5.2f * gravity);
             CharacterController.stepOffset = 0;

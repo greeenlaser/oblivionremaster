@@ -38,6 +38,11 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        SettingsScript = GetComponent<Manager_Settings>();
+        KeyBindingsScript = GetComponent<Manager_KeyBindings>();
+        SavingScript = GetComponent<Manager_GameSaving>();
+        ConsoleScript = GetComponent<Manager_Console>();
+
         //start recieving unity logs
         Application.logMessageReceived += GetComponent<Manager_Console>().HandleLog;
 
@@ -61,13 +66,6 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        SettingsScript = GetComponent<Manager_Settings>();
-        KeyBindingsScript = GetComponent<Manager_KeyBindings>();
-        SavingScript = GetComponent<Manager_GameSaving>();
-        ConsoleScript = GetComponent<Manager_Console>();
-
-        SettingsScript.AssignSettings();
-
         currentScene = SceneManager.GetActiveScene().buildIndex;
         if (currentScene == 0)
         {
@@ -90,6 +88,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        SettingsScript.LoadSettings();
         KeyBindingsScript.LoadKeyBindings();
 
         //automatically update game version name

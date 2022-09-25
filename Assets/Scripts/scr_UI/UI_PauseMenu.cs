@@ -33,6 +33,7 @@ public class UI_PauseMenu : MonoBehaviour
     private Manager_GameSaving SavingScript;
     private UI_Confirmation ConfirmationScript;
     private Manager_KeyBindings KeyBindingsScript;
+    private Manager_Settings SettingsScript;
     private Manager_UIReuse UIReuseScript;
     private Player_Movement PlayerMovementScript;
     private Player_Camera PlayerCameraScript;
@@ -42,6 +43,7 @@ public class UI_PauseMenu : MonoBehaviour
         SavingScript = GetComponent<Manager_GameSaving>();
         ConfirmationScript = GetComponent<UI_Confirmation>();
         KeyBindingsScript = GetComponent<Manager_KeyBindings>();
+        SettingsScript = GetComponent<Manager_Settings>();
         UIReuseScript = GetComponent<Manager_UIReuse>();
         PlayerMovementScript = thePlayer.GetComponent<Player_Movement>();
         PlayerCameraScript = thePlayer.GetComponentInChildren<Player_Camera>();
@@ -96,6 +98,13 @@ public class UI_PauseMenu : MonoBehaviour
         PlayerMovementScript.canMove = true;
         PlayerCameraScript.isCamEnabled = true;
 
+        //reset or load saved settings
+        //if settings were not saved after player exited settings menu
+        if (!SettingsScript.savedSettings)
+        {
+            SettingsScript.LoadSettings();
+        }
+
         isPaused = false;
     }
     //pauses the game with UI
@@ -127,6 +136,13 @@ public class UI_PauseMenu : MonoBehaviour
         par_LoadContent.SetActive(false);
         par_SettingsContent.SetActive(false);
         par_KeyBindingsContent.SetActive(false);
+
+        //reset or load saved settings
+        //if settings were not saved after player exited settings menu
+        if (!SettingsScript.savedSettings)
+        {
+            SettingsScript.LoadSettings();
+        }
 
         btn_ReturnToPM.gameObject.SetActive(false);
     }
@@ -160,6 +176,8 @@ public class UI_PauseMenu : MonoBehaviour
         par_PMContent.SetActive(false);
         par_SettingsContent.SetActive(true);
 
+        SettingsScript.RebuildSettingsList("general");
+
         btn_ReturnToPM.gameObject.SetActive(true);
     }
     //shows all key bindings
@@ -181,7 +199,8 @@ public class UI_PauseMenu : MonoBehaviour
             //if they actually want to go back to the main menu or not
             ConfirmationScript.RecieveData(gameObject,
                                            "pauseMenuScript",
-                                           "returnToMM");
+                                           "returnToMM",
+                                           "");
         }
         else
         {
@@ -197,7 +216,8 @@ public class UI_PauseMenu : MonoBehaviour
             //if they actually want to quit the game or not
             ConfirmationScript.RecieveData(gameObject, 
                                            "pauseMenuScript", 
-                                           "quit");
+                                           "quit",
+                                           "");
         }
         else
         {

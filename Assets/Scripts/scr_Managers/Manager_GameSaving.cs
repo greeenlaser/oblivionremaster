@@ -10,8 +10,9 @@ using System.Linq;
 
 public class Manager_GameSaving : MonoBehaviour
 {
-    [Header("Scripts")]
+    [Header("Assignables")]
     [SerializeField] private GameObject thePlayer;
+    [SerializeField] private Canvas canvas; 
 
     //hidden but public variables
     [HideInInspector] public bool allowGameLoadBypass;
@@ -23,6 +24,7 @@ public class Manager_GameSaving : MonoBehaviour
     private readonly List<Button> saveButtons = new();
     private GameManager GameManagerScript;
     private Manager_KeyBindings KeyBindingsScript;
+    private Manager_Settings SettingsScript;
     private Manager_UIReuse UIReuseScript;
     private Player_Stats PlayerStatsScript;
 
@@ -30,6 +32,7 @@ public class Manager_GameSaving : MonoBehaviour
     {
         GameManagerScript = GetComponent<GameManager>();
         KeyBindingsScript = GetComponent<Manager_KeyBindings>();
+        SettingsScript = GetComponent<Manager_Settings>();
         UIReuseScript = GetComponent<Manager_UIReuse>();
 
         currentScene = SceneManager.GetActiveScene().buildIndex;
@@ -42,17 +45,18 @@ public class Manager_GameSaving : MonoBehaviour
 
     private void Update()
     {
-        //save the game
-        if (KeyBindingsScript.GetButtonDown("Save")
-            && currentScene == 1)
+        if (currentScene == 1)
         {
-            CreateSaveFile("");
-        }
-        //load the latest save
-        if (KeyBindingsScript.GetButtonDown("Load")
-            && currentScene == 1)
-        {
-            CreateLoadFile("");
+            //save the game
+            if (KeyBindingsScript.GetButtonDown("Save"))
+            {
+                CreateSaveFile("");
+            }
+            //load the latest save
+            if (KeyBindingsScript.GetButtonDown("Load"))
+            {
+                CreateLoadFile("");
+            }
         }
     }
 
@@ -84,18 +88,22 @@ public class Manager_GameSaving : MonoBehaviour
                 foreach (FileInfo file in files)
                 {
                     string filePath = file.Directory.FullName;
-
                     string fileName = Path.GetFileName(file.Name);
-                    DateTime creationDate = file.CreationTime;
 
-                    Button btn_New = Instantiate(UIReuseScript.btn_SaveButtonTemplate);
-                    btn_New.transform.SetParent(UIReuseScript.par_SaveButtons, false);
+                    //only show txt files as saves
+                    if (fileName.Contains(".txt"))
+                    {
+                        DateTime creationDate = file.CreationTime;
 
-                    btn_New.GetComponentInChildren<TMP_Text>().text = fileName.Replace(".txt", "");
+                        Button btn_New = Instantiate(UIReuseScript.btn_SaveButtonTemplate);
+                        btn_New.transform.SetParent(UIReuseScript.par_SaveButtons, false);
 
-                    btn_New.onClick.AddListener(delegate { ShowSaveData(fileName); });
+                        btn_New.GetComponentInChildren<TMP_Text>().text = fileName.Replace(".txt", "");
 
-                    saveButtons.Add(btn_New);
+                        btn_New.onClick.AddListener(delegate { ShowSaveData(fileName); });
+
+                        saveButtons.Add(btn_New);
+                    }
                 }
             }
         }
@@ -107,8 +115,8 @@ public class Manager_GameSaving : MonoBehaviour
     //shows a few details of the game save
     public void ShowSaveData(string saveName)
     {
-        UIReuseScript.btn_LoadGame.interactable = true;
-        UIReuseScript.btn_LoadGame.onClick.RemoveAllListeners();
+        UIReuseScript.btn_LoadSave.interactable = true;
+        UIReuseScript.btn_LoadSave.onClick.RemoveAllListeners();
 
         //always loads the game in main menu scene
         //or loads the game in game scene if confirmation bypass is allowed
@@ -116,23 +124,101 @@ public class Manager_GameSaving : MonoBehaviour
             || (currentScene == 1
             && allowGameLoadBypass))
         {
-            UIReuseScript.btn_LoadGame.onClick.AddListener(delegate { CreateLoadFile(saveName); });
+            UIReuseScript.btn_LoadSave.onClick.AddListener(delegate { CreateLoadFile(saveName); });
         }
         //asks for confirmation before loading a save in game scene
         else if (currentScene == 1)
         {
-            UIReuseScript.btn_LoadGame.onClick.AddListener(delegate {
+            UIReuseScript.btn_LoadSave.onClick.AddListener(delegate {
                 GetComponent<UI_Confirmation>().RecieveData(gameObject,
                                                             "saveScript",
-                                                            saveName); });
+                                                            saveName,
+                                                            "load"); });
         }
 
+        //delete save button
+        UIReuseScript.btn_DeleteSave.interactable = true;
+        UIReuseScript.btn_DeleteSave.onClick.RemoveAllListeners();
+
+        UIReuseScript.btn_DeleteSave.onClick.AddListener(delegate {
+            GetComponent<UI_Confirmation>().RecieveData(gameObject,
+                                                        "saveScript",
+                                                        saveName,
+                                                        "delete");});
+
+        //show save name
         UIReuseScript.txt_SaveName.text = saveName.Replace(".txt", "");
 
+        //show save creation date
         DateTime str_SaveDate = File.GetLastWriteTime(GameManagerScript.savePath + @"\" + saveName);
         UIReuseScript.txt_SaveDate.text = str_SaveDate.ToString("d");
 
-        //TODO: save and show save screenshot
+        //find the screenshot from saves directory
+        //and apply it to the rawimage texture slot
+        DirectoryInfo info = new(GameManagerScript.savePath);
+        FileInfo[] files = info.GetFiles().OrderBy(p => p.CreationTime).ToArray();
+        //loop through all files
+        foreach (FileInfo file in files)
+        {
+            string fileName = Path.GetFileName(file.Name);
+
+            //find the png image with the same name as the save
+            if (fileName.Contains(saveName.Replace(".txt", ".png")))
+            {
+                string path = GameManagerScript.savePath + @"\" + fileName;
+
+                //convert the image to a texture
+                //and apply it to the raw image texture slot
+                Texture2D screenshot = new(1, 1);
+                byte[] data = File.ReadAllBytes(path);
+                screenshot.LoadImage(data);
+                UIReuseScript.saveImage.texture = screenshot;
+                UIReuseScript.saveImage.gameObject.SetActive(true);
+
+                break;
+            }
+        }
+    }
+
+    //delete selected save
+    public void DeleteSave(string saveName)
+    {
+        bool foundSave = false;
+        //add .txt to saveName if it is missing
+        if (!saveName.Contains(".txt"))
+        {
+            saveName += ".txt";
+        }
+
+        DirectoryInfo info = new(GameManagerScript.savePath);
+        FileInfo[] files = info.GetFiles().OrderBy(p => p.CreationTime).ToArray();
+        //loop through all files
+        for (int i = 0; i < files.Length; i++)
+        {
+            string fileName = Path.GetFileName(files[i].Name);
+            //find the file to delete
+            if (fileName == saveName)
+            {
+                foundSave = true;
+
+                break;
+            }
+        }
+
+        if (foundSave)
+        {
+            File.Delete(GameManagerScript.savePath + @"\" + saveName);
+            File.Delete(GameManagerScript.savePath + @"\" + saveName.Replace(".txt", ".png"));
+            UIReuseScript.ClearSaveData();
+
+            ShowGameSaves();
+
+            Debug.Log("Successfully deleted save " + saveName.Replace(".txt", "") + ".");
+        }
+        else
+        {
+            Debug.LogError("Error: Did not find save " + saveName + "!");
+        }
     }
 
     //set up game save file creation
@@ -226,6 +312,9 @@ public class Manager_GameSaving : MonoBehaviour
     //create the actual game save file
     private void SaveGame()
     {
+        //save a screenshot of the game
+        StartCoroutine(TakeScreenshot());
+
         //create a new save file and fill it with data
         using StreamWriter saveFile = File.CreateText(str_SaveFilePath);
 
@@ -255,8 +344,8 @@ public class Manager_GameSaving : MonoBehaviour
         saveFile.WriteLine("pv_PlayerCameraRotation: " + camRotX + ", " + camRotY + ", " + camRotZ);
         saveFile.WriteLine("");
 
-        saveFile.WriteLine("pv_MouseSpeed: " + PlayerStatsScript.cameraMoveSpeed);
-        saveFile.WriteLine("pv_FieldOfView: " + PlayerStatsScript.fieldOfView);
+        saveFile.WriteLine("pv_MouseSpeed: " + SettingsScript.user_MouseSpeed);
+        saveFile.WriteLine("pv_FieldOfView: " + SettingsScript.user_FieldOfView);
         saveFile.WriteLine("");
 
         saveFile.WriteLine("---PLAYER STATS---");
@@ -433,13 +522,13 @@ public class Manager_GameSaving : MonoBehaviour
                         else if (typeName == "FieldOfView")
                         {
                             float fov = float.Parse(values[0]);
-                            PlayerStatsScript.fieldOfView = fov;
+                            SettingsScript.user_FieldOfView = (int)fov;
                             thePlayer.GetComponentInChildren<Camera>().fieldOfView = fov;
                         }
                         else if (typeName == "MouseSpeed")
                         {
                             float mouseSpeed = float.Parse(values[0]);
-                            PlayerStatsScript.cameraMoveSpeed = (int)mouseSpeed;
+                            SettingsScript.user_MouseSpeed = (int)mouseSpeed;
                             thePlayer.GetComponentInChildren<Player_Camera>().sensX = mouseSpeed;
                             thePlayer.GetComponentInChildren<Player_Camera>().sensY = mouseSpeed;
                         }
@@ -447,8 +536,19 @@ public class Manager_GameSaving : MonoBehaviour
                     //load player stats
                     else if (type == "ps")
                     {
-                        float floatVal = float.Parse(values[0]);
-                        int intVal = int.Parse(values[0]);
+                        bool isFloat = float.TryParse(values[0], out _);
+                        bool isInt = int.TryParse(values[0], out _);
+
+                        float floatVal = 0;
+                        int intVal = 0;
+                        if (isFloat)
+                        {
+                            floatVal = float.Parse(values[0]);
+                        }
+                        else if (isInt)
+                        {
+                            intVal = int.Parse(values[0]);
+                        }
 
                         if (typeName == "MaxHealth")
                         {
@@ -479,20 +579,26 @@ public class Manager_GameSaving : MonoBehaviour
                             PlayerStatsScript.maxInvSpace = intVal;
                         }
 
-                        PlayerStatsScript.UpdateBar(PlayerStatsScript.healthBar,
-                                                   (int)PlayerStatsScript.currentHealth,
-                                                   (int)PlayerStatsScript.maxHealth);
-                        PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar,
-                                                   (int)PlayerStatsScript.currentStamina,
-                                                   (int)PlayerStatsScript.maxStamina);
-                        PlayerStatsScript.UpdateBar(PlayerStatsScript.magickaBar,
-                                                   (int)PlayerStatsScript.currentMagicka,
-                                                   (int)PlayerStatsScript.maxMagicka);
+                        PlayerStatsScript.UpdateBar(PlayerStatsScript.healthBar);
+                        PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar);
+                        PlayerStatsScript.UpdateBar(PlayerStatsScript.magickaBar);
                     }
                 }
             }
 
             Debug.Log("Sucessfully loaded save file " + saveFileName.Replace(".txt", "") + " from " + GameManagerScript.savePath + "!");
         }
+    }
+
+    private IEnumerator TakeScreenshot()
+    {
+        string screenshotPath = str_SaveFilePath.Replace(".txt", ".png");
+
+        canvas.enabled = false;
+
+        ScreenCapture.CaptureScreenshot(screenshotPath);
+
+        yield return new WaitForEndOfFrame();
+        canvas.enabled = true;
     }
 }

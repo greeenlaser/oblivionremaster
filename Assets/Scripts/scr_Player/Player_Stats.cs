@@ -17,12 +17,6 @@ public class Player_Stats : MonoBehaviour
     [HideInInspector] public Vector3 cameraWalkHeight = new(0, 0.6f, 0);
     [HideInInspector] public Vector3 cameraCrouchHeight = new(0, 0.3f, 0);
 
-    [Header("Player camera")]
-    [SerializeField] private int defaultCameraMoveSpeed = 50;
-    [HideInInspector] public int cameraMoveSpeed;
-    [SerializeField] private float defaultFieldOfView = 90;
-    [HideInInspector] public float fieldOfView;
-
     [Header("Combat stats")]
     [SerializeField] private float defaultMaxHealth = 100;
     [HideInInspector] public float maxHealth;
@@ -53,11 +47,6 @@ public class Player_Stats : MonoBehaviour
         sprintSpeed = defaultSprintSpeed;
         crouchSpeed = defaultCrouchSpeed;
         jumpHeight = defaultJumpHeight;
-        cameraMoveSpeed = defaultCameraMoveSpeed;
-        fieldOfView = defaultFieldOfView;
-        GetComponentInChildren<Camera>().fieldOfView = fieldOfView;
-        GetComponentInChildren<Player_Camera>().sensX = cameraMoveSpeed;
-        GetComponentInChildren<Player_Camera>().sensY = cameraMoveSpeed;
 
         maxHealth = defaultMaxHealth;
         currentHealth = defaultMaxHealth;
@@ -69,19 +58,13 @@ public class Player_Stats : MonoBehaviour
         maxInvSpace = defaultMaxInvSpace;
         invSpace = 0;
 
-        UpdateBar(healthBar,
-                  (int)currentHealth,
-                  (int)maxHealth);
-        UpdateBar(staminaBar,
-                  (int)currentStamina,
-                  (int)maxStamina);
-        UpdateBar(magickaBar,
-                  (int)currentMagicka,
-                  (int)maxMagicka);
+        UpdateBar(healthBar);
+        UpdateBar(staminaBar);
+        UpdateBar(magickaBar);
     }
 
     //update players health/stamina/magicka bar UI
-    public void UpdateBar(Slider bar, int currentValue, int maxValue)
+    public void UpdateBar(Slider bar)
     {
         if (bar == healthBar)
         {

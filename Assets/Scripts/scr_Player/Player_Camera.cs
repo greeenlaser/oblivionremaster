@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Player_Camera : MonoBehaviour
 {
+    [Header("Assignables")]
+    [SerializeField] private GameObject par_Managers;
+
     //public but hidden variables
     [HideInInspector] public bool isCamEnabled;
     [HideInInspector] public float sensX;
@@ -13,10 +16,12 @@ public class Player_Camera : MonoBehaviour
     private float mouseX;
     private float mouseY;
     private float xRot;
-    private Player_Stats PlayerStatsScript;
+    private Manager_Settings SettingsScript;
 
     private void Awake()
     {
+        SettingsScript = par_Managers.GetComponent<Manager_Settings>();
+
         StartCoroutine(Wait());
     }
 
@@ -41,9 +46,7 @@ public class Player_Camera : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
         isCamEnabled = true;
 
-        PlayerStatsScript = transform.parent.GetComponent<Player_Stats>();
-
-        sensX = PlayerStatsScript.cameraMoveSpeed;
-        sensY = PlayerStatsScript.cameraMoveSpeed;
+        sensX = SettingsScript.user_MouseSpeed;
+        sensY = SettingsScript.user_MouseSpeed;
     }
 }
