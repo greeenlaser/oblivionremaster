@@ -323,39 +323,34 @@ public class Manager_GameSaving : MonoBehaviour
         saveFile.WriteLine("");
 
         saveFile.WriteLine("---GLOBAL VALUES---");
-        saveFile.WriteLine("gv_Time: <UNASSIGNED VALUE>");
-        saveFile.WriteLine("gv_Difficulty: <UNASSIGNED VALUE>");
+        saveFile.WriteLine("Time: <UNASSIGNED VALUE>");
         saveFile.WriteLine("");
 
         saveFile.WriteLine("---PLAYER VALUES---");
         float posX = thePlayer.transform.position.x;
         float posY = thePlayer.transform.position.y;
         float posZ = thePlayer.transform.position.z;
-        saveFile.WriteLine("pv_PlayerPosition: " + posX + ", " + posY + ", " + posZ);
+        saveFile.WriteLine("PlayerPosition: " + posX + ", " + posY + ", " + posZ);
 
         float rotX = thePlayer.transform.rotation.x;
         float rotY = thePlayer.transform.rotation.y;
         float rotZ = thePlayer.transform.rotation.z;
-        saveFile.WriteLine("pv_PlayerRotation: " + rotX + ", " + rotY + ", " + rotZ);
+        saveFile.WriteLine("PlayerRotation: " + rotX + ", " + rotY + ", " + rotZ);
 
         float camRotX = thePlayer.GetComponentInChildren<Camera>().transform.rotation.x;
         float camRotY = thePlayer.GetComponentInChildren<Camera>().transform.rotation.y;
         float camRotZ = thePlayer.GetComponentInChildren<Camera>().transform.rotation.z;
-        saveFile.WriteLine("pv_PlayerCameraRotation: " + camRotX + ", " + camRotY + ", " + camRotZ);
-        saveFile.WriteLine("");
-
-        saveFile.WriteLine("pv_MouseSpeed: " + SettingsScript.user_MouseSpeed);
-        saveFile.WriteLine("pv_FieldOfView: " + SettingsScript.user_FieldOfView);
+        saveFile.WriteLine("PlayerCameraRotation: " + camRotX + ", " + camRotY + ", " + camRotZ);
         saveFile.WriteLine("");
 
         saveFile.WriteLine("---PLAYER STATS---");
-        saveFile.WriteLine("ps_MaxHealth: " + PlayerStatsScript.maxHealth);
-        saveFile.WriteLine("ps_Health: " + PlayerStatsScript.currentHealth);
-        saveFile.WriteLine("ps_MaxStamina: " + PlayerStatsScript.maxStamina);
-        saveFile.WriteLine("ps_Stamina: " + PlayerStatsScript.currentStamina);
-        saveFile.WriteLine("ps_MaxMagicka: " + PlayerStatsScript.maxMagicka);
-        saveFile.WriteLine("ps_Magicka: " + PlayerStatsScript.currentMagicka);
-        saveFile.WriteLine("ps_MaxInvSpace: " + PlayerStatsScript.maxInvSpace);
+        saveFile.WriteLine("MaxHealth: " + PlayerStatsScript.maxHealth);
+        saveFile.WriteLine("Health: " + PlayerStatsScript.currentHealth);
+        saveFile.WriteLine("MaxStamina: " + PlayerStatsScript.maxStamina);
+        saveFile.WriteLine("Stamina: " + PlayerStatsScript.currentStamina);
+        saveFile.WriteLine("MaxMagicka: " + PlayerStatsScript.maxMagicka);
+        saveFile.WriteLine("Magicka: " + PlayerStatsScript.currentMagicka);
+        saveFile.WriteLine("MaxInvSpace: " + PlayerStatsScript.maxInvSpace);
 
         Debug.Log("Sucessfully saved game to " + str_SaveFilePath + "!");
     }
@@ -480,109 +475,89 @@ public class Manager_GameSaving : MonoBehaviour
                 if (line.Contains(':')
                     && line.Contains('_'))
                 {
+                    //initial value split
                     string[] valueSplit = line.Split(':');
                     string[] values = valueSplit[1].Split(',');
-                    //split type between _
-                    string[] typeSplit = valueSplit[0].Split('_');
-                    string type = typeSplit[0];
-                    string typeName = typeSplit[1];
+                    string type = valueSplit[0];
+
+                    //vectors
+                    float valX = float.Parse(values[0]);
+                    float valY = 0;
+                    float valZ = 0;
+                    if (values.Length > 1)
+                    {
+                        valY = float.Parse(values[1]);
+                        valZ = float.Parse(values[2]);
+                    }
+
+                    //sorting between ints and floats
+                    bool isFloat = float.TryParse(values[0], out _);
+                    bool isInt = int.TryParse(values[0], out _);
+                    float floatVal = 0;
+                    int intVal = 0;
+                    if (isFloat)
+                    {
+                        floatVal = float.Parse(values[0]);
+                    }
+                    else if (isInt)
+                    {
+                        intVal = int.Parse(values[0]);
+                    }
 
                     //load global values
-                    if (type == "gv")
+                    if (type == "Time")
                     {
                         //TODO: save and load game time
-                        //saveFile.WriteLine("gv_Time: <UNASSIGNED VALUE>");
+                        //saveFile.WriteLine("Time: <UNASSIGNED VALUE>");
                     }
                     //load player values
-                    else if (type == "pv")
+                    else if (type == "PlayerPosition")
                     {
-                        float valX = float.Parse(values[0]);
-                        float valY = 0;
-                        float valZ = 0;
-                        if (values.Length > 1)
-                        {
-                            valY = float.Parse(values[1]);
-                            valZ = float.Parse(values[2]);
-                        }
-
-                        if (typeName == "PlayerPosition")
-                        {
-                            thePlayer.transform.position = new(valX, valY, valZ);
-                        }
-                        else if (typeName == "PlayerRotation")
-                        {
-                            Vector3 rot = new(valX, valY, valZ);
-                            thePlayer.transform.rotation = Quaternion.Euler(rot);
-                        }
-                        else if (typeName == "PlayerCameraRotation")
-                        {
-                            Vector3 camRot = new(valX, valY, valZ);
-                            thePlayer.GetComponentInChildren<Camera>().transform.rotation = Quaternion.Euler(camRot);
-                        }
-                        else if (typeName == "FieldOfView")
-                        {
-                            float fov = float.Parse(values[0]);
-                            SettingsScript.user_FieldOfView = (int)fov;
-                            thePlayer.GetComponentInChildren<Camera>().fieldOfView = fov;
-                        }
-                        else if (typeName == "MouseSpeed")
-                        {
-                            float mouseSpeed = float.Parse(values[0]);
-                            SettingsScript.user_MouseSpeed = (int)mouseSpeed;
-                            thePlayer.GetComponentInChildren<Player_Camera>().sensX = mouseSpeed;
-                            thePlayer.GetComponentInChildren<Player_Camera>().sensY = mouseSpeed;
-                        }
+                        thePlayer.transform.position = new(valX, valY, valZ);
+                    }
+                    else if (type == "PlayerRotation")
+                    {
+                        Vector3 rot = new(valX, valY, valZ);
+                        thePlayer.transform.rotation = Quaternion.Euler(rot);
+                    }
+                    else if (type == "PlayerCameraRotation")
+                    {
+                        Vector3 camRot = new(valX, valY, valZ);
+                        thePlayer.GetComponentInChildren<Camera>().transform.rotation = Quaternion.Euler(camRot);
                     }
                     //load player stats
-                    else if (type == "ps")
+                    else if (type == "MaxHealth")
                     {
-                        bool isFloat = float.TryParse(values[0], out _);
-                        bool isInt = int.TryParse(values[0], out _);
-
-                        float floatVal = 0;
-                        int intVal = 0;
-                        if (isFloat)
-                        {
-                            floatVal = float.Parse(values[0]);
-                        }
-                        else if (isInt)
-                        {
-                            intVal = int.Parse(values[0]);
-                        }
-
-                        if (typeName == "MaxHealth")
-                        {
-                            PlayerStatsScript.maxHealth = floatVal;
-                        }
-                        else if (typeName == "Health")
-                        {
-                            PlayerStatsScript.currentHealth = floatVal;
-                        }
-                        else if (typeName == "MaxStamina")
-                        {
-                            PlayerStatsScript.maxStamina = floatVal;
-                        }
-                        else if (typeName == "Stamina")
-                        {
-                            PlayerStatsScript.currentStamina = floatVal;
-                        }
-                        else if (typeName == "MaxMagicka")
-                        {
-                            PlayerStatsScript.maxMagicka = floatVal;
-                        }
-                        else if (typeName == "Magicka")
-                        {
-                            PlayerStatsScript.currentMagicka = floatVal;
-                        }
-                        else if (typeName == "MaxInvSpace")
-                        {
-                            PlayerStatsScript.maxInvSpace = intVal;
-                        }
-
-                        PlayerStatsScript.UpdateBar(PlayerStatsScript.healthBar);
-                        PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar);
-                        PlayerStatsScript.UpdateBar(PlayerStatsScript.magickaBar);
+                        PlayerStatsScript.maxHealth = floatVal;
                     }
+                    else if (type == "Health")
+                    {
+                        PlayerStatsScript.currentHealth = floatVal;
+                    }
+                    else if (type == "MaxStamina")
+                    {
+                        PlayerStatsScript.maxStamina = floatVal;
+                    }
+                    else if (type == "Stamina")
+                    {
+                        PlayerStatsScript.currentStamina = floatVal;
+                    }
+                    else if (type == "MaxMagicka")
+                    {
+                        PlayerStatsScript.maxMagicka = floatVal;
+                    }
+                    else if (type == "Magicka")
+                    {
+                        PlayerStatsScript.currentMagicka = floatVal;
+                    }
+                    else if (type == "MaxInvSpace")
+                    {
+                        PlayerStatsScript.maxInvSpace = intVal;
+                    }
+
+                    PlayerStatsScript.UpdateBar(PlayerStatsScript.healthBar);
+                    PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar);
+                    PlayerStatsScript.UpdateBar(PlayerStatsScript.magickaBar);
                 }
             }
 

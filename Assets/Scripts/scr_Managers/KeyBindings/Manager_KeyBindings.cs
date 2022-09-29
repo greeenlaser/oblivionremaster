@@ -288,34 +288,34 @@ public class Manager_KeyBindings : MonoBehaviour
         using StreamWriter keyBindingsFile = File.CreateText(filePath);
 
         keyBindingsFile.WriteLine("Save file for " + UIReuseScript.txt_GameVersion.text + ".");
-        keyBindingsFile.WriteLine("WARNING: Invalid values will break the game - edit at your own risk!");
+        keyBindingsFile.WriteLine("WARNING - Invalid values will break the game - edit at your own risk!");
         keyBindingsFile.WriteLine("");
 
         keyBindingsFile.WriteLine("---GENERAL KEYBINDS---");
-        keyBindingsFile.WriteLine("gkb_Save: " + KeyBindings["Save"].ToString().Replace("KeyCode.", ""));
-        keyBindingsFile.WriteLine("gkb_Load: " + KeyBindings["Load"].ToString().Replace("KeyCode.", ""));
-        keyBindingsFile.WriteLine("gkb_TogglePauseMenu: " + KeyBindings["TogglePauseMenu"].ToString().Replace("KeyCode.", ""));
-        keyBindingsFile.WriteLine("gkb_ToggleConsole: " + KeyBindings["ToggleConsole"].ToString().Replace("KeyCode.", ""));
-        keyBindingsFile.WriteLine("gkb_TogglePlayerMenu: " + KeyBindings["TogglePlayerMenu"].ToString().Replace("KeyCode.", ""));
-        keyBindingsFile.WriteLine("gkb_PickUpOrInteract: " + KeyBindings["PickUpOrInteract"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("Save: " + KeyBindings["Save"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("Load: " + KeyBindings["Load"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("TogglePauseMenu: " + KeyBindings["TogglePauseMenu"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("ToggleConsole: " + KeyBindings["ToggleConsole"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("TogglePlayerMenu: " + KeyBindings["TogglePlayerMenu"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("PickUpOrInteract: " + KeyBindings["PickUpOrInteract"].ToString().Replace("KeyCode.", ""));
         keyBindingsFile.WriteLine("");
 
         keyBindingsFile.WriteLine("---MOVEMENT KEYBINDS---");
-        keyBindingsFile.WriteLine("mkb_WalkForwards: " + KeyBindings["WalkForwards"].ToString().Replace("KeyCode.", ""));
-        keyBindingsFile.WriteLine("mkb_WalkBackwards: " + KeyBindings["WalkBackwards"].ToString().Replace("KeyCode.", ""));
-        keyBindingsFile.WriteLine("mkb_WalkLeft: " + KeyBindings["WalkLeft"].ToString().Replace("KeyCode.", ""));
-        keyBindingsFile.WriteLine("mkb_WalkRight: " + KeyBindings["WalkRight"].ToString().Replace("KeyCode.", ""));
-        keyBindingsFile.WriteLine("mkb_Jump: " + KeyBindings["Jump"].ToString().Replace("KeyCode.", ""));
-        keyBindingsFile.WriteLine("mkb_Sprint: " + KeyBindings["Sprint"].ToString().Replace("KeyCode.", ""));
-        keyBindingsFile.WriteLine("mkb_Crouch: " + KeyBindings["Crouch"].ToString().Replace("KeyCode.", ""));
-        keyBindingsFile.WriteLine("mkb_ToggleFirstAndThirdPerson: " + KeyBindings["ToggleFirstAndThirdPerson"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("WalkForwards: " + KeyBindings["WalkForwards"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("WalkBackwards: " + KeyBindings["WalkBackwards"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("WalkLeft: " + KeyBindings["WalkLeft"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("WalkRight: " + KeyBindings["WalkRight"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("Jump: " + KeyBindings["Jump"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("Sprint: " + KeyBindings["Sprint"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("Crouch: " + KeyBindings["Crouch"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("ToggleFirstAndThirdPerson: " + KeyBindings["ToggleFirstAndThirdPerson"].ToString().Replace("KeyCode.", ""));
         keyBindingsFile.WriteLine("");
 
         keyBindingsFile.WriteLine("---COMBAT KEYBINDS---");
-        keyBindingsFile.WriteLine("ckb_CastSpell: " + KeyBindings["CastSpell"].ToString().Replace("KeyCode.", ""));
-        keyBindingsFile.WriteLine("ckb_UseWeaponOrShootBow: " + KeyBindings["UseWeaponOrShootBow"].ToString().Replace("KeyCode.", ""));
-        keyBindingsFile.WriteLine("ckb_BlockOrAimBow: " + KeyBindings["BlockOrAimBow"].ToString().Replace("KeyCode.", ""));
-        keyBindingsFile.WriteLine("ckb_DropEquippedWeapon: " + KeyBindings["DropEquippedWeapon"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("CastSpell: " + KeyBindings["CastSpell"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("UseWeaponOrShootBow: " + KeyBindings["UseWeaponOrShootBow"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("BlockOrAimBow: " + KeyBindings["BlockOrAimBow"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("DropEquippedWeapon: " + KeyBindings["DropEquippedWeapon"].ToString().Replace("KeyCode.", ""));
 
         Debug.Log("Successfully saved " + KeyBindings.Count + " key bindings!");
     }
@@ -331,49 +331,41 @@ public class Manager_KeyBindings : MonoBehaviour
             foreach (string line in File.ReadLines(filePath))
             {
                 //split full line between :
-                if (line.Contains(':')
-                    && line.Contains('_'))
+                if (line.Contains(':'))
                 {
                     string[] valueSplit = line.Split(':');
+                    string type = valueSplit[0];
                     string value = valueSplit[1];
 
-                    //split type between _
-                    string[] typeSplit = valueSplit[0].Split('_');
-                    string type = typeSplit[0];
-                    string typeName = typeSplit[1];
-
                     //load general key bindings
-                    if (type == "gkb"
-                        && (typeName == "Save"
-                        || typeName == "Load"
-                        || typeName == "TogglePauseMenu"
-                        || typeName == "ToggleConsole"
-                        || typeName == "TogglePlayerMenu"
-                        || typeName == "PickUpOrInteract"))
+                    if (type == "Save"
+                        || type == "Load"
+                        || type == "TogglePauseMenu"
+                        || type == "ToggleConsole"
+                        || type == "TogglePlayerMenu"
+                        || type == "PickUpOrInteract")
                     {
-                        KeyBindings[typeName] = (KeyCode)Enum.Parse(typeof(KeyCode), value);
+                        KeyBindings[type] = (KeyCode)Enum.Parse(typeof(KeyCode), value);
                     }
                     //load movement key bindings
-                    else if (type == "mkb"
-                             && (typeName == "WalkForwards"
-                             || typeName == "WalkBackwards"
-                             || typeName == "WalkLeft"
-                             || typeName == "WalkRight"
-                             || typeName == "Jump"
-                             || typeName == "Sprint"
-                             || typeName == "Crouch"
-                             || typeName == "ToggleFirstAndThirdPerson"))
+                    else if (type == "WalkForwards"
+                             || type == "WalkBackwards"
+                             || type == "WalkLeft"
+                             || type == "WalkRight"
+                             || type == "Jump"
+                             || type == "Sprint"
+                             || type == "Crouch"
+                             || type == "ToggleFirstAndThirdPerson")
                     {
-                        KeyBindings[typeName] = (KeyCode)Enum.Parse(typeof(KeyCode), value);
+                        KeyBindings[type] = (KeyCode)Enum.Parse(typeof(KeyCode), value);
                     }
                     //load combat key bindings
-                    else if (type == "ckb"
-                             && (typeName == "CastSpell"
-                             || typeName == "UseWeaponOrShootBow"
-                             || typeName == "BlockOrAimBow"
-                             || typeName == "DropEquippedWeapon"))
+                    else if (type == "CastSpell"
+                             || type == "UseWeaponOrShootBow"
+                             || type == "BlockOrAimBow"
+                             || type == "DropEquippedWeapon")
                     {
-                        KeyBindings[typeName] = (KeyCode)Enum.Parse(typeof(KeyCode), value);
+                        KeyBindings[type] = (KeyCode)Enum.Parse(typeof(KeyCode), value);
                     }
                 }
             }

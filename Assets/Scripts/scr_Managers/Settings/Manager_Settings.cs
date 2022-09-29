@@ -6,7 +6,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using System.Globalization;
 
 public class Manager_Settings : MonoBehaviour
 {
@@ -100,13 +99,13 @@ public class Manager_Settings : MonoBehaviour
     public int def_NPCVolume = 50;
     [HideInInspector] public int user_NPCVolume;
 
-    //public but hidden variables
-    [HideInInspector] public bool savedSettings;
-
     //private variables
+    private bool savedInCurrentInstance;
+    private bool resetInCurrentInstance;
     private float timer;
     private float deltaTime;
     private int currentScene;
+    private Slider mouseSpeedSlider;
 
     //scripts
     private UI_Confirmation ConfirmationScript;
@@ -144,6 +143,34 @@ public class Manager_Settings : MonoBehaviour
             timer = 0;
         }
         //framerate block ending
+
+        if (!resetInCurrentInstance
+            && !savedInCurrentInstance
+            && !UIReuseScript.par_GeneralSettingsParent.activeInHierarchy
+            && !UIReuseScript.par_GraphicsSettingsParent.activeInHierarchy
+            && !UIReuseScript.par_AudioSettingsParent.activeInHierarchy)
+        {
+            ResetSettings(true);
+        }
+
+        if (mouseSpeedSlider == null)
+        {
+            foreach (GameObject par in UIReuseScript.generalSettingsParents)
+            {
+                if (par.transform.GetComponentInChildren<Slider>() != null
+                    && par.transform.GetComponentInChildren<Slider>().GetComponentInChildren<UI_AssignSettings>().str_Info == "MouseSpeed")
+                {
+                    Transform child = par.transform.GetChild(3);
+                    mouseSpeedSlider = child.GetComponent<Slider>();
+                    break;
+                }
+            }
+        }
+
+        if (mouseSpeedSlider != null)
+        {
+            Debug.Log(def_MouseSpeed + ", " + user_MouseSpeed + ", " + mouseSpeedSlider.value);
+        }
     }
 
     //set slider limits to all sliders
@@ -211,14 +238,6 @@ public class Manager_Settings : MonoBehaviour
         {
             UIReuseScript.par_MainGeneralSettingsParent.SetActive(true);
             UIReuseScript.btn_ShowGeneralSettings.interactable = false;
-            foreach (Transform child in UIReuseScript.par_MainGeneralSettingsParent.transform)
-            {
-                if (child.GetComponentInChildren<Scrollbar>() != null)
-                {
-                    child.GetComponentInChildren<Scrollbar>().value = 1;
-                    break;
-                }
-            }
 
             settingsParents = UIReuseScript.generalSettingsParents;
         }
@@ -226,14 +245,6 @@ public class Manager_Settings : MonoBehaviour
         {
             UIReuseScript.par_MainGraphicsSettingsParent.SetActive(true);
             UIReuseScript.btn_ShowGraphicsSettings.interactable = false;
-            foreach (Transform child in UIReuseScript.par_MainGraphicsSettingsParent.transform)
-            {
-                if (child.GetComponentInChildren<Scrollbar>() != null)
-                {
-                    child.GetComponentInChildren<Scrollbar>().value = 1;
-                    break;
-                }
-            }
 
             settingsParents = UIReuseScript.graphicsSettingsParents;
         }
@@ -241,14 +252,6 @@ public class Manager_Settings : MonoBehaviour
         {
             UIReuseScript.par_MainAudioSettingsParent.SetActive(true);
             UIReuseScript.btn_ShowAudioSettings.interactable = false;
-            foreach (Transform child in UIReuseScript.par_MainAudioSettingsParent.transform)
-            {
-                if (child.GetComponentInChildren<Scrollbar>() != null) 
-                {
-                    child.GetComponentInChildren<Scrollbar>().value = 1;
-                    break;
-                }
-            }
 
             settingsParents = UIReuseScript.audioSettingsParents;
         }
@@ -631,7 +634,11 @@ public class Manager_Settings : MonoBehaviour
         }
         else
         {
-            savedSettings = false;
+            //deleted the settings file because it is no longer needed
+            if (File.Exists(GameManagerScript.settingsPath + @"\Settings.txt"))
+            {
+                File.Delete(GameManagerScript.settingsPath + @"\Settings.txt");
+            }
 
             //general settings
 
@@ -645,7 +652,8 @@ public class Manager_Settings : MonoBehaviour
                 PlayerCameraScript.sensY = user_MouseSpeed;
             }
 
-            if (UIReuseScript.par_GeneralSettingsParent.activeInHierarchy)
+            if (currentScene == 1
+                && UIReuseScript.par_GeneralSettingsParent.activeInHierarchy)
             {
                 RebuildSettingsList("general");
             }
@@ -729,7 +737,8 @@ public class Manager_Settings : MonoBehaviour
             //reset ai distance
             user_AIDistance = def_AIDistance;
 
-            if (UIReuseScript.par_GraphicsSettingsParent.activeInHierarchy)
+            if (currentScene == 1
+                && UIReuseScript.par_GraphicsSettingsParent.activeInHierarchy)
             {
                 RebuildSettingsList("graphics");
             }
@@ -748,19 +757,23 @@ public class Manager_Settings : MonoBehaviour
             //reset npc volume
             user_NPCVolume = def_NPCVolume;
 
-            if (UIReuseScript.par_AudioSettingsParent.activeInHierarchy)
+            if (currentScene == 1 
+                && UIReuseScript.par_AudioSettingsParent.activeInHierarchy)
             {
                 RebuildSettingsList("audio");
             }
+
+            savedInCurrentInstance = false;
+            resetInCurrentInstance = true;
         }
+
+        Debug.Log("Reset settings...");
     }
 
     //save settings to Settings.txt,
     //delete old file if it exists
     public void SaveSettings()
     {
-        savedSettings = true;
-
         string settingsPath = GameManagerScript.settingsPath;
         string filePath = settingsPath + @"\Settings.txt";
 
@@ -793,13 +806,32 @@ public class Manager_Settings : MonoBehaviour
         foreach (GameObject par in parents)
         {
             Transform target = par.transform.GetChild(0);
+
+            Dropdown dropDown = null;
             Slider slider = null;
+            Toggle toggle = null;
+
             UI_AssignSettings AssignScript;
             string info = "";
-            if (target.GetComponentInChildren<Slider>() != null
-                && target.GetComponentInChildren<Slider>().gameObject.activeInHierarchy)
+
+            if (target.GetComponentInChildren<Dropdown>() != null
+                && target.GetComponentInChildren<Dropdown>().gameObject.activeInHierarchy)
+            {
+                dropDown = target.GetComponentInChildren<Dropdown>();
+                AssignScript = slider.GetComponent<UI_AssignSettings>();
+                info = AssignScript.str_Info;
+            }
+            else if (target.GetComponentInChildren<Slider>() != null
+                     && target.GetComponentInChildren<Slider>().gameObject.activeInHierarchy)
             {
                 slider = target.GetComponentInChildren<Slider>();
+                AssignScript = slider.GetComponent<UI_AssignSettings>();
+                info = AssignScript.str_Info;
+            }
+            else if (target.GetComponentInChildren<Toggle>() != null
+                     && target.GetComponentInChildren<Toggle>().gameObject.activeInHierarchy)
+            {
+                toggle = target.GetComponentInChildren<Toggle>();
                 AssignScript = slider.GetComponent<UI_AssignSettings>();
                 info = AssignScript.str_Info;
             }
@@ -810,12 +842,16 @@ public class Manager_Settings : MonoBehaviour
             if (info == "Difficulty")
             {
                 //TODO: assign difficulty value
+                user_Difficulty = (int)slider.value;
             }
             //apply mouse speed
             else if (info == "MouseSpeed")
             {
+                user_MouseSpeed = (int)slider.value;
                 PlayerCameraScript.sensX = user_MouseSpeed;
                 PlayerCameraScript.sensY = user_MouseSpeed;
+
+                Debug.Log("mouse speed slider new value is " + user_MouseSpeed);
             }
 
             //graphics settings
@@ -824,6 +860,8 @@ public class Manager_Settings : MonoBehaviour
             else if (info == "Preset")
             {
                 //TODO: assign preset
+                string dropDownValue = dropDown.options[dropDown.value].ToString();
+                user_Preset = (Preset)Enum.Parse(typeof(Preset), dropDownValue);
             }
             //apply resolution and fullscreen mode
             else if (info == "FullScreenMode")
@@ -856,10 +894,12 @@ public class Manager_Settings : MonoBehaviour
             }
             else if (info == "FieldOfView")
             {
+                user_FieldOfView = (int)slider.value;
                 playerMainCamera.GetComponent<Camera>().fieldOfView = user_FieldOfView;
             }
             else if (info == "VSyncState")
             {
+                user_EnableVSync = toggle.isOn;
                 if (user_EnableVSync)
                 {
                     QualitySettings.vSyncCount = 1;
@@ -872,38 +912,49 @@ public class Manager_Settings : MonoBehaviour
             else if (info == "TextureQuality")
             {
                 //TODO: assign texture quality
+                string dropDownValue = dropDown.options[dropDown.value].ToString();
+                user_TextureQuality = (TextureQuality)Enum.Parse(typeof(TextureQuality), dropDownValue);
             }
             else if (info == "LightDistance")
             {
                 //TODO: assign light distance
+                user_LightDistance = (int)slider.value;
             }
             else if (info == "ShadowDistance")
             {
                 //TODO: assign shadow distance
+                user_ShadowDistance = (int)slider.value;
             }
             else if (info == "ShadowQuality")
             {
                 //TODO: assign shadow quality
+                string dropDownValue = dropDown.options[dropDown.value].ToString();
+                user_ShadowQuality = (ShadowQuality)Enum.Parse(typeof(ShadowQuality), dropDownValue);
             }
             else if (info == "TreeDistance")
             {
                 //TODO: assign tree distance
+                user_TreeDistance = (int)slider.value;
             }
             else if (info == "GrassDistance")
             {
                 //TODO: assign grass distance
+                user_GrassDistance = (int)slider.value;
             }
             else if (info == "ObjectDistance")
             {
                 //TODO: assign object distance
+                user_ObjectDistance = (int)slider.value;
             }
             else if (info == "ItemDistance")
             {
                 //TODO: assign item distance
+                user_ItemDistance = (int)slider.value;
             }
             else if (info == "AIDistance")
             {
                 //TODO: assign AI distance
+                user_AIDistance = (int)slider.value;
             }
 
             //audio settings
@@ -911,49 +962,56 @@ public class Manager_Settings : MonoBehaviour
             else if (info == "MasterVolume")
             {
                 //TODO: assign master volume
+                user_MasterVolume = (int)slider.value;
             }
             else if (info == "MusicVolume")
             {
                 //TODO: assign music volume
+                user_MusicVolume = (int)slider.value;
             }
             else if (info == "SFXVolume")
             {
                 //TODO: assign SFX volume
+                user_SFXVolume = (int)slider.value;
             }
             else if (info == "NPCVolume")
             {
                 //TODO: assign NPC volume
+                user_NPCVolume = (int)slider.value;
             }
         }
 
         settingsFile.WriteLine("---GENERAL SETTINGS---");
-        settingsFile.WriteLine("ge_Difficulty: " + user_Difficulty);
-        settingsFile.WriteLine("ge_MouseSpeed: " + user_MouseSpeed);
+        settingsFile.WriteLine("Difficulty: " + user_Difficulty);
+        settingsFile.WriteLine("MouseSpeed: " + user_MouseSpeed);
         settingsFile.WriteLine("");
 
         settingsFile.WriteLine("---GRAPHICS SETTINGS---");
-        settingsFile.WriteLine("gr_Preset: " + user_Preset);
+        settingsFile.WriteLine("Preset: " + user_Preset);
         string res = user_Resolution.ToString().Replace("res_", "");
-        settingsFile.WriteLine("gr_Resolution: " + res);
-        settingsFile.WriteLine("gr_FullScreenMode: " + user_FullScreenMode);
-        settingsFile.WriteLine("gr_FieldOfView: " + user_FieldOfView);
-        settingsFile.WriteLine("gr_VSyncState: " + user_EnableVSync);
-        settingsFile.WriteLine("gr_TextureQuality: " + user_TextureQuality);
-        settingsFile.WriteLine("gr_LightDistance: " + user_LightDistance);
-        settingsFile.WriteLine("gr_ShadowDistance: " + user_ShadowDistance);
-        settingsFile.WriteLine("gr_ShadowQuality: " + user_ShadowQuality);
-        settingsFile.WriteLine("gr_TreeDistance: " + user_TreeDistance);
-        settingsFile.WriteLine("gr_GrassDistance: " + user_GrassDistance);
-        settingsFile.WriteLine("gr_ObjectDistance: " + user_ObjectDistance);
-        settingsFile.WriteLine("gr_ItemDistance: " + user_ItemDistance);
-        settingsFile.WriteLine("gr_AIDistance: " + user_AIDistance);
+        settingsFile.WriteLine("Resolution: " + res);
+        settingsFile.WriteLine("FullScreenMode: " + user_FullScreenMode);
+        settingsFile.WriteLine("FieldOfView: " + user_FieldOfView);
+        settingsFile.WriteLine("VSyncState: " + user_EnableVSync);
+        settingsFile.WriteLine("TextureQuality: " + user_TextureQuality);
+        settingsFile.WriteLine("LightDistance: " + user_LightDistance);
+        settingsFile.WriteLine("ShadowDistance: " + user_ShadowDistance);
+        settingsFile.WriteLine("ShadowQuality: " + user_ShadowQuality);
+        settingsFile.WriteLine("TreeDistance: " + user_TreeDistance);
+        settingsFile.WriteLine("GrassDistance: " + user_GrassDistance);
+        settingsFile.WriteLine("ObjectDistance: " + user_ObjectDistance);
+        settingsFile.WriteLine("ItemDistance: " + user_ItemDistance);
+        settingsFile.WriteLine("AIDistance: " + user_AIDistance);
         settingsFile.WriteLine("");
 
         settingsFile.WriteLine("---AUDIO SETTINGS---");
-        settingsFile.WriteLine("au_MasterVolume: " + user_MasterVolume);
-        settingsFile.WriteLine("au_MusicVolume: " + user_MusicVolume);
-        settingsFile.WriteLine("au_SFXVolume: " + user_SFXVolume);
-        settingsFile.WriteLine("au_NPCVolume: " + user_NPCVolume);
+        settingsFile.WriteLine("MasterVolume: " + user_MasterVolume);
+        settingsFile.WriteLine("MusicVolume: " + user_MusicVolume);
+        settingsFile.WriteLine("SFXVolume: " + user_SFXVolume);
+        settingsFile.WriteLine("NPCVolume: " + user_NPCVolume);
+
+        savedInCurrentInstance = true;
+        resetInCurrentInstance = false;
 
         Debug.Log("Successfully saved settings to " + filePath + ".");
     }

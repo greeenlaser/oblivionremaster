@@ -98,13 +98,6 @@ public class UI_PauseMenu : MonoBehaviour
         PlayerMovementScript.canMove = true;
         PlayerCameraScript.isCamEnabled = true;
 
-        //reset or load saved settings
-        //if settings were not saved after player exited settings menu
-        if (!SettingsScript.savedSettings)
-        {
-            SettingsScript.LoadSettings();
-        }
-
         isPaused = false;
     }
     //pauses the game with UI
@@ -136,13 +129,6 @@ public class UI_PauseMenu : MonoBehaviour
         par_LoadContent.SetActive(false);
         par_SettingsContent.SetActive(false);
         par_KeyBindingsContent.SetActive(false);
-
-        //reset or load saved settings
-        //if settings were not saved after player exited settings menu
-        if (!SettingsScript.savedSettings)
-        {
-            SettingsScript.LoadSettings();
-        }
 
         btn_ReturnToPM.gameObject.SetActive(false);
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class Manager_UIReuse : MonoBehaviour
 {
@@ -55,21 +56,27 @@ public class Manager_UIReuse : MonoBehaviour
     public TMP_Text txt_FPS;
 
     //private variables
+    private int currentScene;
     private Manager_Settings SettingsScript;
 
     private void Awake()
     {
-        SettingsScript = GetComponent<Manager_Settings>();
+        currentScene = SceneManager.GetActiveScene().buildIndex;
 
-        par_MainGeneralSettingsParent = par_GeneralSettingsParent.transform.parent.parent.parent.gameObject;
-        par_MainGraphicsSettingsParent = par_GraphicsSettingsParent.transform.parent.parent.parent.gameObject;
-        par_MainAudioSettingsParent = par_AudioSettingsParent.transform.parent.parent.parent.gameObject;
+        if (currentScene == 1)
+        {
+            SettingsScript = GetComponent<Manager_Settings>();
 
-        btn_SaveSettings.onClick.AddListener(SettingsScript.SaveSettings);
-        btn_ResetSettings.onClick.AddListener(delegate { SettingsScript.ResetSettings(false); });
-        btn_ShowGeneralSettings.onClick.AddListener(delegate { SettingsScript.RebuildSettingsList("general"); });
-        btn_ShowGraphicsSettings.onClick.AddListener(delegate { SettingsScript.RebuildSettingsList("graphics"); });
-        btn_ShowAudioSettings.onClick.AddListener(delegate { SettingsScript.RebuildSettingsList("audio"); });
+            par_MainGeneralSettingsParent = par_GeneralSettingsParent.transform.parent.parent.parent.gameObject;
+            par_MainGraphicsSettingsParent = par_GraphicsSettingsParent.transform.parent.parent.parent.gameObject;
+            par_MainAudioSettingsParent = par_AudioSettingsParent.transform.parent.parent.parent.gameObject;
+
+            btn_SaveSettings.onClick.AddListener(SettingsScript.SaveSettings);
+            btn_ResetSettings.onClick.AddListener(delegate { SettingsScript.ResetSettings(false); });
+            btn_ShowGeneralSettings.onClick.AddListener(delegate { SettingsScript.RebuildSettingsList("general"); });
+            btn_ShowGraphicsSettings.onClick.AddListener(delegate { SettingsScript.RebuildSettingsList("graphics"); });
+            btn_ShowAudioSettings.onClick.AddListener(delegate { SettingsScript.RebuildSettingsList("audio"); });
+        }
     }
 
     //reset all confirmation UI elements

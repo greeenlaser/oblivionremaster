@@ -9,12 +9,10 @@ public class UI_MainMenu : MonoBehaviour
     [Header("Main menu UI")]
     [SerializeField] private GameObject par_MMContent;
     [SerializeField] private GameObject par_LoadContent;
-    [SerializeField] private GameObject par_SettingsContent;
     [SerializeField] private GameObject par_CreditsContent;
     [SerializeField] private Button btn_ReturnToMM;
     [SerializeField] private Button btn_ContinueOrNewGame;
     [SerializeField] private Button btn_Load;
-    [SerializeField] private Button btn_Settings;
     [SerializeField] private Button btn_Credits;
     [SerializeField] private Button btn_Quit;
 
@@ -29,7 +27,6 @@ public class UI_MainMenu : MonoBehaviour
 
         btn_ContinueOrNewGame.onClick.AddListener(ContinueOrStartNewGame);
         btn_Load.onClick.AddListener(ShowLoadContent);
-        btn_Settings.onClick.AddListener(ShowSettings);
         btn_Credits.onClick.AddListener(ShowCredits);
         btn_Quit.onClick.AddListener(QuitGame);
         btn_ReturnToMM.onClick.AddListener(ShowMMContent);
@@ -47,7 +44,6 @@ public class UI_MainMenu : MonoBehaviour
     public void ShowMMContent()
     {
         par_LoadContent.SetActive(false);
-        par_SettingsContent.SetActive(false);
         par_CreditsContent.SetActive(false);
         btn_ReturnToMM.gameObject.SetActive(false);
 
@@ -71,14 +67,6 @@ public class UI_MainMenu : MonoBehaviour
 
         UIReuseScript.ClearSaveData();
 
-        btn_ReturnToMM.gameObject.SetActive(true);
-    }
-    //shows only a few settings available through the main menu
-    public void ShowSettings()
-    {
-        par_MMContent.SetActive(false);
-
-        par_SettingsContent.SetActive(true);
         btn_ReturnToMM.gameObject.SetActive(true);
     }
     //shows game credits
