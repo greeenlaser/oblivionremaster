@@ -75,14 +75,10 @@ public class GameManager : MonoBehaviour
         else if (currentScene == 1)
         {
             PauseMenuScript = GetComponent<UI_PauseMenu>();
-
             PlayerStatsScript = thePlayer.GetComponent<Player_Stats>();
 
             PauseMenuScript.canUnpause = true;
             PauseMenuScript.canTogglePMUI = true;
-
-            //player stats are always set to default before save is loaded
-            PlayerStatsScript.ResetStats();
         }
     }
 
@@ -96,6 +92,8 @@ public class GameManager : MonoBehaviour
 
         if (currentScene == 1)
         {
+            //player stats are always set to default before save is loaded
+            PlayerStatsScript.ResetStats();
             //load expected save if any exists
             SavingScript.ReadLoadFile();
 

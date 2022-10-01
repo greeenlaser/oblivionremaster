@@ -1,3 +1,4 @@
+using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,14 +19,16 @@ public class UI_MainMenu : MonoBehaviour
 
     //private variables
     private Manager_GameSaving SavingScript;
+    private GameManager GameManagerScript;
     private Manager_UIReuse UIReuseScript;
 
     private void Awake()
     {
         SavingScript = GetComponent<Manager_GameSaving>();
+        GameManagerScript = GetComponent<GameManager>();
         UIReuseScript = GetComponent<Manager_UIReuse>();
 
-        btn_ContinueOrNewGame.onClick.AddListener(ContinueOrStartNewGame);
+        btn_ContinueOrNewGame.onClick.AddListener(StartNewGame);
         btn_Load.onClick.AddListener(ShowLoadContent);
         btn_Credits.onClick.AddListener(ShowCredits);
         btn_Quit.onClick.AddListener(QuitGame);
@@ -50,11 +53,16 @@ public class UI_MainMenu : MonoBehaviour
         par_MMContent.SetActive(true);
     }
 
-    //loads latest save or starts a new game if none exist,
-    //button text is also changed accordingly
-    //if save exists or start new game if none exist
-    public void ContinueOrStartNewGame()
+    //start a new game and override game save loading in gamemanager script
+    public void StartNewGame()
     {
+        string loadFilePath = GameManagerScript.gamePath + @"\loadfile.txt";
+
+        //using a text editor to write text to the game save file in the saved file path
+        using StreamWriter loadFile = File.CreateText(loadFilePath);
+
+        loadFile.WriteLine("restart");
+
         SceneManager.LoadScene(1);
     }
     //shows game saves

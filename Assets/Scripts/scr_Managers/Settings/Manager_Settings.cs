@@ -100,12 +100,9 @@ public class Manager_Settings : MonoBehaviour
     [HideInInspector] public int user_NPCVolume;
 
     //private variables
-    private bool savedInCurrentInstance;
-    private bool resetInCurrentInstance;
     private float timer;
     private float deltaTime;
     private int currentScene;
-    private Slider mouseSpeedSlider;
 
     //scripts
     private UI_Confirmation ConfirmationScript;
@@ -143,34 +140,6 @@ public class Manager_Settings : MonoBehaviour
             timer = 0;
         }
         //framerate block ending
-
-        if (!resetInCurrentInstance
-            && !savedInCurrentInstance
-            && !UIReuseScript.par_GeneralSettingsParent.activeInHierarchy
-            && !UIReuseScript.par_GraphicsSettingsParent.activeInHierarchy
-            && !UIReuseScript.par_AudioSettingsParent.activeInHierarchy)
-        {
-            ResetSettings(true);
-        }
-
-        if (mouseSpeedSlider == null)
-        {
-            foreach (GameObject par in UIReuseScript.generalSettingsParents)
-            {
-                if (par.transform.GetComponentInChildren<Slider>() != null
-                    && par.transform.GetComponentInChildren<Slider>().GetComponentInChildren<UI_AssignSettings>().str_Info == "MouseSpeed")
-                {
-                    Transform child = par.transform.GetChild(3);
-                    mouseSpeedSlider = child.GetComponent<Slider>();
-                    break;
-                }
-            }
-        }
-
-        if (mouseSpeedSlider != null)
-        {
-            Debug.Log(def_MouseSpeed + ", " + user_MouseSpeed + ", " + mouseSpeedSlider.value);
-        }
     }
 
     //set slider limits to all sliders
@@ -762,12 +731,7 @@ public class Manager_Settings : MonoBehaviour
             {
                 RebuildSettingsList("audio");
             }
-
-            savedInCurrentInstance = false;
-            resetInCurrentInstance = true;
         }
-
-        Debug.Log("Reset settings...");
     }
 
     //save settings to Settings.txt,
@@ -1010,9 +974,6 @@ public class Manager_Settings : MonoBehaviour
         settingsFile.WriteLine("SFXVolume: " + user_SFXVolume);
         settingsFile.WriteLine("NPCVolume: " + user_NPCVolume);
 
-        savedInCurrentInstance = true;
-        resetInCurrentInstance = false;
-
         Debug.Log("Successfully saved settings to " + filePath + ".");
     }
 
@@ -1020,9 +981,20 @@ public class Manager_Settings : MonoBehaviour
     //reset settings if load settings file was not found
     public void LoadSettings()
     {
-        //temporarily always reset settings
-        ResetSettings(true);
+        string settingsFilePath = GameManagerScript.settingsPath + @"\Settings.txt";
 
-        //Debug.Log("Successfully loaded settings from ");
+        if (!File.Exists(settingsFilePath))
+        {
+            ResetSettings(true);
+        }
+        else
+        {
+            foreach (string line in File.ReadLines(settingsFilePath))
+            {
+                string[] valueSplit = line.Split(':');
+                string type = valueSplit[0];
+                string value = valueSplit[1];
+            }
+        }
     }
 }

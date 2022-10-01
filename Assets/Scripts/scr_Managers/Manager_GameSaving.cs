@@ -12,10 +12,7 @@ public class Manager_GameSaving : MonoBehaviour
 {
     [Header("Assignables")]
     [SerializeField] private GameObject thePlayer;
-    [SerializeField] private Canvas canvas; 
-
-    //hidden but public variables
-    [HideInInspector] public bool allowGameLoadBypass;
+    [SerializeField] private Canvas canvas;
 
     //private variables
     private string str_SaveName;
@@ -24,7 +21,6 @@ public class Manager_GameSaving : MonoBehaviour
     private readonly List<Button> saveButtons = new();
     private GameManager GameManagerScript;
     private Manager_KeyBindings KeyBindingsScript;
-    private Manager_Settings SettingsScript;
     private Manager_UIReuse UIReuseScript;
     private Player_Stats PlayerStatsScript;
 
@@ -32,7 +28,6 @@ public class Manager_GameSaving : MonoBehaviour
     {
         GameManagerScript = GetComponent<GameManager>();
         KeyBindingsScript = GetComponent<Manager_KeyBindings>();
-        SettingsScript = GetComponent<Manager_Settings>();
         UIReuseScript = GetComponent<Manager_UIReuse>();
 
         currentScene = SceneManager.GetActiveScene().buildIndex;
@@ -120,9 +115,7 @@ public class Manager_GameSaving : MonoBehaviour
 
         //always loads the game in main menu scene
         //or loads the game in game scene if confirmation bypass is allowed
-        if (currentScene == 0
-            || (currentScene == 1
-            && allowGameLoadBypass))
+        if (currentScene == 0)
         {
             UIReuseScript.btn_LoadSave.onClick.AddListener(delegate { CreateLoadFile(saveName); });
         }
@@ -293,10 +286,9 @@ public class Manager_GameSaving : MonoBehaviour
             }
 
             if (foundBadSymbol
-                || saveName == "reset"
-                || saveName.Length >= 11)
+                || saveName == "reset")
             {
-                Debug.LogError("Error: Invalid name " + saveName + " for game save. Save name is too long or not allowed!");
+                Debug.LogError("Error: Invalid name " + saveName + " for game save. Save name is not allowed!");
             }
             else
             {
@@ -319,7 +311,7 @@ public class Manager_GameSaving : MonoBehaviour
         using StreamWriter saveFile = File.CreateText(str_SaveFilePath);
 
         saveFile.WriteLine("Save file for " + UIReuseScript.txt_GameVersion.text + ".");
-        saveFile.WriteLine("WARNING: Invalid values will break the game - edit at your own risk!");
+        saveFile.WriteLine("WARNING - Invalid values will break the game - edit at your own risk!");
         saveFile.WriteLine("");
 
         saveFile.WriteLine("---GLOBAL VALUES---");
@@ -472,32 +464,28 @@ public class Manager_GameSaving : MonoBehaviour
             foreach (string line in File.ReadLines(str_SaveFileName))
             {
                 //split full line between :
-                if (line.Contains(':')
-                    && line.Contains('_'))
+                if (line.Contains(':'))
                 {
                     //initial value split
                     string[] valueSplit = line.Split(':');
                     string[] values = valueSplit[1].Split(',');
                     string type = valueSplit[0];
 
-                    //vectors
-                    float valX = float.Parse(values[0]);
-                    float valY = 0;
-                    float valZ = 0;
-                    if (values.Length > 1)
-                    {
-                        valY = float.Parse(values[1]);
-                        valZ = float.Parse(values[2]);
-                    }
-
                     //sorting between ints and floats
                     bool isFloat = float.TryParse(values[0], out _);
                     bool isInt = int.TryParse(values[0], out _);
                     float floatVal = 0;
+                    float floatVal2 = 0;
+                    float floatVal3 = 0;
                     int intVal = 0;
                     if (isFloat)
                     {
                         floatVal = float.Parse(values[0]);
+                        if (values.Length > 1)
+                        {
+                            floatVal2 = float.Parse(values[1]);
+                            floatVal3 = float.Parse(values[2]);     
+                        }
                     }
                     else if (isInt)
                     {
@@ -513,16 +501,16 @@ public class Manager_GameSaving : MonoBehaviour
                     //load player values
                     else if (type == "PlayerPosition")
                     {
-                        thePlayer.transform.position = new(valX, valY, valZ);
+                        thePlayer.transform.position = new(floatVal, floatVal2, floatVal3);
                     }
                     else if (type == "PlayerRotation")
                     {
-                        Vector3 rot = new(valX, valY, valZ);
+                        Vector3 rot = new(floatVal, floatVal2, floatVal3);
                         thePlayer.transform.rotation = Quaternion.Euler(rot);
                     }
                     else if (type == "PlayerCameraRotation")
                     {
-                        Vector3 camRot = new(valX, valY, valZ);
+                        Vector3 camRot = new(floatVal, floatVal2, floatVal3);
                         thePlayer.GetComponentInChildren<Camera>().transform.rotation = Quaternion.Euler(camRot);
                     }
                     //load player stats
