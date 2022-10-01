@@ -2,8 +2,10 @@
 #
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
 #
-[Aa]rt/
-[Aa]udio/
+[Aa]ssets/[Aa]rt/
+[Aa]ssets/Art.meta
+[Aa]ssets/[Aa]udio/
+[Aa]ssets/Audio.meta
 /[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
