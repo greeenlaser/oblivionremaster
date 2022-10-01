@@ -19,9 +19,9 @@ public class Manager_Settings : MonoBehaviour
     [HideInInspector] public int user_MouseSpeed;
 
     [Header("Graphics settings")]
-    public Preset def_Preset = Preset.medium;
-    [HideInInspector] public Preset user_Preset;
-    public enum Preset
+    public UserDefined_Preset def_Preset = UserDefined_Preset.medium;
+    [HideInInspector] public UserDefined_Preset user_Preset;
+    public enum UserDefined_Preset
     {
         low,
         medium,
@@ -29,9 +29,9 @@ public class Manager_Settings : MonoBehaviour
         ultra,
         custom
     }
-    public Resolution def_Resolution = Resolution.res_1920x1080;
-    [HideInInspector] public Resolution user_Resolution;
-    public enum Resolution
+    public UserDefined_Resolution def_Resolution = UserDefined_Resolution.res_1920x1080;
+    [HideInInspector] public UserDefined_Resolution user_Resolution;
+    public enum UserDefined_Resolution
     {
         res_1280x720,
         res_1366x768,
@@ -54,11 +54,11 @@ public class Manager_Settings : MonoBehaviour
     }
     public int def_FieldOfView = 90;
     [HideInInspector] public int user_FieldOfView;
-    public bool def_EnableVsync = true;
-    [HideInInspector] public bool user_EnableVSync;
-    public TextureQuality def_TextureQuality = TextureQuality.medium;
-    [HideInInspector] public TextureQuality user_TextureQuality;
-    public enum TextureQuality
+    public string def_EnableVsync = "true";
+    [HideInInspector] public string user_EnableVSync;
+    public UserDefined_TextureQuality def_TextureQuality = UserDefined_TextureQuality.medium;
+    [HideInInspector] public UserDefined_TextureQuality user_TextureQuality;
+    public enum UserDefined_TextureQuality
     {
         low,
         medium,
@@ -69,9 +69,9 @@ public class Manager_Settings : MonoBehaviour
     [HideInInspector] public int user_LightDistance;
     public int def_ShadowDistance = 250;
     [HideInInspector] public int user_ShadowDistance;
-    public ShadowQuality def_ShadowQuality = ShadowQuality.medium;
-    [HideInInspector] public ShadowQuality user_ShadowQuality;
-    public enum ShadowQuality
+    public UserDefined_ShadowQuality def_ShadowQuality = UserDefined_ShadowQuality.medium;
+    [HideInInspector] public UserDefined_ShadowQuality user_ShadowQuality;
+    public enum UserDefined_ShadowQuality
     {
         low,
         medium,
@@ -229,7 +229,7 @@ public class Manager_Settings : MonoBehaviour
         {
             TMP_Dropdown dropdown;
             Slider slider;
-            Toggle toggle;
+            Button button;
 
             if (buttonUIParent.GetComponentInChildren<TMP_Dropdown>() != null
                 && buttonUIParent.GetComponentInChildren<TMP_Dropdown>().gameObject.activeInHierarchy)
@@ -245,12 +245,12 @@ public class Manager_Settings : MonoBehaviour
                 slider.onValueChanged.RemoveAllListeners();
                 AssignEvent(slider.gameObject, "slider");
             }
-            else if (buttonUIParent.GetComponentInChildren<Toggle>() != null
-                     && buttonUIParent.GetComponentInChildren<Toggle>().gameObject.activeInHierarchy)
+            else if (buttonUIParent.GetComponentInChildren<Button>() != null
+                     && buttonUIParent.GetComponentInChildren<Button>().gameObject.activeInHierarchy)
             {
-                toggle = buttonUIParent.GetComponentInChildren<Toggle>();
-                toggle.onValueChanged.RemoveAllListeners();
-                AssignEvent(toggle.gameObject, "toggle");
+                button = buttonUIParent.GetComponentInChildren<Button>();
+                button.onClick.RemoveAllListeners();
+                AssignEvent(button.gameObject, "button");
             }
         }
     }
@@ -268,7 +268,7 @@ public class Manager_Settings : MonoBehaviour
             //assign preset choices, current choice and event
             if (info == "Preset")
             {
-                List<string> values = new(Enum.GetNames(typeof(Preset)));
+                List<string> values = new(Enum.GetNames(typeof(UserDefined_Preset)));
                 dropdown.AddOptions(values);
                 foreach (string res in values)
                 {
@@ -290,7 +290,7 @@ public class Manager_Settings : MonoBehaviour
             //assign resolution choices, current choice and event
             else if (info == "Resolution")
             {
-                List<string> values = new(Enum.GetNames(typeof(Resolution)));
+                List<string> values = new(Enum.GetNames(typeof(UserDefined_Resolution)));
                 dropdown.AddOptions(values);
                 foreach (string res in values)
                 {
@@ -334,7 +334,7 @@ public class Manager_Settings : MonoBehaviour
             //assign texture quality choices, current choice and event
             else if (info == "TextureQuality")
             {
-                List<string> values = new(Enum.GetNames(typeof(TextureQuality)));
+                List<string> values = new(Enum.GetNames(typeof(UserDefined_TextureQuality)));
                 dropdown.AddOptions(values);
                 foreach (string res in values)
                 {
@@ -513,17 +513,17 @@ public class Manager_Settings : MonoBehaviour
                 slider.onValueChanged.AddListener(delegate { SliderEvent(slider, sliderText); });
             }
         }
-        else if (targetType == "toggle")
+        else if (targetType == "button")
         {
-            Toggle toggle = target.GetComponent<Toggle>();
+            Button button = target.GetComponent<Button>();
 
             if (info == "VSyncState")
             {
                 //get user defined vsync state
-                target.GetComponent<Toggle>().enabled = user_EnableVSync;
+                target.GetComponent<Button>().GetComponentInChildren<TMP_Text>().text = user_EnableVSync;
 
                 //create a new toggle event for vsync state
-                target.GetComponent<Toggle>().onValueChanged.AddListener(delegate { ToggleEvent(toggle); });
+                target.GetComponent<Button>().onClick.AddListener(delegate { ButtonEvent(button); });
             }
         }
     }
@@ -538,11 +538,11 @@ public class Manager_Settings : MonoBehaviour
 
         if (info == "Preset")
         {
-            user_Preset = (Preset)Enum.Parse(typeof(Preset), newValue);
+            user_Preset = (UserDefined_Preset)Enum.Parse(typeof(UserDefined_Preset), newValue);
         }
         else if (info == "Resolution")
         {
-            user_Resolution = (Resolution)Enum.Parse(typeof(Resolution), newValue);
+            user_Resolution = (UserDefined_Resolution)Enum.Parse(typeof(UserDefined_Resolution), newValue);
         }
         else if (info == "FullScreenMode")
         {
@@ -550,11 +550,11 @@ public class Manager_Settings : MonoBehaviour
         }
         else if (info == "TextureQuality")
         {
-            user_TextureQuality = (TextureQuality)Enum.Parse(typeof(TextureQuality), newValue);
+            user_TextureQuality = (UserDefined_TextureQuality)Enum.Parse(typeof(UserDefined_TextureQuality), newValue);
         }
         else if (info == "ShadowQuality")
         {
-            user_ShadowQuality = (ShadowQuality)Enum.Parse(typeof(ShadowQuality), newValue);
+            user_ShadowQuality = (UserDefined_ShadowQuality)Enum.Parse(typeof(UserDefined_ShadowQuality), newValue);
         }
     }
     //the individual slider event for every slider
@@ -581,14 +581,22 @@ public class Manager_Settings : MonoBehaviour
             sliderText.text = target.value.ToString();
         }
     }
-    //the individual toggle event for every toggle
-    public void ToggleEvent(Toggle target)
+    //the individual button event for every button
+    public void ButtonEvent(Button target)
     { 
         UI_AssignSettings SettingsScript = target.GetComponent<UI_AssignSettings>();
         string info = SettingsScript.str_Info;
         if (info == "VSyncState")
         {
-            user_EnableVSync = target.GetComponent<Toggle>().isOn;
+            if (target.GetComponentInChildren<TMP_Text>().text == "true")
+            {
+                target.GetComponentInChildren<TMP_Text>().text = "false";
+            }
+            else if (target.GetComponentInChildren<TMP_Text>().text == "false")
+            {
+                target.GetComponentInChildren<TMP_Text>().text = "true";
+            }
+            user_EnableVSync = target.GetComponentInChildren<TMP_Text>().text;
         }
     }
 
@@ -670,11 +678,11 @@ public class Manager_Settings : MonoBehaviour
 
             //reset vsync
             user_EnableVSync = def_EnableVsync;
-            if (user_EnableVSync)
+            if (user_EnableVSync == "true")
             {
                 QualitySettings.vSyncCount = 1;
             }
-            else
+            else if (user_EnableVSync == "false")
             {
                 QualitySettings.vSyncCount = 0;
             }
@@ -750,7 +758,7 @@ public class Manager_Settings : MonoBehaviour
         using StreamWriter settingsFile = File.CreateText(filePath);
 
         settingsFile.WriteLine("Settings file for " + UIReuseScript.txt_GameVersion.text + ".");
-        settingsFile.WriteLine("WARNING: Invalid values will break the game - edit at your own risk!");
+        settingsFile.WriteLine("WARNING - Invalid values will break the game - edit at your own risk!");
         settingsFile.WriteLine("");
 
         List<GameObject> parents = new();
@@ -769,34 +777,32 @@ public class Manager_Settings : MonoBehaviour
 
         foreach (GameObject par in parents)
         {
-            Transform target = par.transform.GetChild(0);
-
-            Dropdown dropDown = null;
+            TMP_Dropdown dropDown = null;
             Slider slider = null;
-            Toggle toggle = null;
+            Button button = null;
 
             UI_AssignSettings AssignScript;
             string info = "";
 
-            if (target.GetComponentInChildren<Dropdown>() != null
-                && target.GetComponentInChildren<Dropdown>().gameObject.activeInHierarchy)
+            if (par.GetComponentInChildren<TMP_Dropdown>() != null
+                && par.GetComponentInChildren<TMP_Dropdown>().gameObject.activeInHierarchy)
             {
-                dropDown = target.GetComponentInChildren<Dropdown>();
+                dropDown = par.GetComponentInChildren<TMP_Dropdown>();
+                AssignScript = dropDown.GetComponent<UI_AssignSettings>();
+                info = AssignScript.str_Info;
+            }
+            else if (par.GetComponentInChildren<Slider>() != null
+                     && par.GetComponentInChildren<Slider>().gameObject.activeInHierarchy)
+            {
+                slider = par.GetComponentInChildren<Slider>();
                 AssignScript = slider.GetComponent<UI_AssignSettings>();
                 info = AssignScript.str_Info;
             }
-            else if (target.GetComponentInChildren<Slider>() != null
-                     && target.GetComponentInChildren<Slider>().gameObject.activeInHierarchy)
+            else if (par.GetComponentInChildren<Button>() != null
+                     && par.GetComponentInChildren<Button>().gameObject.activeInHierarchy)
             {
-                slider = target.GetComponentInChildren<Slider>();
-                AssignScript = slider.GetComponent<UI_AssignSettings>();
-                info = AssignScript.str_Info;
-            }
-            else if (target.GetComponentInChildren<Toggle>() != null
-                     && target.GetComponentInChildren<Toggle>().gameObject.activeInHierarchy)
-            {
-                toggle = target.GetComponentInChildren<Toggle>();
-                AssignScript = slider.GetComponent<UI_AssignSettings>();
+                button = par.GetComponentInChildren<Button>();
+                AssignScript = button.GetComponent<UI_AssignSettings>();
                 info = AssignScript.str_Info;
             }
 
@@ -814,8 +820,6 @@ public class Manager_Settings : MonoBehaviour
                 user_MouseSpeed = (int)slider.value;
                 PlayerCameraScript.sensX = user_MouseSpeed;
                 PlayerCameraScript.sensY = user_MouseSpeed;
-
-                Debug.Log("mouse speed slider new value is " + user_MouseSpeed);
             }
 
             //graphics settings
@@ -825,7 +829,7 @@ public class Manager_Settings : MonoBehaviour
             {
                 //TODO: assign preset
                 string dropDownValue = dropDown.options[dropDown.value].ToString();
-                user_Preset = (Preset)Enum.Parse(typeof(Preset), dropDownValue);
+                user_Preset = (UserDefined_Preset)Enum.Parse(typeof(UserDefined_Preset), dropDownValue);
             }
             //apply resolution and fullscreen mode
             else if (info == "FullScreenMode")
@@ -863,12 +867,12 @@ public class Manager_Settings : MonoBehaviour
             }
             else if (info == "VSyncState")
             {
-                user_EnableVSync = toggle.isOn;
-                if (user_EnableVSync)
+                user_EnableVSync = button.GetComponentInChildren<TMP_Text>().text;
+                if (user_EnableVSync == "true")
                 {
                     QualitySettings.vSyncCount = 1;
                 }
-                else
+                else if (user_EnableVSync == "false")
                 {
                     QualitySettings.vSyncCount = 0;
                 }
@@ -877,7 +881,7 @@ public class Manager_Settings : MonoBehaviour
             {
                 //TODO: assign texture quality
                 string dropDownValue = dropDown.options[dropDown.value].ToString();
-                user_TextureQuality = (TextureQuality)Enum.Parse(typeof(TextureQuality), dropDownValue);
+                user_TextureQuality = (UserDefined_TextureQuality)Enum.Parse(typeof(UserDefined_TextureQuality), dropDownValue);
             }
             else if (info == "LightDistance")
             {
@@ -893,7 +897,7 @@ public class Manager_Settings : MonoBehaviour
             {
                 //TODO: assign shadow quality
                 string dropDownValue = dropDown.options[dropDown.value].ToString();
-                user_ShadowQuality = (ShadowQuality)Enum.Parse(typeof(ShadowQuality), dropDownValue);
+                user_ShadowQuality = (UserDefined_ShadowQuality)Enum.Parse(typeof(UserDefined_ShadowQuality), dropDownValue);
             }
             else if (info == "TreeDistance")
             {
@@ -986,15 +990,183 @@ public class Manager_Settings : MonoBehaviour
         if (!File.Exists(settingsFilePath))
         {
             ResetSettings(true);
+            Debug.Log("Loaded default settings.");
         }
         else
         {
-            foreach (string line in File.ReadLines(settingsFilePath))
+            List<Transform> parents = new();
+
+            foreach (GameObject par in UIReuseScript.generalSettingsParents)
             {
-                string[] valueSplit = line.Split(':');
-                string type = valueSplit[0];
-                string value = valueSplit[1];
+                parents.Add(par.transform);
             }
+            foreach (GameObject par in UIReuseScript.graphicsSettingsParents)
+            {
+                parents.Add(par.transform);
+            }
+            foreach (GameObject par in UIReuseScript.audioSettingsParents)
+            {
+                parents.Add(par.transform);
+            }
+
+            foreach (Transform parent in parents)
+            {
+                UI_AssignSettings AssignScript = parent.transform.GetComponentInChildren<UI_AssignSettings>();
+                string info = AssignScript.str_Info;
+
+                foreach (string line in File.ReadLines(settingsFilePath))
+                {
+                    if (line.Contains(':'))
+                    {
+                        string[] valueSplit = line.Split(':');
+                        string type = valueSplit[0];
+                        string value = valueSplit[1].Replace(" ", string.Empty);
+
+                        if (info == type)
+                        {
+                            //general settings
+                            if (type == "Difficulty")
+                            {
+                                //TODO: assign difficulty
+                                user_Difficulty = int.Parse(value);
+                            }
+                            else if (type == "MouseSpeed")
+                            {
+                                user_MouseSpeed = int.Parse(value);
+                                PlayerCameraScript.sensX = user_MouseSpeed;
+                                PlayerCameraScript.sensY = user_MouseSpeed;
+                            }
+
+                            //graphics settings
+                            else if (type == "Preset")
+                            {
+                                //TODO: apply preset
+                                user_Preset = (UserDefined_Preset)Enum.Parse(typeof(UserDefined_Preset), value);
+                            }
+                            else if (info == "Resolution")
+                            {
+                                user_Resolution = (UserDefined_Resolution)Enum.Parse(typeof(UserDefined_Resolution), "res_" + value);
+                            }
+                            else if (info == "FullScreenMode")
+                            {
+                                user_FullScreenMode = (UserDefined_FullScreenMode)Enum.Parse(typeof(UserDefined_FullScreenMode), value);
+
+                                //apply resolution and fullscreen mode
+                                string resolution = user_Resolution.ToString();
+                                string[] splitResolutionString = resolution.Split('_');
+                                string[] resolutionValues = splitResolutionString[1].Split('x');
+                                int defaultX = int.Parse(resolutionValues[0]);
+                                int defaultY = int.Parse(resolutionValues[1]);
+                                //get user defined fullscreen mode
+                                int fullScreenMode = (int)user_FullScreenMode;
+                                //set user defined resolution and fullscreen mode
+                                if (fullScreenMode == 0)
+                                {
+                                    Screen.SetResolution(defaultX, defaultY, FullScreenMode.ExclusiveFullScreen);
+                                }
+                                else if (fullScreenMode == 1)
+                                {
+                                    Screen.SetResolution(defaultX, defaultY, FullScreenMode.FullScreenWindow);
+                                }
+                                else if (fullScreenMode == 2)
+                                {
+                                    Screen.SetResolution(defaultX, defaultY, FullScreenMode.Windowed);
+                                }
+                                else if (fullScreenMode == 3)
+                                {
+                                    Screen.SetResolution(defaultX, defaultY, FullScreenMode.MaximizedWindow);
+                                }
+                            }
+                            else if (type == "FieldOfView")
+                            {
+                                user_FieldOfView = int.Parse(value);
+                                playerMainCamera.GetComponent<Camera>().fieldOfView = user_FieldOfView;
+                            }
+                            else if (type == "VSyncState")
+                            {
+                                user_EnableVSync = value;
+                                if (user_EnableVSync == "true")
+                                {
+                                    QualitySettings.vSyncCount = 1;
+                                }
+                                else if (user_EnableVSync == "false")
+                                {
+                                    QualitySettings.vSyncCount = 0;
+                                }
+                            }
+                            else if (type == "TextureQuality")
+                            {
+                                //TODO: apply texture quality
+                                user_TextureQuality = (UserDefined_TextureQuality)Enum.Parse(typeof(UserDefined_TextureQuality), value);
+                            }
+                            else if (type == "LightDistance")
+                            {
+                                //TODO: apply light distance
+                                user_LightDistance = int.Parse(value);
+                            }
+                            else if (type == "ShadowDistance")
+                            {
+                                //TODO: apply shadow distance
+                                user_ShadowDistance = int.Parse(value);
+                            }
+                            else if (type == "ShadowQuality")
+                            {
+                                //TODO: apply shadow quality
+                                user_ShadowQuality = (UserDefined_ShadowQuality)Enum.Parse(typeof(UserDefined_ShadowQuality), value);
+                            }
+                            else if (type == "TreeDistance")
+                            {
+                                //TODO: apply tree distance
+                                user_TreeDistance = int.Parse(value);
+                            }
+                            else if (type == "GrassDistance")
+                            {
+                                //TODO: apply grass distance
+                                user_GrassDistance = int.Parse(value);
+                            }
+                            else if (type == "ObjectDistance")
+                            {
+                                //TODO: apply object distance
+                                user_ObjectDistance = int.Parse(value);
+                            }
+                            else if (type == "ItemDistance")
+                            {
+                                //TODO: apply item distance
+                                user_ItemDistance = int.Parse(value);
+                            }
+                            else if (type == "AIDistance")
+                            {
+                                //TODO: apply AI distance
+                                user_AIDistance = int.Parse(value);
+                            }
+
+                            //audio settings
+                            else if (type == "MasterVolume")
+                            {
+                                //TODO: apply master volume
+                                user_MasterVolume = int.Parse(value);
+                            }
+                            else if (type == "MusicVolume")
+                            {
+                                //TODO: apply music volume
+                                user_MusicVolume = int.Parse(value);
+                            }
+                            else if (type == "SFXVolume")
+                            {
+                                //TODO: apply SFX volume
+                                user_SFXVolume = int.Parse(value);
+                            }
+                            else if (type == "NPCVolume")
+                            {
+                                //TODO: apply NPC volume
+                                user_NPCVolume = int.Parse(value);
+                            }
+                        }
+                    }
+                }
+            }
+
+            Debug.Log("Successfully loaded game settings from " + GameManagerScript.settingsPath + @"\Settings.txt" + "!");
         }
     }
 }

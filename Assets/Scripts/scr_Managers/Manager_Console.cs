@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using static Manager_Settings;
 
 public class Manager_Console : MonoBehaviour
 {
@@ -36,7 +37,6 @@ public class Manager_Console : MonoBehaviour
     private GameManager GameManagerScript;
     private UI_PauseMenu PauseMenuScript;
     private Manager_KeyBindings KeyBindingsScript;
-    private Manager_GameSaving GameSavingScript;
     private Manager_Settings SettingsScript;
     private Manager_UIReuse UIReuseScript;
 
@@ -45,7 +45,6 @@ public class Manager_Console : MonoBehaviour
         GameManagerScript = GetComponent<GameManager>();
         PauseMenuScript = GetComponent<UI_PauseMenu>();
         KeyBindingsScript = GetComponent<Manager_KeyBindings>();
-        GameSavingScript = GetComponent<Manager_GameSaving>();
         SettingsScript = GetComponent<Manager_Settings>();
         UIReuseScript = GetComponent<Manager_UIReuse>();
 
@@ -199,19 +198,13 @@ public class Manager_Console : MonoBehaviour
                 }
 
                 //show all saves
-                else if (separatedWords[0] == "sas"
+                else if (separatedWords[0] == "showallsaves"
                          && separatedWords.Count == 1)
                 {
                     Command_ShowAllSaves();
                 }
-                //delete selected save
-                else if (separatedWords[0] == "deletesave"
-                         && separatedWords.Count == 2)
-                {
-                    Command_DeleteSave();
-                }
                 //delete all saves
-                else if (separatedWords[0] == "das"
+                else if (separatedWords[0] == "deleteallsaves"
                          && separatedWords.Count == 1)
                 {
                     Command_DeleteAllSaves();
@@ -233,16 +226,16 @@ public class Manager_Console : MonoBehaviour
                 }
 
                 //reset all key bindings to default values
-                else if (separatedWords[0] == "resetkeybindings"
+                else if (separatedWords[0] == "resetallkeybindings"
                          && separatedWords.Count == 1)
                 {
-                    Command_ResetKeyBindings();
+                    Command_ResetAllKeyBindings();
                 }
                 //list all key bindings and their values
-                else if (separatedWords[0] == "showkeybindings"
+                else if (separatedWords[0] == "showallkeybindings"
                          && separatedWords.Count == 1)
                 {
-                    Command_ShowKeyBindings();
+                    Command_ShowAllKeyBindings();
                 }
                 //set keybindingname to keybindingvalue
                 else if (separatedWords[0] == "setkeybinding"
@@ -251,10 +244,32 @@ public class Manager_Console : MonoBehaviour
                     Command_SetKeyBinding();
                 }
 
+                //reset all settings to default values
+                else if (separatedWords[0] == "resetallsettings"
+                         && separatedWords.Count == 1
+                         && currentScene == 1)
+                {
+                    Command_ResetAllSettings();
+                }
+                //list all settings and their values
+                else if (separatedWords[0] == "showallsettings"
+                         && separatedWords.Count == 1
+                         && currentScene == 1)
+                {
+                    Command_ShowAllSettings();
+                }
+                //set settingsname to settingsvalue
+                else if (separatedWords[0] == "setsettings"
+                         && separatedWords.Count == 3
+                         && currentScene == 1)
+                {
+                    Command_SetSettings();
+                }
+
                 //restart game from the beginning
                 else if (separatedWords[0] == "restart"
                          && separatedWords.Count == 1)
-                //&& PlayerHealthScript.isPlayerAlive)
+                         //&& PlayerHealthScript.isPlayerAlive)
                 {
                     Command_Restart();
                 }
@@ -378,15 +393,18 @@ public class Manager_Console : MonoBehaviour
             CreateNewConsoleLine("clear - clear console log.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("tdm - toggle debug menu.", "CONSOLE_INFO_MESSAGE");
 
-            CreateNewConsoleLine("sas - show all game saves.", "CONSOLE_INFO_MESSAGE");
-            CreateNewConsoleLine("deletesave savename - delete selected save.", "CONSOLE_INFO_MESSAGE");
-            CreateNewConsoleLine("das - delete all game saves.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("showallsaves - show all game saves.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("deleteallsaves - delete all game saves.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("save savename - save game with save name (GAME SCENE ONLY).", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("load loadname - load game with game save name.", "CONSOLE_INFO_MESSAGE");
 
-            CreateNewConsoleLine("resetkeybindings - reset all key bindings to default values.", "CONSOLE_INFO_MESSAGE");
-            CreateNewConsoleLine("showkeybindings - list all key bindings and their current values.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("resetallkeybindings - reset all key bindings to default values.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("showallkeybindings - list all key bindings and their current values.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("setkeybinding keybindingname keybindingvalue - set keybindingname to keybindingvalue.", "CONSOLE_INFO_MESSAGE");
+
+            CreateNewConsoleLine("resetallsettings - reset all settings to default values.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("showallsettings - list all settings and their current values.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("setsettings settingsname settingsvalue - set settingsname to settingsvalue.", "CONSOLE_INFO_MESSAGE");
 
             CreateNewConsoleLine("restart - restart the game from the beginning.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("quit - quit game.", "CONSOLE_INFO_MESSAGE");
@@ -471,18 +489,13 @@ public class Manager_Console : MonoBehaviour
             }
             else
             {
-                CreateNewConsoleLine("Save folder at path " + path + " is empty.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("Error: Cannot list any saves because save folder at path " + path + " is empty!", "CONSOLE_INFO_MESSAGE");
             }
         }
         else
         {
             CreateNewConsoleLine("Error: Cannot find game saves folder!", "CONSOLE_ERROR_MESSAGE");
         }
-    }
-    //delete selected save
-    private void Command_DeleteSave()
-    {
-        GameSavingScript.DeleteSave(separatedWords[1]);
     }
     //delete all game saves
     private void Command_DeleteAllSaves()
@@ -527,13 +540,13 @@ public class Manager_Console : MonoBehaviour
     }
 
     //reset all key bindings to default values
-    private void Command_ResetKeyBindings()
+    private void Command_ResetAllKeyBindings()
     {
         KeyBindingsScript.ResetKeyBindings(true);
         CreateNewConsoleLine("Successfully reset " + KeyBindingsScript.KeyBindings.Count + " key bindings!", "CONSOLE_SUCCESS_MESSAGE");
     }
     //list all key bindings and their values
-    private void Command_ShowKeyBindings()
+    private void Command_ShowAllKeyBindings()
     {
         CreateNewConsoleLine("---KEY BINDINGS---", "CONSOLE_INFO_MESSAGE");
         foreach (KeyValuePair<string, KeyCode> dict in KeyBindingsScript.KeyBindings)
@@ -611,6 +624,623 @@ public class Manager_Console : MonoBehaviour
         else
         {
             CreateNewConsoleLine("Error: Inserted key binding name " + userKey + " or key binding value " + userValue.ToString().Replace("KeyCode.", "") + " does not exist! Type showkeybindings to list all key bindings.", "CONSOLE_ERROR_MESSAGE");
+        }
+    }
+
+    //reset all settings to default values
+    private void Command_ResetAllSettings()
+    {
+        SettingsScript.ResetSettings(true);
+        CreateNewConsoleLine("Successfully reset all settings to default values!", "CONSOLE_SUCCESS_MESSAGE");
+    }
+    //list all settings and their values
+    private void Command_ShowAllSettings()
+    {
+        List<Transform> parents = new();
+        foreach (GameObject par in UIReuseScript.generalSettingsParents)
+        {
+            parents.Add(par.transform);
+        }
+        foreach (GameObject par in UIReuseScript.graphicsSettingsParents)
+        {
+            parents.Add(par.transform);
+        }
+        foreach (GameObject par in UIReuseScript.audioSettingsParents)
+        {
+            parents.Add(par.transform);
+        }
+
+        foreach (Transform par in parents)
+        {
+            string info = par.GetComponentInChildren<UI_AssignSettings>().str_Info;
+
+            //general settings
+            if (info == "Difficulty")
+            {
+                CreateNewConsoleLine("difficulty: " + SettingsScript.user_Difficulty, "CONSOLE_INFO_MESSAGE");
+            }
+            else if (info == "MouseSpeed")
+            {
+                CreateNewConsoleLine("mouse_speed: " + SettingsScript.user_MouseSpeed, "CONSOLE_INFO_MESSAGE");
+            }
+
+            //graphics settings
+            else if (info == "Preset")
+            {
+                CreateNewConsoleLine("preset: " + SettingsScript.user_Preset, "CONSOLE_INFO_MESSAGE");
+            }
+            else if (info == "Resolution")
+            {
+                CreateNewConsoleLine("resolution: " + SettingsScript.user_Resolution.ToString().Replace("res_", ""), "CONSOLE_INFO_MESSAGE");
+            }
+            else if (info == "FullScreenMode")
+            {
+                CreateNewConsoleLine("fullscreen_mode: " + SettingsScript.user_FullScreenMode, "CONSOLE_INFO_MESSAGE");
+            }
+            else if (info == "FieldOfView")
+            {
+                CreateNewConsoleLine("field_of_view: " + SettingsScript.user_FieldOfView, "CONSOLE_INFO_MESSAGE");
+            }
+            else if (info == "VSyncState")
+            {
+                CreateNewConsoleLine("vsync_state: " + SettingsScript.user_EnableVSync, "CONSOLE_INFO_MESSAGE");
+            }
+            else if (info == "TextureQuality")
+            {
+                CreateNewConsoleLine("texture_quality: " + SettingsScript.user_TextureQuality, "CONSOLE_INFO_MESSAGE");
+            }
+            else if (info == "LightDistance")
+            {
+                CreateNewConsoleLine("light_distance: " + SettingsScript.user_LightDistance, "CONSOLE_INFO_MESSAGE");
+            }
+            else if (info == "ShadowDistance")
+            {
+                CreateNewConsoleLine("shadow_distance: " + SettingsScript.user_ShadowDistance, "CONSOLE_INFO_MESSAGE");
+            }
+            else if (info == "ShadowQuality")
+            {
+                CreateNewConsoleLine("shadow_quality: " + SettingsScript.user_ShadowDistance, "CONSOLE_INFO_MESSAGE");
+            }
+            else if (info == "TreeDistance")
+            {
+                CreateNewConsoleLine("tree_distance: " + SettingsScript.user_TreeDistance, "CONSOLE_INFO_MESSAGE");
+            }
+            else if (info == "GrassDistance")
+            {
+                CreateNewConsoleLine("grass_distance: " + SettingsScript.user_GrassDistance, "CONSOLE_INFO_MESSAGE");
+            }
+            else if (info == "ObjectDistance")
+            {
+                CreateNewConsoleLine("object_distance: " + SettingsScript.user_ObjectDistance, "CONSOLE_INFO_MESSAGE");
+            }
+            else if (info == "item_Distance")
+            {
+                CreateNewConsoleLine("item_distance: " + SettingsScript.user_ItemDistance, "CONSOLE_INFO_MESSAGE");
+            }
+            else if (info == "AIDistance")
+            {
+                CreateNewConsoleLine("ai_distance: " + SettingsScript.user_AIDistance, "CONSOLE_INFO_MESSAGE");
+            }
+
+            //audio settings
+            else if (info == "MasterVolume")
+            {
+                CreateNewConsoleLine("master_volume: " + SettingsScript.user_MasterVolume, "CONSOLE_INFO_MESSAGE");
+            }
+            else if (info == "MusicVolume")
+            {
+                CreateNewConsoleLine("music_volume: " + SettingsScript.user_MusicVolume, "CONSOLE_INFO_MESSAGE");
+            }
+            else if (info == "SFXVolume")
+            {
+                CreateNewConsoleLine("sfx_volume: " + SettingsScript.user_SFXVolume, "CONSOLE_INFO_MESSAGE");
+            }
+            else if (info == "NPCVolume")
+            {
+                CreateNewConsoleLine("npc_volume: " + SettingsScript.user_NPCVolume, "CONSOLE_INFO_MESSAGE");
+            }
+        }
+    }
+    //set settingsname to settingsvalue
+    private void Command_SetSettings()
+    {
+        string type = separatedWords[1];
+        string value = separatedWords[2];
+
+        bool isTypeFloat = float.TryParse(type, out _);
+        bool isTypeInt = int.TryParse(type, out _);
+
+        if (!isTypeFloat
+            && !isTypeInt)
+        {
+            //general settings
+            if (type == "difficulty")
+            {
+                int val = int.Parse(value);
+                if (val >= -100
+                    && val <= 100)
+                {
+                    SettingsScript.user_Difficulty = val;
+
+                    PauseMenuScript.PauseWithUI();
+                    PauseMenuScript.ShowSettingsContent();
+                    SettingsScript.RebuildSettingsList("general");
+                    PauseMenuScript.UnpauseGame();
+
+                    SettingsScript.SaveSettings();
+                    CreateNewConsoleLine("Successfully changed " + type + " to " + value + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Invalid value for " + type + "! Must be between -100 and 100.", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+            else if (type == "mouse_speed")
+            {
+                int val = int.Parse(value);
+                if (val >= 1
+                    && val <= 100)
+                {
+                    SettingsScript.user_MouseSpeed = val;
+
+                    PauseMenuScript.PauseWithUI();
+                    PauseMenuScript.ShowSettingsContent();
+                    SettingsScript.RebuildSettingsList("general");
+                    PauseMenuScript.UnpauseGame();
+
+                    SettingsScript.SaveSettings();
+                    CreateNewConsoleLine("Successfully changed " + type + " to " + value + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Invalid value for " + type + "! Must be between 1 and 100.", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+
+            //graphics settings
+            else if (type == "preset")
+            {
+                List<string> values = new(Enum.GetNames(typeof(UserDefined_Preset)));
+                values.Remove("custom");
+
+                bool foundAvailableValue = false;
+                foreach (string val in values)
+                {
+                    if (value == val)
+                    {
+                        foundAvailableValue = true;
+                        break;
+                    }
+                }
+
+                if (foundAvailableValue)
+                {
+                    SettingsScript.user_Preset = (UserDefined_Preset)Enum.Parse(typeof(UserDefined_Preset), value);
+
+                    PauseMenuScript.PauseWithUI();
+                    PauseMenuScript.ShowSettingsContent();
+                    SettingsScript.RebuildSettingsList("graphics");
+                    PauseMenuScript.UnpauseGame();
+
+                    SettingsScript.SaveSettings();
+                    CreateNewConsoleLine("Successfully changed " + type + " to " + value + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Invalid value for " + type + "! Must be low, medium, high or ultra.", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+            else if (type == "resolution")
+            {
+                List<string> values = new(Enum.GetNames(typeof(UserDefined_Resolution)));
+                foreach (string val in values)
+                {
+                    val.Replace("res_", "");
+                }
+
+                bool foundAvailableValue = false;
+                foreach (string val in values)
+                {
+                    if ("res_" + value == val)
+                    {
+                        foundAvailableValue = true;
+                        break;
+                    }
+                }
+
+                if (foundAvailableValue)
+                {
+                    SettingsScript.user_Resolution = (UserDefined_Resolution)Enum.Parse(typeof(UserDefined_Resolution), "res_" + value);
+
+                    PauseMenuScript.PauseWithUI();
+                    PauseMenuScript.ShowSettingsContent();
+                    SettingsScript.RebuildSettingsList("graphics");
+                    PauseMenuScript.UnpauseGame();
+
+                    SettingsScript.SaveSettings();
+                    CreateNewConsoleLine("Successfully changed " + type + " to " + value + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Invalid value for " + type + "! Must be 1280x720, 1366x768, 1920x1080, 2160x1440, 2560x1080, 3440x1440, 3840x1080, 3840x2160 or 5120x1440.", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+            else if (type == "fullscreen_mode")
+            {
+                List<string> values = new(Enum.GetNames(typeof(UserDefined_FullScreenMode)));
+
+                bool foundAvailableValue = false;
+                foreach (string val in values)
+                {
+                    if (value == val)
+                    {
+                        foundAvailableValue = true;
+                        break;
+                    }
+                }
+
+                if (foundAvailableValue)
+                {
+                    SettingsScript.user_Resolution = (UserDefined_Resolution)Enum.Parse(typeof(UserDefined_Resolution), value);
+
+                    PauseMenuScript.PauseWithUI();
+                    PauseMenuScript.ShowSettingsContent();
+                    SettingsScript.RebuildSettingsList("graphics");
+                    PauseMenuScript.UnpauseGame();
+
+                    SettingsScript.SaveSettings();
+                    CreateNewConsoleLine("Successfully changed " + type + " to " + value + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Invalid value for " + type + "! Must be MaximizedWindow, ExclusiveFullScreen, Windowed or FullScreenWindow.", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+            else if (type == "field_of_view")
+            {
+                int val = int.Parse(value);
+                if (val >= 70
+                    && val <= 110)
+                {
+                    SettingsScript.user_FieldOfView = val;
+
+                    PauseMenuScript.PauseWithUI();
+                    PauseMenuScript.ShowSettingsContent();
+                    SettingsScript.RebuildSettingsList("graphics");
+                    PauseMenuScript.UnpauseGame();
+
+                    SettingsScript.SaveSettings();
+                    CreateNewConsoleLine("Successfully changed " + type + " to " + value + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Invalid value for " + type + "! Must be between 70 and 110.", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+            else if (type == "vsync_state")
+            {
+                if (value == "true"
+                    || value == "false")
+                {
+                    SettingsScript.user_EnableVSync = value;
+
+                    PauseMenuScript.PauseWithUI();
+                    PauseMenuScript.ShowSettingsContent();
+                    SettingsScript.RebuildSettingsList("graphics");
+                    PauseMenuScript.UnpauseGame();
+
+                    SettingsScript.SaveSettings();
+                    CreateNewConsoleLine("Successfully changed " + type + " to " + value + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Invalid value for " + type + "! Must be true or false.", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+            else if (type == "texture_quality")
+            {
+                List<string> values = new(Enum.GetNames(typeof(UserDefined_TextureQuality)));
+
+                bool foundAvailableValue = false;
+                foreach (string val in values)
+                {
+                    if (value == val)
+                    {
+                        foundAvailableValue = true;
+                        break;
+                    }
+                }
+
+                if (foundAvailableValue)
+                {
+                    SettingsScript.user_TextureQuality = (UserDefined_TextureQuality)Enum.Parse(typeof(UserDefined_TextureQuality), value);
+
+                    PauseMenuScript.PauseWithUI();
+                    PauseMenuScript.ShowSettingsContent();
+                    SettingsScript.RebuildSettingsList("graphics");
+                    PauseMenuScript.UnpauseGame();
+
+                    SettingsScript.SaveSettings();
+                    CreateNewConsoleLine("Successfully changed " + type + " to " + value + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Invalid value for " + type + "! Must be low, medium, high or ultra.", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+            else if (type == "light_distance")
+            {
+                int val = int.Parse(value);
+                if (val >= 15
+                    && val <= 5000)
+                {
+                    SettingsScript.user_LightDistance = val;
+
+                    PauseMenuScript.PauseWithUI();
+                    PauseMenuScript.ShowSettingsContent();
+                    SettingsScript.RebuildSettingsList("graphics");
+                    PauseMenuScript.UnpauseGame();
+
+                    SettingsScript.SaveSettings();
+                    CreateNewConsoleLine("Successfully changed " + type + " to " + value + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Invalid value for " + type + "! Must be between 15 and 5000.", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+            else if (type == "shadow_distance")
+            {
+                int val = int.Parse(value);
+                if (val >= 15
+                    && val <= 5000)
+                {
+                    SettingsScript.user_ShadowDistance = val;
+
+                    PauseMenuScript.PauseWithUI();
+                    PauseMenuScript.ShowSettingsContent();
+                    SettingsScript.RebuildSettingsList("graphics");
+                    PauseMenuScript.UnpauseGame();
+
+                    SettingsScript.SaveSettings();
+                    CreateNewConsoleLine("Successfully changed " + type + " to " + value + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Invalid value for " + type + "! Must be between 15 and 5000.", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+            else if (type == "shadow_quality")
+            {
+                List<string> values = new(Enum.GetNames(typeof(UserDefined_ShadowQuality)));
+
+                bool foundAvailableValue = false;
+                foreach (string val in values)
+                {
+                    if (value == val)
+                    {
+                        foundAvailableValue = true;
+                        break;
+                    }
+                }
+
+                if (foundAvailableValue)
+                {
+                    SettingsScript.user_ShadowQuality = (UserDefined_ShadowQuality)Enum.Parse(typeof(UserDefined_ShadowQuality), value);
+
+                    PauseMenuScript.PauseWithUI();
+                    PauseMenuScript.ShowSettingsContent();
+                    SettingsScript.RebuildSettingsList("graphics");
+                    PauseMenuScript.UnpauseGame();
+
+                    SettingsScript.SaveSettings();
+                    CreateNewConsoleLine("Successfully changed " + type + " to " + value + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Invalid value for " + type + "! Must be low, medium, high or ultra.", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+            else if (type == "tree_distance")
+            {
+                int val = int.Parse(value);
+                if (val >= 15
+                    && val <= 5000)
+                {
+                    SettingsScript.user_TreeDistance = val;
+
+                    PauseMenuScript.PauseWithUI();
+                    PauseMenuScript.ShowSettingsContent();
+                    SettingsScript.RebuildSettingsList("graphics");
+                    PauseMenuScript.UnpauseGame();
+
+                    SettingsScript.SaveSettings();
+                    CreateNewConsoleLine("Successfully changed " + type + " to " + value + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Invalid value for " + type + "! Must be between 15 and 5000.", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+            else if (type == "grass_distance")
+            {
+                int val = int.Parse(value);
+                if (val >= 15
+                    && val <= 5000)
+                {
+                    SettingsScript.user_GrassDistance = val;
+
+                    PauseMenuScript.PauseWithUI();
+                    PauseMenuScript.ShowSettingsContent();
+                    SettingsScript.RebuildSettingsList("graphics");
+                    PauseMenuScript.UnpauseGame();
+
+                    SettingsScript.SaveSettings();
+                    CreateNewConsoleLine("Successfully changed " + type + " to " + value + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Invalid value for " + type + "! Must be between 15 and 5000.", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+            else if (type == "object_distance")
+            {
+                int val = int.Parse(value);
+                if (val >= 15
+                    && val <= 5000)
+                {
+                    SettingsScript.user_ObjectDistance = val;
+
+                    PauseMenuScript.PauseWithUI();
+                    PauseMenuScript.ShowSettingsContent();
+                    SettingsScript.RebuildSettingsList("graphics");
+                    PauseMenuScript.UnpauseGame();
+
+                    SettingsScript.SaveSettings();
+                    CreateNewConsoleLine("Successfully changed " + type + " to " + value + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Invalid value for " + type + "! Must be between 15 and 5000.", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+            else if (type == "item_distance")
+            {
+                int val = int.Parse(value);
+                if (val >= 15
+                    && val <= 5000)
+                {
+                    SettingsScript.user_ItemDistance = val;
+
+                    PauseMenuScript.PauseWithUI();
+                    PauseMenuScript.ShowSettingsContent();
+                    SettingsScript.RebuildSettingsList("graphics");
+                    PauseMenuScript.UnpauseGame();
+
+                    SettingsScript.SaveSettings();
+                    CreateNewConsoleLine("Successfully changed " + type + " to " + value + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Invalid value for " + type + "! Must be between 15 and 5000.", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+            else if (type == "ai_distance")
+            {
+                int val = int.Parse(value);
+                if (val >= 15
+                    && val <= 5000)
+                {
+                    SettingsScript.user_AIDistance = val;
+
+                    PauseMenuScript.PauseWithUI();
+                    PauseMenuScript.ShowSettingsContent();
+                    SettingsScript.RebuildSettingsList("graphics");
+                    PauseMenuScript.UnpauseGame();
+
+                    SettingsScript.SaveSettings();
+                    CreateNewConsoleLine("Successfully changed " + type + " to " + value + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Invalid value for " + type + "! Must be between 15 and 5000.", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+
+            //audio settings
+            else if (type == "master_volume")
+            {
+                int val = int.Parse(value);
+                if (val >= 15
+                    && val <= 5000)
+                {
+                    SettingsScript.user_MasterVolume = val;
+
+                    PauseMenuScript.PauseWithUI();
+                    PauseMenuScript.ShowSettingsContent();
+                    SettingsScript.RebuildSettingsList("audio");
+                    PauseMenuScript.UnpauseGame();
+
+                    SettingsScript.SaveSettings();
+                    CreateNewConsoleLine("Successfully changed " + type + " to " + value + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Invalid value for " + type + "! Must be between 15 and 5000.", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+            else if (type == "music_volume")
+            {
+                int val = int.Parse(value);
+                if (val >= 15
+                    && val <= 5000)
+                {
+                    SettingsScript.user_MusicVolume = val;
+
+                    PauseMenuScript.PauseWithUI();
+                    PauseMenuScript.ShowSettingsContent();
+                    SettingsScript.RebuildSettingsList("audio");
+                    PauseMenuScript.UnpauseGame();
+
+                    SettingsScript.SaveSettings();
+                    CreateNewConsoleLine("Successfully changed " + type + " to " + value + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Invalid value for " + type + "! Must be between 15 and 5000.", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+            else if (type == "sfx_volume")
+            {
+                int val = int.Parse(value);
+                if (val >= 15
+                    && val <= 5000)
+                {
+                    SettingsScript.user_SFXVolume = val;
+
+                    PauseMenuScript.PauseWithUI();
+                    PauseMenuScript.ShowSettingsContent();
+                    SettingsScript.RebuildSettingsList("audio");
+                    PauseMenuScript.UnpauseGame();
+
+                    SettingsScript.SaveSettings();
+                    CreateNewConsoleLine("Successfully changed " + type + " to " + value + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Invalid value for " + type + "! Must be between 15 and 5000.", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+            else if (type == "npc_volume")
+            {
+                int val = int.Parse(value);
+                if (val >= 15
+                    && val <= 5000)
+                {
+                    SettingsScript.user_NPCVolume = val;
+
+                    PauseMenuScript.PauseWithUI();
+                    PauseMenuScript.ShowSettingsContent();
+                    SettingsScript.RebuildSettingsList("audio");
+                    PauseMenuScript.UnpauseGame();
+
+                    SettingsScript.SaveSettings();
+                    CreateNewConsoleLine("Successfully changed " + type + " to " + value + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Invalid value for " + type + "! Must be between 15 and 5000.", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+
+            else
+            {
+                CreateNewConsoleLine("Error: Settings name " + type + " was not found! Type showallsettings to list all game settings.", "CONSOLE_ERROR_MESSAGE");
+            }
+        }
+        else
+        {
+            CreateNewConsoleLine("Error: Settings name " + type + " cannot be a number!", "CONSOLE_ERROR_MESSAGE");
         }
     }
 

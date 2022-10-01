@@ -369,10 +369,12 @@ public class Manager_KeyBindings : MonoBehaviour
                     }
                 }
             }
+            Debug.Log("Successfully loaded key bindings from " + GameManagerScript.settingsPath + @"\KeyBindings.txt" + "!");
         }
         else
         {
             ResetKeyBindings(true);
+            Debug.Log("Loaded default key bindings.");
         }
     }
 

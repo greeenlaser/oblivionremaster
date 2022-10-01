@@ -438,6 +438,10 @@ public class Manager_GameSaving : MonoBehaviour
             {
                 LoadGame(str_loadFileName);
             }
+            else
+            {
+                Debug.Log("Started new game.");
+            }
 
             //delete load file
             File.Delete(GameManagerScript.gamePath + @"\loadfile.txt");
