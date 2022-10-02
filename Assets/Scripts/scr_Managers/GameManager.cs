@@ -9,7 +9,6 @@ public class GameManager : MonoBehaviour
 {
     [Header("General")]
     [SerializeField] private string str_GameVersion;
-    [SerializeField] private bool enableVSync;
 
     [Header("Scripts")]
     public GameObject thePlayer;
