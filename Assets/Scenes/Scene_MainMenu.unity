@@ -1735,7 +1735,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d80c2ab430a9deb488d6b298e8c4310e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  str_GameVersion: OblivionUnity_0.0.3
+  str_GameVersion: OblivionUnity_0.1.1
   thePlayer: {fileID: 0}
   parentPath: 
   gamePath: 
