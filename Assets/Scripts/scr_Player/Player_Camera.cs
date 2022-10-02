@@ -44,7 +44,6 @@ public class Player_Camera : MonoBehaviour
     private IEnumerator Wait()
     {
         yield return new WaitForSeconds(0.2f);
-        isCamEnabled = true;
 
         sensX = SettingsScript.user_MouseSpeed;
         sensY = SettingsScript.user_MouseSpeed;
