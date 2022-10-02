@@ -488,6 +488,146 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 245072190}
   m_CullTransparentMesh: 1
+--- !u!1001 &322438958
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1166655236}
+    m_Modifications:
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365565, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_Name
+      value: par_LoadingUI
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+--- !u!224 &322438959 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+  m_PrefabInstance: {fileID: 322438958}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &322438960 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6874313420596012289, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+  m_PrefabInstance: {fileID: 322438958}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &322438961 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6874313420059395118, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+  m_PrefabInstance: {fileID: 322438958}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &322438962 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6874313419678533105, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+  m_PrefabInstance: {fileID: 322438958}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &322438963 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6874313420527365565, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+  m_PrefabInstance: {fileID: 322438958}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &336551058
 GameObject:
   m_ObjectHideFlags: 0
@@ -1625,6 +1765,7 @@ GameObject:
   - component: {fileID: 720376262}
   - component: {fileID: 720376265}
   - component: {fileID: 720376271}
+  - component: {fileID: 720376272}
   - component: {fileID: 720376268}
   - component: {fileID: 720376270}
   - component: {fileID: 720376269}
@@ -1735,7 +1876,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d80c2ab430a9deb488d6b298e8c4310e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  str_GameVersion: OblivionUnity_0.1.1
+  str_GameVersion: OblivionUnity_0.0.2
   thePlayer: {fileID: 0}
   parentPath: 
   gamePath: 
@@ -1874,6 +2015,42 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   locations: []
   locationType: 0
+--- !u!114 &720376272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 720376261}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04c785fc6cac0ff4983c62ef5042abb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  par_LoadingUI: {fileID: 322438963}
+  loadingImage: {fileID: 322438962}
+  txt_Tip: {fileID: 322438961}
+  loadingSlider: {fileID: 2043445628}
+  btn_Continue: {fileID: 322438960}
+  loadingImages:
+  - {fileID: 2800000, guid: df9f20fd28fa1b141bcabf884c0ebdb4, type: 3}
+  - {fileID: 2800000, guid: 70966afc4621572479e1cde57372140f, type: 3}
+  - {fileID: 2800000, guid: 6e0f2a5621fcca049b1af8f6e32f24cd, type: 3}
+  - {fileID: 2800000, guid: e219676967ffbee47a2b2dba157db969, type: 3}
+  - {fileID: 2800000, guid: 637d203d71361a04bae590e8e4f5997f, type: 3}
+  - {fileID: 2800000, guid: 646c71fb40afce044b8267757352b87c, type: 3}
+  tips:
+  - It is said that the Count of Cheydinhal knows of the existence of the Dark Brotherhood
+    Sanctuary, but bribes and threats of death have done wonders to keep his mouth
+    shut.
+  - Anvil's Chapel of Dibella, the goddess of love, grants healing, curing, and restoration
+    of damaged attributes for those good pilgrims who pray at the Altar of the Nine.
+  - Those born under the sign of The Lady have increased Willpower and Endurance.
+  - Bruma's chilly winds and alpine climate favors dwellings built partly below ground
+    level to conserve heat.
+  - If you do enough damage to an opponent, you will stagger them.
+  - Resting restores your Health, Magicka, and Fatigue.
+  thePlayer: {fileID: 0}
 --- !u!1 &756988145
 GameObject:
   m_ObjectHideFlags: 0
@@ -2810,6 +2987,7 @@ RectTransform:
   - {fileID: 1651385925}
   - {fileID: 1003422818}
   - {fileID: 8613387113549227679}
+  - {fileID: 322438959}
   m_Father: {fileID: 430950709}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3755,6 +3933,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 412869655086569818, guid: b13a3629987d97c4fb83237ac1e9ecf5, type: 3}
   m_PrefabInstance: {fileID: 412869656724324126}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2043445628 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3427287404610926444, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+  m_PrefabInstance: {fileID: 322438958}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &412869656724324126
 PrefabInstance:
   m_ObjectHideFlags: 0

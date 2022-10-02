@@ -85,8 +85,7 @@ public class UI_Confirmation : MonoBehaviour
 
                     UIReuseScript.btn_Confirm2.gameObject.SetActive(true);
                     UIReuseScript.btn_Confirm2.GetComponentInChildren<TMP_Text>().text = "Quit without saving";
-
-                    UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { PauseMenuScript.QuitGame(true); });
+                    UIReuseScript.btn_Confirm2.onClick.AddListener(delegate { PauseMenuScript.QuitGame(true); });
                 }
             }
             //the save script
@@ -104,7 +103,6 @@ public class UI_Confirmation : MonoBehaviour
 
                     UIReuseScript.btn_Confirm2.gameObject.SetActive(true);
                     UIReuseScript.btn_Confirm2.GetComponentInChildren<TMP_Text>().text = "Load without saving";
-
                     UIReuseScript.btn_Confirm2.onClick.AddListener(delegate { SavingScript.CreateLoadFile(key); });
                 }
                 else if (optionalAction == "delete")
@@ -126,7 +124,6 @@ public class UI_Confirmation : MonoBehaviour
                 UIReuseScript.btn_Confirm1.gameObject.SetActive(true);
                 UIReuseScript.btn_Confirm1.transform.localPosition = new(0, -79, 0);
                 UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Reset";
-
                 UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { KeyBindingsScript.ResetKeyBindings(true); });
                 UIReuseScript.btn_Confirm1.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
             }
@@ -138,7 +135,6 @@ public class UI_Confirmation : MonoBehaviour
                 UIReuseScript.btn_Confirm1.gameObject.SetActive(true);
                 UIReuseScript.btn_Confirm1.transform.localPosition = new(0, -79, 0);
                 UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Reset";
-
                 UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { SettingsScript.ResetSettings(true); });
                 UIReuseScript.btn_Confirm1.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
             }

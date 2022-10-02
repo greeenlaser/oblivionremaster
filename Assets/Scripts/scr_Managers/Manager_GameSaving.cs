@@ -21,6 +21,7 @@ public class Manager_GameSaving : MonoBehaviour
     private readonly List<Button> saveButtons = new();
     private GameManager GameManagerScript;
     private Manager_KeyBindings KeyBindingsScript;
+    private UI_LoadingScreen LoadingScreenScript;
     private Manager_UIReuse UIReuseScript;
     private Player_Stats PlayerStatsScript;
 
@@ -28,6 +29,7 @@ public class Manager_GameSaving : MonoBehaviour
     {
         GameManagerScript = GetComponent<GameManager>();
         KeyBindingsScript = GetComponent<Manager_KeyBindings>();
+        LoadingScreenScript = GetComponent<UI_LoadingScreen>();
         UIReuseScript = GetComponent<Manager_UIReuse>();
 
         currentScene = SceneManager.GetActiveScene().buildIndex;
@@ -398,6 +400,9 @@ public class Manager_GameSaving : MonoBehaviour
 
         if (str_SaveName != "")
         {
+            LoadingScreenScript.OpenLoadingScreen();
+            LoadingScreenScript.UpdateLoadingScreenBar(10);
+
             //create a new load file and add which save file we want to load
             using StreamWriter loadFile = File.CreateText(GameManagerScript.gamePath + @"\loadfile.txt");
             loadFile.WriteLine(str_SaveName);

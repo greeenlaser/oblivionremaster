@@ -20,12 +20,14 @@ public class UI_MainMenu : MonoBehaviour
     //private variables
     private Manager_GameSaving SavingScript;
     private GameManager GameManagerScript;
+    private UI_LoadingScreen LoadingScreenScript;
     private Manager_UIReuse UIReuseScript;
 
     private void Awake()
     {
         SavingScript = GetComponent<Manager_GameSaving>();
         GameManagerScript = GetComponent<GameManager>();
+        LoadingScreenScript = GetComponent<UI_LoadingScreen>();
         UIReuseScript = GetComponent<Manager_UIReuse>();
 
         btn_ContinueOrNewGame.onClick.AddListener(StartNewGame);
@@ -56,6 +58,9 @@ public class UI_MainMenu : MonoBehaviour
     //start a new game and override game save loading in gamemanager script
     public void StartNewGame()
     {
+        LoadingScreenScript.OpenLoadingScreen();
+        LoadingScreenScript.UpdateLoadingScreenBar(10);
+
         string loadFilePath = GameManagerScript.gamePath + @"\loadfile.txt";
 
         //using a text editor to write text to the game save file in the saved file path

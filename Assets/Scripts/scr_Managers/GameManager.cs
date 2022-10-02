@@ -30,17 +30,20 @@ public class GameManager : MonoBehaviour
     //scripts
     private Manager_Settings SettingsScript;
     private Manager_GameSaving SavingScript;
-    private UI_PauseMenu PauseMenuScript;
     private Manager_KeyBindings KeyBindingsScript;
-    private Manager_Console ConsoleScript;
+    private UI_LoadingScreen LoadingScreenScript;
     private Player_Stats PlayerStatsScript;
 
     private void Awake()
     {
-        SettingsScript = GetComponent<Manager_Settings>();
-        KeyBindingsScript = GetComponent<Manager_KeyBindings>();
-        SavingScript = GetComponent<Manager_GameSaving>();
-        ConsoleScript = GetComponent<Manager_Console>();
+        currentScene = SceneManager.GetActiveScene().buildIndex;
+
+        if (currentScene == 1)
+        {
+            LoadingScreenScript = GetComponent<UI_LoadingScreen>();
+            LoadingScreenScript.OpenLoadingScreen();
+            LoadingScreenScript.UpdateLoadingScreenBar(10);
+        }
 
         //start recieving unity logs
         Application.logMessageReceived += GetComponent<Manager_Console>().HandleLog;
@@ -65,7 +68,6 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        currentScene = SceneManager.GetActiveScene().buildIndex;
         if (currentScene == 0)
         {
             //create debug file
@@ -73,17 +75,16 @@ public class GameManager : MonoBehaviour
         }
         else if (currentScene == 1)
         {
-            PauseMenuScript = GetComponent<UI_PauseMenu>();
-            PlayerStatsScript = thePlayer.GetComponent<Player_Stats>();
-
-            PauseMenuScript.canUnpause = true;
-            PauseMenuScript.canTogglePMUI = true;
+            LoadingScreenScript.UpdateLoadingScreenBar(50);
         }
     }
 
     private void Start()
     {
+        SettingsScript = GetComponent<Manager_Settings>();
         SettingsScript.LoadSettings();
+
+        KeyBindingsScript = GetComponent<Manager_KeyBindings>();
         KeyBindingsScript.LoadKeyBindings();
 
         //automatically update game version name
@@ -92,16 +93,16 @@ public class GameManager : MonoBehaviour
         if (currentScene == 1)
         {
             //player stats are always set to default before save is loaded
+            PlayerStatsScript = thePlayer.GetComponent<Player_Stats>();
             PlayerStatsScript.ResetStats();
             //load expected save if any exists
+            SavingScript = GetComponent<Manager_GameSaving>();
             SavingScript.ReadLoadFile();
 
-            //quickly pause and unpause to prevent game pause issues
-            PauseMenuScript.PauseWithoutUI();
-            PauseMenuScript.UnpauseGame();
-        }
+            LoadingScreenScript.UpdateLoadingScreenBar(100);
 
-        ConsoleScript.canToggleConsole = true;
+            LoadingScreenScript.btn_Continue.gameObject.SetActive(true);
+        }
     }
 
     public void CreatePaths()

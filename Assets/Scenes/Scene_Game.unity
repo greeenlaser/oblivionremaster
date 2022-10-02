@@ -1787,6 +1787,7 @@ RectTransform:
   - {fileID: 1076377335}
   - {fileID: 1827080093}
   - {fileID: 1423837890}
+  - {fileID: 737777249}
   m_Father: {fileID: 500743291}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1975,6 +1976,17 @@ Transform:
   m_Father: {fileID: 43975271}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &261439475 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6874313420059395118, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+  m_PrefabInstance: {fileID: 6874313420150307805}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &269299721
 GameObject:
   m_ObjectHideFlags: 0
@@ -5446,6 +5458,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &737777248 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6874313420527365565, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+  m_PrefabInstance: {fileID: 6874313420150307805}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &737777249 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+  m_PrefabInstance: {fileID: 6874313420150307805}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &746510538
 GameObject:
   m_ObjectHideFlags: 0
@@ -5999,6 +6021,17 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &798039772 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6874313420596012289, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+  m_PrefabInstance: {fileID: 6874313420150307805}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &799581974
 GameObject:
   m_ObjectHideFlags: 0
@@ -7096,6 +7129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 919376841}
   - component: {fileID: 919376844}
+  - component: {fileID: 919376851}
   - component: {fileID: 919376850}
   - component: {fileID: 919376847}
   - component: {fileID: 919376849}
@@ -7236,7 +7270,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d80c2ab430a9deb488d6b298e8c4310e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  str_GameVersion: OblivionUnity_0.1.1
+  str_GameVersion: OblivionUnity_0.0.2
   thePlayer: {fileID: 43975270}
   parentPath: 
   gamePath: 
@@ -7397,6 +7431,42 @@ MonoBehaviour:
   - {fileID: 22995568}
   - {fileID: 1657751556}
   locationType: 0
+--- !u!114 &919376851
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919376840}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04c785fc6cac0ff4983c62ef5042abb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  par_LoadingUI: {fileID: 737777248}
+  loadingImage: {fileID: 1684127276}
+  txt_Tip: {fileID: 261439475}
+  loadingSlider: {fileID: 6874313420150307806}
+  btn_Continue: {fileID: 798039772}
+  loadingImages:
+  - {fileID: 2800000, guid: df9f20fd28fa1b141bcabf884c0ebdb4, type: 3}
+  - {fileID: 2800000, guid: 70966afc4621572479e1cde57372140f, type: 3}
+  - {fileID: 2800000, guid: 6e0f2a5621fcca049b1af8f6e32f24cd, type: 3}
+  - {fileID: 2800000, guid: e219676967ffbee47a2b2dba157db969, type: 3}
+  - {fileID: 2800000, guid: 637d203d71361a04bae590e8e4f5997f, type: 3}
+  - {fileID: 2800000, guid: 646c71fb40afce044b8267757352b87c, type: 3}
+  tips:
+  - It is said that the Count of Cheydinhal knows of the existence of the Dark Brotherhood
+    Sanctuary, but bribes and threats of death have done wonders to keep his mouth
+    shut.
+  - Anvil's Chapel of Dibella, the goddess of love, grants healing, curing, and restoration
+    of damaged attributes for those good pilgrims who pray at the Altar of the Nine.
+  - Those born under the sign of The Lady have increased Willpower and Endurance.
+  - Bruma's chilly winds and alpine climate favors dwellings built partly below ground
+    level to conserve heat.
+  - If you do enough damage to an opponent, you will stagger them.
+  - Resting restores your Health, Magicka, and Fatigue.
+  thePlayer: {fileID: 43975270}
 --- !u!114 &922013609 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2607496534327689197, guid: 074b96c3524858349a136b830933d01f, type: 3}
@@ -15345,6 +15415,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1677450202}
   m_CullTransparentMesh: 1
+--- !u!114 &1684127276 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6874313419678533105, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+  m_PrefabInstance: {fileID: 6874313420150307805}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1696373456
 GameObject:
   m_ObjectHideFlags: 0
@@ -57511,6 +57592,118 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2043607806100873532}
   m_CullTransparentMesh: 1
+--- !u!1001 &6874313420150307805
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 248737391}
+    m_Modifications:
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_RootOrder
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365565, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_Name
+      value: par_LoadingUI
+      objectReference: {fileID: 0}
+    - target: {fileID: 6874313420527365565, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+--- !u!114 &6874313420150307806 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3427287404610926444, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
+  m_PrefabInstance: {fileID: 6874313420150307805}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &6876070686077420799
 MonoBehaviour:
   m_ObjectHideFlags: 0

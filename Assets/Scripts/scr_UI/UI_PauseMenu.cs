@@ -58,6 +58,11 @@ public class UI_PauseMenu : MonoBehaviour
         btn_Quit.onClick.AddListener(delegate { QuitGame(false); });
     }
 
+    private void Start()
+    {
+        PauseWithoutUI();
+    }
+
     private void Update()
     {
         if (KeyBindingsScript.GetButtonDown("TogglePauseMenu"))

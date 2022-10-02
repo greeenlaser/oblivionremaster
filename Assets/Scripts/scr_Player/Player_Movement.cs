@@ -49,12 +49,10 @@ public class Player_Movement : MonoBehaviour
                 break;
             }
         }
-
-        LoadPlayer();
     }
 
     //load player data at the beginning of the game
-    private void LoadPlayer()
+    public void LoadPlayer()
     {
         currentSpeed = PlayerStatsScript.walkSpeed;
         canMove = true;
