@@ -7449,12 +7449,9 @@ MonoBehaviour:
   loadingSlider: {fileID: 6874313420150307806}
   btn_Continue: {fileID: 798039772}
   loadingImages:
-  - {fileID: 2800000, guid: df9f20fd28fa1b141bcabf884c0ebdb4, type: 3}
-  - {fileID: 2800000, guid: 70966afc4621572479e1cde57372140f, type: 3}
-  - {fileID: 2800000, guid: 6e0f2a5621fcca049b1af8f6e32f24cd, type: 3}
-  - {fileID: 2800000, guid: e219676967ffbee47a2b2dba157db969, type: 3}
-  - {fileID: 2800000, guid: 637d203d71361a04bae590e8e4f5997f, type: 3}
-  - {fileID: 2800000, guid: 646c71fb40afce044b8267757352b87c, type: 3}
+  - {fileID: 2800000, guid: 2f2397d1e6231af4a8263083750751f8, type: 3}
+  - {fileID: 2800000, guid: 5d4be8477422d6c4dad66365b763b7a5, type: 3}
+  - {fileID: 2800000, guid: ebc241809af20234c922576dc556106e, type: 3}
   tips:
   - It is said that the Count of Cheydinhal knows of the existence of the Dark Brotherhood
     Sanctuary, but bribes and threats of death have done wonders to keep his mouth
