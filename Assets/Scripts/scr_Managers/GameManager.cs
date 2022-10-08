@@ -68,7 +68,11 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if (currentScene == 0)
+        //always recreates the debug log when game is opened,
+        //recreates it in game scene only in engine
+        if (currentScene == 0
+            || (currentScene == 1
+            && Application.isEditor))
         {
             //create debug file
             CreateDebugFile();
@@ -221,16 +225,13 @@ public class GameManager : MonoBehaviour
     public void CreateDebugFile()
     {
         //delete old debug file if player switched to main menu scene
-        if (currentScene == 0)
+        string[] files = Directory.GetFiles(gamePath);
+        foreach (string file in files)
         {
-            string[] files = Directory.GetFiles(gamePath);
-            foreach (string file in files)
+            if (file.Contains("DebugFile_"))
             {
-                if (file.Contains("DebugFile_"))
-                {
-                    File.Delete(file);
-                    break;
-                }
+                File.Delete(file);
+                break;
             }
         }
 

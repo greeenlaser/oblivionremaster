@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Rendering;
 
 public class Manager_Settings : MonoBehaviour
 {
@@ -43,14 +44,14 @@ public class Manager_Settings : MonoBehaviour
         res_3840x2160,
         res_5120x1440
     }
-    public UserDefined_FullScreenMode def_FullScreenMode;
+    public UserDefined_FullScreenMode def_FullScreenMode = UserDefined_FullScreenMode.FullScreenWindow;
     [HideInInspector] public UserDefined_FullScreenMode user_FullScreenMode;
     public enum UserDefined_FullScreenMode
     {
-        MaximizedWindow,
         ExclusiveFullScreen,
-        Windowed,
-        FullScreenWindow
+        FullScreenWindow,
+        MaximizedWindow,
+        Windowed
     }
     public int def_FieldOfView = 90;
     [HideInInspector] public int user_FieldOfView;
@@ -227,14 +228,14 @@ public class Manager_Settings : MonoBehaviour
 
         foreach (GameObject buttonUIParent in settingsParents)
         {
-            TMP_Dropdown dropdown;
+            Dropdown dropdown;
             Slider slider;
             Button button;
 
-            if (buttonUIParent.GetComponentInChildren<TMP_Dropdown>() != null
-                && buttonUIParent.GetComponentInChildren<TMP_Dropdown>().gameObject.activeInHierarchy)
+            if (buttonUIParent.GetComponentInChildren<Dropdown>() != null
+                && buttonUIParent.GetComponentInChildren<Dropdown>().gameObject.activeInHierarchy)
             {
-                dropdown = buttonUIParent.GetComponentInChildren<TMP_Dropdown>();
+                dropdown = buttonUIParent.GetComponentInChildren<Dropdown>();
                 dropdown.ClearOptions();
                 AssignEvent(dropdown.gameObject, "dropdown");
             }
@@ -263,7 +264,7 @@ public class Manager_Settings : MonoBehaviour
 
         if (targetType == "dropdown")
         {
-            TMP_Dropdown dropdown = target.GetComponent<TMP_Dropdown>();
+            Dropdown dropdown = target.GetComponent<Dropdown>();
 
             //assign preset choices, current choice and event
             if (info == "Preset")
@@ -529,7 +530,7 @@ public class Manager_Settings : MonoBehaviour
     }
 
     //the individual dropdown event for every selected dropdown choice
-    public void DropdownEvent(TMP_Dropdown target)
+    public void DropdownEvent(Dropdown target)
     {
         UI_AssignSettings SettingsScript = target.GetComponent<UI_AssignSettings>();
         string info = SettingsScript.str_Info;
@@ -777,17 +778,17 @@ public class Manager_Settings : MonoBehaviour
 
         foreach (GameObject par in parents)
         {
-            TMP_Dropdown dropDown = null;
+            Dropdown dropDown = null;
             Slider slider = null;
             Button button = null;
 
             UI_AssignSettings AssignScript;
             string info = "";
 
-            if (par.GetComponentInChildren<TMP_Dropdown>() != null
-                && par.GetComponentInChildren<TMP_Dropdown>().gameObject.activeInHierarchy)
+            if (par.GetComponentInChildren<Dropdown>() != null
+                && par.GetComponentInChildren<Dropdown>().gameObject.activeInHierarchy)
             {
-                dropDown = par.GetComponentInChildren<TMP_Dropdown>();
+                dropDown = par.GetComponentInChildren<Dropdown>();
                 AssignScript = dropDown.GetComponent<UI_AssignSettings>();
                 info = AssignScript.str_Info;
             }
@@ -829,6 +830,7 @@ public class Manager_Settings : MonoBehaviour
             {
                 //TODO: assign preset
                 string dropDownValue = dropDown.options[dropDown.value].ToString();
+                Debug.Log(dropDownValue);
                 user_Preset = (UserDefined_Preset)Enum.Parse(typeof(UserDefined_Preset), dropDownValue);
             }
             //apply resolution and fullscreen mode

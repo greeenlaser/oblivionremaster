@@ -7,12 +7,16 @@ using UnityEngine.SceneManagement;
 
 public class UI_Confirmation : MonoBehaviour
 {
+    [Header("Scripts")]
+    [SerializeField] private GameObject thePlayer;
+
     //private variables
     private UI_PauseMenu PauseMenuScript;
     private Manager_GameSaving SavingScript;
     private Manager_KeyBindings KeyBindingsScript;
     private Manager_Settings SettingsScript;
     private Manager_UIReuse UIReuseScript;
+    private Player_Stats PlayerStatsScript;
 
     private void Awake()
     {
@@ -25,9 +29,9 @@ public class UI_Confirmation : MonoBehaviour
         {
             PauseMenuScript = GetComponent<UI_PauseMenu>();
             KeyBindingsScript = GetComponent<Manager_KeyBindings>();
+            PlayerStatsScript = thePlayer.GetComponent<Player_Stats>();
         }
 
-        UIReuseScript.btn_Cancel.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
         UIReuseScript.ClearConfirmationUI();
     }
 
@@ -48,7 +52,12 @@ public class UI_Confirmation : MonoBehaviour
         //resets confirmation UI
         UIReuseScript.ClearConfirmationUI();
 
+        PauseMenuScript.isConfirmationUIOpen = true;
+
         UIReuseScript.par_Confirmation.SetActive(true);
+
+        UIReuseScript.btn_Cancel.onClick.RemoveAllListeners();
+        UIReuseScript.btn_Cancel.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
 
         //the manager scripts gameobject
         if (callerObject.name == "par_Managers")
@@ -65,12 +74,16 @@ public class UI_Confirmation : MonoBehaviour
                     UIReuseScript.btn_Confirm1.gameObject.SetActive(true);
                     UIReuseScript.btn_Confirm1.transform.localPosition = new(-150, -79, 0);
                     UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Save and go";
-                    UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { SavingScript.CreateSaveFile(""); });
-                    UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { PauseMenuScript.ReturnToMM(true); });
+                    UIReuseScript.btn_Confirm1.onClick.AddListener(
+                        delegate { SavingScript.CreateSaveFile(""); });
+                    UIReuseScript.btn_Confirm1.onClick.AddListener(
+                        delegate { PauseMenuScript.ReturnToMM(true); });
 
-                    UIReuseScript.btn_Confirm2.gameObject.SetActive(true);
+                    UIReuseScript.btn_Confirm2.gameObject.SetActive(
+                        true);
                     UIReuseScript.btn_Confirm2.GetComponentInChildren<TMP_Text>().text = "Go without saving";
-                    UIReuseScript.btn_Confirm2.onClick.AddListener(delegate { PauseMenuScript.ReturnToMM(true); });
+                    UIReuseScript.btn_Confirm2.onClick.AddListener(
+                        delegate { PauseMenuScript.ReturnToMM(true); });
                 }
                 //the player wants to quit the game
                 else if (key == "quit")
@@ -80,12 +93,15 @@ public class UI_Confirmation : MonoBehaviour
                     UIReuseScript.btn_Confirm1.gameObject.SetActive(true);
                     UIReuseScript.btn_Confirm1.transform.localPosition = new(-150, -79, 0);
                     UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Save game and quit";
-                    UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { SavingScript.CreateSaveFile(""); });
-                    UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { PauseMenuScript.QuitGame(true); });
+                    UIReuseScript.btn_Confirm1.onClick.AddListener(
+                        delegate { SavingScript.CreateSaveFile(""); });
+                    UIReuseScript.btn_Confirm1.onClick.AddListener(
+                        delegate { PauseMenuScript.QuitGame(true); });
 
                     UIReuseScript.btn_Confirm2.gameObject.SetActive(true);
                     UIReuseScript.btn_Confirm2.GetComponentInChildren<TMP_Text>().text = "Quit without saving";
-                    UIReuseScript.btn_Confirm2.onClick.AddListener(delegate { PauseMenuScript.QuitGame(true); });
+                    UIReuseScript.btn_Confirm2.onClick.AddListener(
+                        delegate { PauseMenuScript.QuitGame(true); });
                 }
             }
             //the save script
@@ -98,12 +114,15 @@ public class UI_Confirmation : MonoBehaviour
                     UIReuseScript.btn_Confirm1.gameObject.SetActive(true);
                     UIReuseScript.btn_Confirm1.transform.localPosition = new(-150, -79, 0);
                     UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Save game and load";
-                    UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { SavingScript.CreateSaveFile(""); });
-                    UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { SavingScript.CreateLoadFile(key); });
+                    UIReuseScript.btn_Confirm1.onClick.AddListener(
+                        delegate { SavingScript.CreateSaveFile(""); });
+                    UIReuseScript.btn_Confirm1.onClick.AddListener(
+                        delegate { SavingScript.CreateLoadFile(key); });
 
                     UIReuseScript.btn_Confirm2.gameObject.SetActive(true);
                     UIReuseScript.btn_Confirm2.GetComponentInChildren<TMP_Text>().text = "Load without saving";
-                    UIReuseScript.btn_Confirm2.onClick.AddListener(delegate { SavingScript.CreateLoadFile(key); });
+                    UIReuseScript.btn_Confirm2.onClick.AddListener(
+                        delegate { SavingScript.CreateLoadFile(key); });
                 }
                 else if (optionalAction == "delete")
                 {
@@ -112,8 +131,10 @@ public class UI_Confirmation : MonoBehaviour
                     UIReuseScript.btn_Confirm1.gameObject.SetActive(true);
                     UIReuseScript.btn_Confirm1.transform.localPosition = new(0, -79, 0);
                     UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Delete";
-                    UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { SavingScript.DeleteSave(key); });
-                    UIReuseScript.btn_Confirm1.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
+                    UIReuseScript.btn_Confirm1.onClick.AddListener(
+                        delegate { SavingScript.DeleteSave(key); });
+                    UIReuseScript.btn_Confirm1.onClick.AddListener(
+                        UIReuseScript.ClearConfirmationUI);
                 }
             }
             //the key bindings script
@@ -124,8 +145,10 @@ public class UI_Confirmation : MonoBehaviour
                 UIReuseScript.btn_Confirm1.gameObject.SetActive(true);
                 UIReuseScript.btn_Confirm1.transform.localPosition = new(0, -79, 0);
                 UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Reset";
-                UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { KeyBindingsScript.ResetKeyBindings(true); });
-                UIReuseScript.btn_Confirm1.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
+                UIReuseScript.btn_Confirm1.onClick.AddListener(
+                    delegate { KeyBindingsScript.ResetKeyBindings(true); });
+                UIReuseScript.btn_Confirm1.onClick.AddListener(
+                    UIReuseScript.ClearConfirmationUI);
             }
             //the settings script
             else if (callerName == "settingsScript")
@@ -135,9 +158,164 @@ public class UI_Confirmation : MonoBehaviour
                 UIReuseScript.btn_Confirm1.gameObject.SetActive(true);
                 UIReuseScript.btn_Confirm1.transform.localPosition = new(0, -79, 0);
                 UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Reset";
-                UIReuseScript.btn_Confirm1.onClick.AddListener(delegate { SettingsScript.ResetSettings(true); });
-                UIReuseScript.btn_Confirm1.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
+                UIReuseScript.btn_Confirm1.onClick.AddListener(
+                    delegate { SettingsScript.ResetSettings(true); });
+                UIReuseScript.btn_Confirm1.onClick.AddListener(
+                    UIReuseScript.ClearConfirmationUI);
             }
+        }
+    }
+
+    //special method just for handling item movement between inventories
+    public void MoveItem(GameObject callerObject,
+                         string callerName,
+                         GameObject originalLocation,
+                         GameObject targetLocation,
+                         GameObject targetItem)
+    {
+        //resets confirmation UI
+        UIReuseScript.ClearConfirmationUI();
+
+        PauseMenuScript.isConfirmationUIOpen = true;
+
+        UIReuseScript.par_Confirmation.SetActive(true);
+
+        UIReuseScript.btn_Cancel.onClick.RemoveAllListeners();
+        UIReuseScript.btn_Cancel.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
+
+        if (callerObject.name == "Player")
+        {
+            UI_Inventory targetInventory = callerObject.GetComponent<UI_Inventory>();
+            Env_Item itemScript = targetItem.GetComponent<Env_Item>();
+
+            if (callerName == "takeFromWorld")
+            {
+                UIReuseScript.txt_Confirmation.text = "Take " + targetItem.name + "(s).";
+                UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Take selected count";
+                UIReuseScript.btn_Confirm2.GetComponentInChildren<TMP_Text>().text = "Take all";
+            }
+            else if (callerName == "placeToWorld")
+            {
+                UIReuseScript.txt_Confirmation.text = "Drop " + targetItem.name + "(s).";
+                UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Drop selected count";
+                UIReuseScript.btn_Confirm2.GetComponentInChildren<TMP_Text>().text = "Drop all";
+            }
+
+            UIReuseScript.confirmationSlider.gameObject.SetActive(true);
+            UIReuseScript.confirmationSlider.minValue = 1;
+            UIReuseScript.confirmationSlider.maxValue = targetItem.GetComponent<Env_Item>().itemCount;
+            UIReuseScript.confirmationSlider.value = UIReuseScript.confirmationSlider.minValue;
+            UIReuseScript.txt_ConfirmationSliderValue.text = UIReuseScript.confirmationSlider.value.ToString();
+
+            UIReuseScript.confirmationSlider.onValueChanged.AddListener(
+                delegate { SliderUpdate(callerObject,
+                                        originalLocation,
+                                        targetLocation,
+                                        targetItem); });
+
+            UIReuseScript.btn_Confirm1.gameObject.SetActive(true);
+            
+            UIReuseScript.btn_Confirm1.onClick.AddListener(
+                delegate { targetInventory.SuccessfulItemMove(1,
+                                                              originalLocation,
+                                                              targetLocation,
+                                                              targetItem); });
+            UIReuseScript.btn_Confirm1.onClick.AddListener(PauseMenuScript.UnpauseGame);
+            UIReuseScript.btn_Confirm1.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
+
+            int maxInventorySpace = PlayerStatsScript.maxInvSpace;
+            int currentInventorySpace = PlayerStatsScript.invSpace;
+            int totalTakenSpace = currentInventorySpace + (itemScript.itemWeight * itemScript.itemCount);
+
+            //can move all of selected items
+            if (totalTakenSpace <= maxInventorySpace
+                || targetLocation.name != "par_PlayerItems")
+            {
+                UIReuseScript.btn_Confirm1.transform.localPosition = new(-150, -79, 0);
+
+                UIReuseScript.btn_Confirm2.gameObject.SetActive(true);
+
+                UIReuseScript.btn_Confirm2.onClick.AddListener(
+                    delegate { targetInventory.SuccessfulItemMove(targetItem.GetComponent<Env_Item>().itemCount,
+                                                                  originalLocation,
+                                                                  targetLocation,
+                                                                  targetItem); });
+                UIReuseScript.btn_Confirm2.onClick.AddListener(PauseMenuScript.UnpauseGame);
+                UIReuseScript.btn_Confirm2.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
+            }
+            //not enough space to move all of the items
+            else if (totalTakenSpace > maxInventorySpace
+                     && targetLocation.name == "par_PlayerItems")
+            {
+                UIReuseScript.btn_Confirm1.transform.localPosition = new(0, -79, 0);
+                UIReuseScript.btn_Confirm2.gameObject.SetActive(false);
+            }
+
+            UIReuseScript.btn_Cancel.onClick.AddListener(PauseMenuScript.UnpauseGame);
+            UIReuseScript.btn_Cancel.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
+        }
+    }
+
+    //update confirmation buttons depeding on selected value
+    public void SliderUpdate(GameObject callerObject,
+                             GameObject originalLocation,
+                             GameObject targetLocation,
+                             GameObject targetItem)
+    {
+        UI_Inventory TargetInventory = callerObject.GetComponent<UI_Inventory>();
+        Env_Item itemScript = targetItem.GetComponent<Env_Item>();
+
+        int maxInventorySpace = PlayerStatsScript.maxInvSpace;
+        int currentInventorySpace = PlayerStatsScript.invSpace;
+        int totalTakenSpace = currentInventorySpace + (itemScript.itemWeight * itemScript.itemCount);
+        int selectedValue = (int)UIReuseScript.confirmationSlider.value;
+        int selectedValueTakenSpace = currentInventorySpace + (itemScript.itemWeight * selectedValue);
+
+        UIReuseScript.txt_ConfirmationSliderValue.text = selectedValue.ToString();
+
+        UIReuseScript.btn_Confirm1.onClick.RemoveAllListeners();
+        UIReuseScript.btn_Confirm1.onClick.AddListener(
+            delegate { TargetInventory.SuccessfulItemMove(selectedValue,
+                                                                originalLocation,
+                                                                targetLocation,
+                                                                targetItem); });
+        UIReuseScript.btn_Confirm1.onClick.AddListener(PauseMenuScript.UnpauseGame);
+        UIReuseScript.btn_Confirm1.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
+
+        //can move selected amount of selected items
+        if (selectedValueTakenSpace <= maxInventorySpace
+            || targetLocation.name != "par_PlayerItems")
+        {
+            UIReuseScript.btn_Confirm1.interactable = true;
+        }
+        //not enough space to move selected count
+        else
+        {
+            UIReuseScript.btn_Confirm1.interactable = false;
+        }
+
+        //can move all of selected items
+        if (totalTakenSpace <= maxInventorySpace
+            || targetLocation.name != "par_PlayerItems")
+        {
+            UIReuseScript.btn_Confirm1.transform.localPosition = new(-150, -79, 0);
+
+            UIReuseScript.btn_Confirm2.gameObject.SetActive(true);
+            UIReuseScript.btn_Confirm2.onClick.RemoveAllListeners();
+            UIReuseScript.btn_Confirm2.onClick.AddListener(
+                delegate { TargetInventory.SuccessfulItemMove(targetItem.GetComponent<Env_Item>().itemCount,
+                                                                    originalLocation,
+                                                                    targetLocation,
+                                                                    targetItem); });
+            UIReuseScript.btn_Confirm2.onClick.AddListener(PauseMenuScript.UnpauseGame);
+            UIReuseScript.btn_Confirm2.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
+        }
+        //not enough space to move all of the items
+        else if (totalTakenSpace > maxInventorySpace
+                 && targetLocation.name == "par_PlayerItems")
+        {
+            UIReuseScript.btn_Confirm1.transform.localPosition = new(0, -79, 0);
+            UIReuseScript.btn_Confirm2.gameObject.SetActive(false);
         }
     }
 }

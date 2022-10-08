@@ -16,7 +16,6 @@ public class Manager_Console : MonoBehaviour
 
     //public but hidden variables
     [HideInInspector] public bool canToggleConsole;
-    [HideInInspector] public bool isConsoleOpen;
 
     //private variables
     private bool startedConsoleSetupWait;
@@ -34,6 +33,7 @@ public class Manager_Console : MonoBehaviour
     private Player_Stats PlayerStatsScript;
 
     //scripts
+    private bool isConsoleOpen;
     private GameManager GameManagerScript;
     private UI_PauseMenu PauseMenuScript;
     private Manager_KeyBindings KeyBindingsScript;
@@ -50,7 +50,12 @@ public class Manager_Console : MonoBehaviour
 
         currentScene = SceneManager.GetActiveScene().buildIndex;
 
-        if (currentScene == 1)
+        //console is always enabled at the beginning in main menu
+        if (currentScene == 0)
+        {
+            canToggleConsole = true;
+        }
+        else if (currentScene == 1)
         {
             PlayerStatsScript = thePlayer.GetComponent<Player_Stats>();
         }
@@ -70,79 +75,91 @@ public class Manager_Console : MonoBehaviour
         if (KeyBindingsScript.GetButtonDown("ToggleConsole")
             && canToggleConsole)
         {
-            isConsoleOpen = !isConsoleOpen;
-        }
-
-        //choose newer and older inserted commands with arrow keys
-        if (isConsoleOpen
-            && insertedCommands.Count > 0)
-        {
-            //always picks newest added console command if input field is empty
-            if ((Input.GetKeyDown(KeyCode.UpArrow)
-                || Input.GetKeyDown(KeyCode.DownArrow))
-                && UIReuseScript.consoleInputField.text == "")
+            if (currentScene == 0)
             {
-                currentSelectedInsertedCommand = insertedCommands.Count - 1;
-                UIReuseScript.consoleInputField.text = insertedCommands[^1];
-                UIReuseScript.consoleInputField.MoveToEndOfLine(false, false);
+                isConsoleOpen = !isConsoleOpen;
             }
-            else
+            else if (currentScene == 1
+                     && !PauseMenuScript.isKeyAssignUIOpen)
             {
-                if (Input.GetKeyDown(KeyCode.UpArrow))
-                {
-                    currentSelectedInsertedCommand--;
-                    if (currentSelectedInsertedCommand < 0)
-                    {
-                        currentSelectedInsertedCommand = insertedCommands.Count - 1;
-                    }
-
-                    UIReuseScript.consoleInputField.text = insertedCommands[currentSelectedInsertedCommand];
-                    UIReuseScript.consoleInputField.MoveToEndOfLine(false, false);
-                }
-                else if (Input.GetKeyDown(KeyCode.DownArrow))
-                {
-                    currentSelectedInsertedCommand++;
-                    if (currentSelectedInsertedCommand == insertedCommands.Count)
-                    {
-                        currentSelectedInsertedCommand = 0;
-                    }
-
-                    UIReuseScript.consoleInputField.text = insertedCommands[currentSelectedInsertedCommand];
-                    UIReuseScript.consoleInputField.MoveToEndOfLine(false, false);
-                }
+                PauseMenuScript.isConsoleOpen = !PauseMenuScript.isConsoleOpen;
             }
         }
 
         //open console
-        if (isConsoleOpen
-            && !UIReuseScript.par_Console.activeInHierarchy)
+        if (!UIReuseScript.par_Console.activeInHierarchy)
         {
-            if (currentScene == 1)
+            if ((currentScene == 0
+                && isConsoleOpen)
+                || currentScene == 1
+                && PauseMenuScript.isConsoleOpen)
             {
-                //cannot unpause game while console is open
-                PauseMenuScript.canUnpause = false;
-
-                PauseMenuScript.PauseWithoutUI();
+                if (currentScene == 1)
+                {
+                    PauseMenuScript.PauseWithoutUI();
+                }
+                OpenConsole();
             }
-
-            OpenConsole();
         }
         //close console
-        else if (!isConsoleOpen
-                 && UIReuseScript.par_Console.activeInHierarchy)
+        else if (UIReuseScript.par_Console.activeInHierarchy)
         {
-            if (currentScene == 1)
+            if ((currentScene == 0
+                && !isConsoleOpen)
+                || currentScene == 1
+                && !PauseMenuScript.isConsoleOpen)
             {
-                //can unpause game once console is closed
-                PauseMenuScript.canUnpause = true;
-
-                if (!PauseMenuScript.isPaused)
+                if (currentScene == 1)
                 {
                     PauseMenuScript.UnpauseGame();
                 }
+                CloseConsole();
             }
+        }
 
-            CloseConsole();
+        //choose newer and older inserted commands with arrow keys
+        if (insertedCommands.Count > 0)
+        {
+            if ((currentScene == 0
+                && isConsoleOpen)
+                || (currentScene == 1
+                && PauseMenuScript.isConsoleOpen))
+            {
+                //always picks newest added console command if input field is empty
+                if ((Input.GetKeyDown(KeyCode.UpArrow)
+                    || Input.GetKeyDown(KeyCode.DownArrow))
+                    && UIReuseScript.consoleInputField.text == "")
+                {
+                    currentSelectedInsertedCommand = insertedCommands.Count - 1;
+                    UIReuseScript.consoleInputField.text = insertedCommands[^1];
+                    UIReuseScript.consoleInputField.MoveToEndOfLine(false, false);
+                }
+                else
+                {
+                    if (Input.GetKeyDown(KeyCode.UpArrow))
+                    {
+                        currentSelectedInsertedCommand--;
+                        if (currentSelectedInsertedCommand < 0)
+                        {
+                            currentSelectedInsertedCommand = insertedCommands.Count - 1;
+                        }
+
+                        UIReuseScript.consoleInputField.text = insertedCommands[currentSelectedInsertedCommand];
+                        UIReuseScript.consoleInputField.MoveToEndOfLine(false, false);
+                    }
+                    else if (Input.GetKeyDown(KeyCode.DownArrow))
+                    {
+                        currentSelectedInsertedCommand++;
+                        if (currentSelectedInsertedCommand == insertedCommands.Count)
+                        {
+                            currentSelectedInsertedCommand = 0;
+                        }
+
+                        UIReuseScript.consoleInputField.text = insertedCommands[currentSelectedInsertedCommand];
+                        UIReuseScript.consoleInputField.MoveToEndOfLine(false, false);
+                    }
+                }
+            }
         }
     }
 

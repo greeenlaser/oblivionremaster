@@ -25,9 +25,12 @@ public class UI_PauseMenu : MonoBehaviour
     [SerializeField] private GameObject thePlayer;
 
     //public but hidden variables
-    [HideInInspector] public bool canUnpause;
     [HideInInspector] public bool canTogglePMUI;
     [HideInInspector] public bool isPaused;
+    [HideInInspector] public bool isConsoleOpen;
+    [HideInInspector] public bool isPlayerMenuOpen;
+    [HideInInspector] public bool isConfirmationUIOpen;
+    [HideInInspector] public bool isKeyAssignUIOpen;
 
     //private variables
     private Manager_GameSaving SavingScript;
@@ -70,8 +73,8 @@ public class UI_PauseMenu : MonoBehaviour
             isPaused = !isPaused;
         }
 
-        if (isPaused
-            && canTogglePMUI
+        if (canTogglePMUI
+            && isPaused 
             && !par_PauseMenu.activeInHierarchy)
         {
             PauseWithUI();
@@ -79,31 +82,33 @@ public class UI_PauseMenu : MonoBehaviour
         else if (!isPaused
                  && par_PauseMenu.activeInHierarchy)
         {
-            if (canUnpause)
-            {
-                UnpauseGame();
-            }
-            else
-            {
-                ClosePMContent();
-            }
+            UnpauseGame();
         }
     }
 
     //unpauses the game
     public void UnpauseGame()
     {
-        ClosePMContent();
+        if (!isConsoleOpen
+            && !isPlayerMenuOpen
+            && !isKeyAssignUIOpen)
+        {
+            ClosePMContent();
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
 
-        Time.timeScale = 1;
+            Time.timeScale = 1;
 
-        PlayerMovementScript.canMove = true;
-        PlayerCameraScript.isCamEnabled = true;
+            PlayerMovementScript.canMove = true;
+            PlayerCameraScript.isCamEnabled = true;
 
-        isPaused = false;
+            isPaused = false;
+        }
+        else
+        {
+            ClosePMContent();
+        }
     }
     //pauses the game with UI
     public void PauseWithUI()

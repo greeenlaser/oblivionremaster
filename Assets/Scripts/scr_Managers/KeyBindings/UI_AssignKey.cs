@@ -63,8 +63,7 @@ public class UI_AssignKey : MonoBehaviour
 
     public void OpenAssigning()
     {
-        PauseMenuScript.canTogglePMUI = false;
-        ConsoleScript.canToggleConsole = false;
+        PauseMenuScript.isKeyAssignUIOpen = true;
 
         UIReuseScript.par_KeyAssign.SetActive(true);
 
@@ -75,8 +74,7 @@ public class UI_AssignKey : MonoBehaviour
     }
     public void CloseAssigning()
     {
-        PauseMenuScript.canTogglePMUI = true;
-        ConsoleScript.canToggleConsole = true;
+        PauseMenuScript.isKeyAssignUIOpen = false;
 
         UIReuseScript.par_KeyAssign.SetActive(false);
 
