@@ -120,7 +120,9 @@ public class Manager_UIReuse : MonoBehaviour
     //clears and closes the selected item info in inventory
     public void CloseSelectedItemInfo()
     {
+        btn_Use_Take_Place.onClick.RemoveAllListeners();
         btn_Use_Take_Place.gameObject.SetActive(false);
+        btn_Drop.onClick.RemoveAllListeners();
         btn_Drop.gameObject.SetActive(false);
         par_ItemStats.SetActive(false);
     }

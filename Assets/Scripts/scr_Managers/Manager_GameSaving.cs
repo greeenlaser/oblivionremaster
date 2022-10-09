@@ -346,7 +346,7 @@ public class Manager_GameSaving : MonoBehaviour
         saveFile.WriteLine("Magicka: " + PlayerStatsScript.currentMagicka);
         saveFile.WriteLine("MaxInvSpace: " + PlayerStatsScript.maxInvSpace);
 
-        Debug.Log("Sucessfully saved game to " + str_SaveFilePath + "!");
+        Debug.Log("Successfully saved game to " + str_SaveFilePath + "!");
     }
 
     //creates a load file where the game scene
@@ -558,7 +558,7 @@ public class Manager_GameSaving : MonoBehaviour
                 }
             }
 
-            Debug.Log("Sucessfully loaded save file " + saveFileName.Replace(".txt", "") + " from " + GameManagerScript.savePath + "!");
+            Debug.Log("Successfully loaded save file " + saveFileName.Replace(".txt", "") + " from " + GameManagerScript.savePath + "!");
         }
     }
 

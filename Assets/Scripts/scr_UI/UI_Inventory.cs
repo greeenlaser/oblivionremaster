@@ -22,7 +22,7 @@ public class UI_Inventory : MonoBehaviour
     [HideInInspector] public GameObject equippedWeapon;
     public List<GameObject> playerItems = new();
 
-    //private variables
+    //scripts
     private UI_PlayerMenu PlayerMenuScript;
     private UI_PauseMenu PauseMenuScript;
     private UI_Confirmation ConfirmationScript;
@@ -163,12 +163,6 @@ public class UI_Inventory : MonoBehaviour
             || (PlayerMenuScript.targetContainer != null
             && PlayerMenuScript.isPlayerInventoryOpen))
         {
-            playerItems.Clear();
-            foreach (Transform item in par_PlayerItems.transform)
-            {
-                playerItems.Add(item.gameObject);
-            }
-
             int invSpace = PlayerStatsScript.invSpace;
             int maxInvSpace = PlayerStatsScript.maxInvSpace;
             UIReuseScript.txt_InventoryCount.text = invSpace + "/" + maxInvSpace;
@@ -239,12 +233,10 @@ public class UI_Inventory : MonoBehaviour
         {
             UIReuseScript.btn_Use_Take_Place.gameObject.SetActive(true);
             UIReuseScript.btn_Use_Take_Place.GetComponentInChildren<TMP_Text>().text = "Use";
-            UIReuseScript.btn_Use_Take_Place.onClick.RemoveAllListeners();
             UIReuseScript.btn_Use_Take_Place.onClick.AddListener(
                 delegate { UseItem(targetItem); });
 
             UIReuseScript.btn_Drop.gameObject.SetActive(true);
-            UIReuseScript.btn_Drop.onClick.RemoveAllListeners();
             UIReuseScript.btn_Drop.onClick.AddListener(
                 delegate { DropItem(targetItem); });
         }
@@ -253,7 +245,6 @@ public class UI_Inventory : MonoBehaviour
         {
             UIReuseScript.btn_Use_Take_Place.gameObject.SetActive(true);
             UIReuseScript.btn_Use_Take_Place.GetComponentInChildren<TMP_Text>().text = "Take";
-            UIReuseScript.btn_Use_Take_Place.onClick.RemoveAllListeners();
             UIReuseScript.btn_Use_Take_Place.onClick.AddListener(
                 delegate { TakeItem(targetItem,
                                     null); });
@@ -283,7 +274,7 @@ public class UI_Inventory : MonoBehaviour
                 && totalTakenSpace <= maxInventorySpace)
             {
                 SuccessfulItemMove(1,
-                                   PlayerMenuScript.par_TemplateItems,
+                                   PlayerMenuScript.par_DroppedItems,
                                    par_PlayerItems,
                                    targetItem);
             }
@@ -293,7 +284,7 @@ public class UI_Inventory : MonoBehaviour
                 PauseMenuScript.PauseWithoutUI();
                 ConfirmationScript.MoveItem(gameObject,
                                             "takeFromWorld",
-                                            PlayerMenuScript.par_TemplateItems,
+                                            PlayerMenuScript.par_DroppedItems,
                                             par_PlayerItems,
                                             targetItem);
             }
@@ -316,7 +307,7 @@ public class UI_Inventory : MonoBehaviour
             {
                 SuccessfulItemMove(1,
                                    par_PlayerItems,
-                                   PlayerMenuScript.par_TemplateItems,
+                                   PlayerMenuScript.par_DroppedItems,
                                    targetItem);
             }
             else if (targetItem.GetComponent<Env_Item>().itemCount > 1)
@@ -325,7 +316,7 @@ public class UI_Inventory : MonoBehaviour
                 ConfirmationScript.MoveItem(gameObject,
                                             "placeToWorld",
                                             par_PlayerItems,
-                                            PlayerMenuScript.par_TemplateItems,
+                                            PlayerMenuScript.par_DroppedItems,
                                             targetItem);
             }
         }
@@ -366,7 +357,7 @@ public class UI_Inventory : MonoBehaviour
         targetItem.name = item.name;
 
         //taking items from world
-        if (originalLocation == PlayerMenuScript.par_TemplateItems
+        if (originalLocation == PlayerMenuScript.par_DroppedItems
             && targetLocation == par_PlayerItems)
         {
             targetItem.SetActive(false);
@@ -380,9 +371,11 @@ public class UI_Inventory : MonoBehaviour
         }
         //dropping items to world
         else if (originalLocation == par_PlayerItems
-                 && targetLocation == PlayerMenuScript.par_TemplateItems)
+                 && targetLocation == PlayerMenuScript.par_DroppedItems)
         {
-            targetItem.transform.parent = PlayerMenuScript.par_TemplateItems.transform;
+            Env_Item targetItemScript = targetItem.GetComponent<Env_Item>();
+            int totalCount = targetItemScript.itemWeight * selectedCount;
+            PlayerStatsScript.invSpace -= totalCount;
 
             //get a random direction (360°) in radians
             float angle = Random.Range(0.0f, Mathf.PI * 2);
@@ -391,9 +384,7 @@ public class UI_Inventory : MonoBehaviour
             //set item drop position
             targetItem.transform.position = thePlayer.transform.position + dropPos;
 
-            Env_Item targetItemScript = targetItem.GetComponent<Env_Item>();
-            int totalCount = targetItemScript.itemWeight * selectedCount;
-            PlayerStatsScript.invSpace -= totalCount;
+            targetItem.transform.parent = PlayerMenuScript.par_DroppedItems.transform;
 
             targetItem.SetActive(true);
         }
@@ -452,15 +443,16 @@ public class UI_Inventory : MonoBehaviour
             Destroy(destroyedItem);
         }
 
+        playerItems.Clear();
+        foreach (Transform item in par_PlayerItems.transform)
+        {
+            playerItems.Add(item.gameObject);
+        }
+
         //rebuilds the currently opened inventory
         if (UIReuseScript.par_Inventory.activeInHierarchy)
         {
-            playerItems.Clear();
-            foreach (Transform item in par_PlayerItems.transform)
-            {
-                playerItems.Add(item.gameObject);
-            }
-            RebuildInventory(currentlyOpenedInventory);
+            OpenInventory(currentlyOpenedInventory);
         }
     }
 }

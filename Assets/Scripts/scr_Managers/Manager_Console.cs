@@ -1324,7 +1324,7 @@ public class Manager_Console : MonoBehaviour
                 //set teleport position
                 Vector3 teleportPos = new(firstVec, secondVec, thirdVec);
 
-                CreateNewConsoleLine("Sucessfully teleported player to " + teleportPos + "!", "CONSOLE_SUCCESS_MESSAGE");
+                CreateNewConsoleLine("Successfully teleported player to " + teleportPos + "!", "CONSOLE_SUCCESS_MESSAGE");
 
                 thePlayer.transform.position = teleportPos;
             }
@@ -1363,7 +1363,7 @@ public class Manager_Console : MonoBehaviour
     private void Command_ResetPlayerStats()
     {
         PlayerStatsScript.ResetStats();
-        CreateNewConsoleLine("Sucessfully reset all player stats to their default values!", "CONSOLE_SUCCESS_MESSAGE");
+        CreateNewConsoleLine("Successfully reset all player stats to their default values!", "CONSOLE_SUCCESS_MESSAGE");
     }
     //set player stat
     private void Command_SetPlayerStat()
@@ -1385,22 +1385,22 @@ public class Manager_Console : MonoBehaviour
                 if (statName == "walkspeed")
                 {
                     PlayerStatsScript.walkSpeed = (int)statValue;
-                    CreateNewConsoleLine("Sucessfully set player walk speed to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    CreateNewConsoleLine("Successfully set player walk speed to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "sprintspeed")
                 {
                     PlayerStatsScript.sprintSpeed = (int)statValue;
-                    CreateNewConsoleLine("Sucessfully set player sprint speed to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    CreateNewConsoleLine("Successfully set player sprint speed to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "crouchspeed")
                 {
                     PlayerStatsScript.crouchSpeed = (int)statValue;
-                    CreateNewConsoleLine("Sucessfully set player crouch speed to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    CreateNewConsoleLine("Successfully set player crouch speed to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "jumpheight")
                 {
                     PlayerStatsScript.jumpHeight = (int)statValue;
-                    CreateNewConsoleLine("Sucessfully set player jump height to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    CreateNewConsoleLine("Successfully set player jump height to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "cameramovespeed")
                 {
@@ -1415,7 +1415,7 @@ public class Manager_Console : MonoBehaviour
                     {
                         SettingsScript.user_FieldOfView = (int)statValue;
                         thePlayer.GetComponentInChildren<Camera>().fieldOfView = (int)statValue;
-                        CreateNewConsoleLine("Sucessfully set player field of view to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                        CreateNewConsoleLine("Successfully set player field of view to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                     }
                     else
                     {
@@ -1426,7 +1426,7 @@ public class Manager_Console : MonoBehaviour
                 {
                     PlayerStatsScript.maxHealth = (int)statValue;
                     PlayerStatsScript.UpdateBar(PlayerStatsScript.healthBar);
-                    CreateNewConsoleLine("Sucessfully set player max health to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    CreateNewConsoleLine("Successfully set player max health to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "currenthealth")
                 {
@@ -1438,14 +1438,14 @@ public class Manager_Console : MonoBehaviour
                     {
                         PlayerStatsScript.currentHealth = (int)statValue;
                         PlayerStatsScript.UpdateBar(PlayerStatsScript.healthBar);
-                        CreateNewConsoleLine("Sucessfully set player current health to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                        CreateNewConsoleLine("Successfully set player current health to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                     }
                 }
                 else if (statName == "maxstamina")
                 {
                     PlayerStatsScript.maxStamina = (int)statValue;
                     PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar);
-                    CreateNewConsoleLine("Sucessfully set player max stamina to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    CreateNewConsoleLine("Successfully set player max stamina to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "currentstamina")
                 {
@@ -1457,14 +1457,14 @@ public class Manager_Console : MonoBehaviour
                     {
                         PlayerStatsScript.currentStamina = (int)statValue;
                         PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar);
-                        CreateNewConsoleLine("Sucessfully set player current stamina to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                        CreateNewConsoleLine("Successfully set player current stamina to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                     }
                 }
                 else if (statName == "maxmagicka")
                 {
                     PlayerStatsScript.maxMagicka = (int)statValue;
                     PlayerStatsScript.UpdateBar(PlayerStatsScript.magickaBar);
-                    CreateNewConsoleLine("Sucessfully set player max magicka to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    CreateNewConsoleLine("Successfully set player max magicka to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "currentmagicka")
                 {
@@ -1476,13 +1476,13 @@ public class Manager_Console : MonoBehaviour
                     {
                         PlayerStatsScript.currentMagicka = (int)statValue;
                         PlayerStatsScript.UpdateBar(PlayerStatsScript.magickaBar);
-                        CreateNewConsoleLine("Sucessfully set player current magicka to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                        CreateNewConsoleLine("Successfully set player current magicka to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                     }
                 }
                 else if (statName == "maxinvspace")
                 {
                     PlayerStatsScript.maxInvSpace = (int)statValue;
-                    CreateNewConsoleLine("Sucessfully set player max inventory space to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    CreateNewConsoleLine("Successfully set player max inventory space to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else
                 {

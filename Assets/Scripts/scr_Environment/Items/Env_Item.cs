@@ -6,12 +6,15 @@ public class Env_Item : MonoBehaviour
 {
     public bool isProtected;
     public bool isStackable;
-    public string str_ItemName;
-    public string str_ItemDescription;
-    public int itemValue;
-    public int itemWeight;
+    public string str_ItemName = "REPLACE_MY_NAME";
+    public string str_ItemDescription = "REPLACE_MY_DESCRIPTION";
+    [Range(0, 25000)]
+    public int itemValue = 0;
+    [Range(0, 100)]
+    public int itemWeight = 0;
+    [Range(1, 999)]
     public int itemCount = 1;
-    public ItemType itemType;
+    public ItemType itemType = ItemType.misc;
     public enum ItemType
     {
         weapon,
@@ -26,39 +29,12 @@ public class Env_Item : MonoBehaviour
     //public but hidden variables
     [HideInInspector] public bool droppedObject;
 
-    //scripts
-    private Item_Weapon WeaponScript;
-    private Item_Armor ArmorScript;
-    private Item_Shield ShieldScript;
-    private Item_Consumable ConsumableScript;
-    private Item_Spell SpellScript;
-    private Item_Ammo AmmoScript;
-
     private void Awake()
     {
-        if (itemType == ItemType.weapon)
+        //forces default layer for all items
+        if (gameObject.layer != LayerMask.NameToLayer("LimitedCollision"))
         {
-            WeaponScript = GetComponent<Item_Weapon>();
-        }
-        else if (itemType == ItemType.armor)
-        {
-            ArmorScript = GetComponent<Item_Armor>();
-        }
-        else if (itemType == ItemType.shield)
-        {
-            ShieldScript = GetComponent<Item_Shield>();
-        }
-        else if (itemType == ItemType.consumable)
-        {
-            ConsumableScript = GetComponent<Item_Consumable>();
-        }
-        else if (itemType == ItemType.spell)
-        {
-            SpellScript = GetComponent<Item_Spell>();
-        }
-        else if (itemType == ItemType.ammo)
-        {
-            AmmoScript = GetComponent<Item_Ammo>();
+            gameObject.layer = LayerMask.NameToLayer("LimitedCollision");
         }
     }
 }

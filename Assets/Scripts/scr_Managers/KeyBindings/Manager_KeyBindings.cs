@@ -209,7 +209,7 @@ public class Manager_KeyBindings : MonoBehaviour
             RebuildKeyBindingsList("combat");
         }
 
-        Debug.Log("Sucessfully assigned key " + pressedKey.ToString().Replace("KeyCode.", "") + " to action " + info + "!");
+        Debug.Log("Successfully assigned key " + pressedKey.ToString().Replace("KeyCode.", "") + " to action " + info + "!");
     }
     public void ResetKeyBindings(bool canReset)
     {

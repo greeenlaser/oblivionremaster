@@ -3681,7 +3681,7 @@ GameObject:
   m_Component:
   - component: {fileID: 335468016}
   m_Layer: 0
-  m_Name: par_TemplateGameItems
+  m_Name: par_TemplateItems
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7477,7 +7477,6 @@ Transform:
   m_Children:
   - {fileID: 1927679181}
   - {fileID: 827097816}
-  - {fileID: 1602703625}
   m_Father: {fileID: 1848623624}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -9504,6 +9503,7 @@ MonoBehaviour:
   btn_ReusedButton3: {fileID: 2686419632831703530}
   btn_ReusedButton4: {fileID: 2686419633356097887}
   btn_ReusedButton5: {fileID: 2686419632604505261}
+  par_DroppedItems: {fileID: 1602703624}
   par_TemplateItems: {fileID: 335468015}
   templateItems:
   - {fileID: 446881468}
@@ -14212,6 +14212,7 @@ Transform:
   - {fileID: 1498131613}
   - {fileID: 1228264630}
   - {fileID: 335468016}
+  - {fileID: 1602703625}
   m_Father: {fileID: 1149778622}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -14808,6 +14809,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: txt_ConfirmationSliderValue
       objectReference: {fileID: 0}
+    - target: {fileID: 2759039479181062900, guid: 78cbad922808c2541aa661eedea1eb08, type: 3}
+      propertyPath: m_text
+      value: 1234 1234
+      objectReference: {fileID: 0}
     - target: {fileID: 3464258601501160568, guid: 78cbad922808c2541aa661eedea1eb08, type: 3}
       propertyPath: m_AnchorMax.x
       value: 1
@@ -14923,6 +14928,10 @@ PrefabInstance:
     - target: {fileID: 6589337038836720861, guid: 78cbad922808c2541aa661eedea1eb08, type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8723101706154516925, guid: 78cbad922808c2541aa661eedea1eb08, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 274.7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 78cbad922808c2541aa661eedea1eb08, type: 3}
@@ -17633,7 +17642,7 @@ GameObject:
   - component: {fileID: 1602703625}
   - component: {fileID: 1602703626}
   m_Layer: 0
-  m_Name: par_Spawn
+  m_Name: par_DroppedItems
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17646,13 +17655,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1602703624}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 2.36, z: 5.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 778648108}
-  m_RootOrder: 2
+  m_Father: {fileID: 1362992875}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1602703626
 MonoBehaviour:

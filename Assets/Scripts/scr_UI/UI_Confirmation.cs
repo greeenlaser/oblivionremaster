@@ -180,7 +180,6 @@ public class UI_Confirmation : MonoBehaviour
 
         UIReuseScript.par_Confirmation.SetActive(true);
 
-        UIReuseScript.btn_Cancel.onClick.RemoveAllListeners();
         UIReuseScript.btn_Cancel.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
 
         if (callerObject.name == "Player")
@@ -205,8 +204,9 @@ public class UI_Confirmation : MonoBehaviour
             UIReuseScript.confirmationSlider.minValue = 1;
             UIReuseScript.confirmationSlider.maxValue = targetItem.GetComponent<Env_Item>().itemCount;
             UIReuseScript.confirmationSlider.value = UIReuseScript.confirmationSlider.minValue;
-            UIReuseScript.txt_ConfirmationSliderValue.text = UIReuseScript.confirmationSlider.value.ToString();
+            UIReuseScript.txt_ConfirmationSliderValue.text = "1 / " + itemScript.itemCount;
 
+            UIReuseScript.confirmationSlider.onValueChanged.RemoveAllListeners();
             UIReuseScript.confirmationSlider.onValueChanged.AddListener(
                 delegate { SliderUpdate(callerObject,
                                         originalLocation,
@@ -214,7 +214,7 @@ public class UI_Confirmation : MonoBehaviour
                                         targetItem); });
 
             UIReuseScript.btn_Confirm1.gameObject.SetActive(true);
-            
+            UIReuseScript.btn_Confirm1.transform.localPosition = new(0, -79, 0);
             UIReuseScript.btn_Confirm1.onClick.AddListener(
                 delegate { targetInventory.SuccessfulItemMove(1,
                                                               originalLocation,
@@ -222,34 +222,6 @@ public class UI_Confirmation : MonoBehaviour
                                                               targetItem); });
             UIReuseScript.btn_Confirm1.onClick.AddListener(PauseMenuScript.UnpauseGame);
             UIReuseScript.btn_Confirm1.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
-
-            int maxInventorySpace = PlayerStatsScript.maxInvSpace;
-            int currentInventorySpace = PlayerStatsScript.invSpace;
-            int totalTakenSpace = currentInventorySpace + (itemScript.itemWeight * itemScript.itemCount);
-
-            //can move all of selected items
-            if (totalTakenSpace <= maxInventorySpace
-                || targetLocation.name != "par_PlayerItems")
-            {
-                UIReuseScript.btn_Confirm1.transform.localPosition = new(-150, -79, 0);
-
-                UIReuseScript.btn_Confirm2.gameObject.SetActive(true);
-
-                UIReuseScript.btn_Confirm2.onClick.AddListener(
-                    delegate { targetInventory.SuccessfulItemMove(targetItem.GetComponent<Env_Item>().itemCount,
-                                                                  originalLocation,
-                                                                  targetLocation,
-                                                                  targetItem); });
-                UIReuseScript.btn_Confirm2.onClick.AddListener(PauseMenuScript.UnpauseGame);
-                UIReuseScript.btn_Confirm2.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
-            }
-            //not enough space to move all of the items
-            else if (totalTakenSpace > maxInventorySpace
-                     && targetLocation.name == "par_PlayerItems")
-            {
-                UIReuseScript.btn_Confirm1.transform.localPosition = new(0, -79, 0);
-                UIReuseScript.btn_Confirm2.gameObject.SetActive(false);
-            }
 
             UIReuseScript.btn_Cancel.onClick.AddListener(PauseMenuScript.UnpauseGame);
             UIReuseScript.btn_Cancel.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
@@ -267,18 +239,17 @@ public class UI_Confirmation : MonoBehaviour
 
         int maxInventorySpace = PlayerStatsScript.maxInvSpace;
         int currentInventorySpace = PlayerStatsScript.invSpace;
-        int totalTakenSpace = currentInventorySpace + (itemScript.itemWeight * itemScript.itemCount);
         int selectedValue = (int)UIReuseScript.confirmationSlider.value;
         int selectedValueTakenSpace = currentInventorySpace + (itemScript.itemWeight * selectedValue);
 
-        UIReuseScript.txt_ConfirmationSliderValue.text = selectedValue.ToString();
+        UIReuseScript.txt_ConfirmationSliderValue.text = selectedValue.ToString() + " / " + itemScript.itemCount;
 
         UIReuseScript.btn_Confirm1.onClick.RemoveAllListeners();
         UIReuseScript.btn_Confirm1.onClick.AddListener(
             delegate { TargetInventory.SuccessfulItemMove(selectedValue,
-                                                                originalLocation,
-                                                                targetLocation,
-                                                                targetItem); });
+                                                          originalLocation,
+                                                          targetLocation,
+                                                          targetItem); });
         UIReuseScript.btn_Confirm1.onClick.AddListener(PauseMenuScript.UnpauseGame);
         UIReuseScript.btn_Confirm1.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
 
@@ -292,30 +263,6 @@ public class UI_Confirmation : MonoBehaviour
         else
         {
             UIReuseScript.btn_Confirm1.interactable = false;
-        }
-
-        //can move all of selected items
-        if (totalTakenSpace <= maxInventorySpace
-            || targetLocation.name != "par_PlayerItems")
-        {
-            UIReuseScript.btn_Confirm1.transform.localPosition = new(-150, -79, 0);
-
-            UIReuseScript.btn_Confirm2.gameObject.SetActive(true);
-            UIReuseScript.btn_Confirm2.onClick.RemoveAllListeners();
-            UIReuseScript.btn_Confirm2.onClick.AddListener(
-                delegate { TargetInventory.SuccessfulItemMove(targetItem.GetComponent<Env_Item>().itemCount,
-                                                                    originalLocation,
-                                                                    targetLocation,
-                                                                    targetItem); });
-            UIReuseScript.btn_Confirm2.onClick.AddListener(PauseMenuScript.UnpauseGame);
-            UIReuseScript.btn_Confirm2.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
-        }
-        //not enough space to move all of the items
-        else if (totalTakenSpace > maxInventorySpace
-                 && targetLocation.name == "par_PlayerItems")
-        {
-            UIReuseScript.btn_Confirm1.transform.localPosition = new(0, -79, 0);
-            UIReuseScript.btn_Confirm2.gameObject.SetActive(false);
         }
     }
 }
