@@ -138,10 +138,9 @@ public class Player_Raycast : MonoBehaviour
                         canInteract = true;
                     }
 
-                    /*
+                    
                     //if the target is a container
-                    else if (hitTarget.transform.GetComponent<Inv_Container>() != null
-                             && hitTarget.transform.GetComponent<Env_Follow>() == null)
+                    else if (hitTarget.transform.GetComponent<UI_Inventory>() != null)
                     {
                         if (target != hitTarget.transform.gameObject)
                         {
@@ -149,14 +148,11 @@ public class Player_Raycast : MonoBehaviour
                             //Debug.Log(target.name);
                         }
 
-                        QuickLootScript.targetContainer = hitTarget.transform.GetComponent<Inv_Container>();
-
-                        UIReuseScript.DisableInteractUI();
-
                         timer = 0;
                         canInteract = true;
                     }
 
+                    /*
                     //if the target is a workbench
                     else if (hitTarget.transform.GetComponent<Env_Workbench>() != null)
                     {
@@ -277,13 +273,13 @@ public class Player_Raycast : MonoBehaviour
                 {
                     PlayerInventoryScript.TakeItem(target, null);
                 }
-                /*
+                
                 //hit container
-                else if (target.GetComponent<Inv_Container>() != null
-                         && target.GetComponent<Env_Follow>() == null)
+                else if (target.GetComponent<UI_Inventory>() != null)
                 {
-                    target.GetComponent<Inv_Container>().CheckIfLocked();
+                    target.GetComponent<UI_Inventory>().CheckIfLocked();
                 }
+                /*
                 //hit workbench
                 else if (target.GetComponent<Env_Workbench>() != null)
                 {

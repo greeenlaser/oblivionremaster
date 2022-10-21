@@ -19,11 +19,16 @@ public class Manager_GameSaving : MonoBehaviour
     private string str_SaveFilePath;
     private int currentScene;
     private readonly List<Button> saveButtons = new();
+
+    //scripts
+    private UI_Inventory PlayerInventoryScript;
+    private Player_Stats PlayerStatsScript;
+    private UI_PlayerMenu PlayerMenuScript;
     private GameManager GameManagerScript;
     private Manager_KeyBindings KeyBindingsScript;
     private UI_LoadingScreen LoadingScreenScript;
+    private Manager_DateAndTime DateAndTimeScript;
     private Manager_UIReuse UIReuseScript;
-    private Player_Stats PlayerStatsScript;
 
     private void Awake()
     {
@@ -34,9 +39,16 @@ public class Manager_GameSaving : MonoBehaviour
 
         currentScene = SceneManager.GetActiveScene().buildIndex;
 
-        if (currentScene == 1)
+        if (currentScene == 0)
         {
+            UIReuseScript.btn_DeleteSave.gameObject.SetActive(false);
+        }
+        else if (currentScene == 1)
+        {
+            PlayerInventoryScript = thePlayer.GetComponent<UI_Inventory>();
             PlayerStatsScript = thePlayer.GetComponent<Player_Stats>();
+            PlayerMenuScript = GetComponent<UI_PlayerMenu>();
+            DateAndTimeScript = GetComponent<Manager_DateAndTime>();
         }
     }
 
@@ -129,17 +141,16 @@ public class Manager_GameSaving : MonoBehaviour
                                                             "saveScript",
                                                             saveName,
                                                             "load"); });
+
+            UIReuseScript.btn_DeleteSave.interactable = true;
+            UIReuseScript.btn_DeleteSave.onClick.RemoveAllListeners();
+
+            UIReuseScript.btn_DeleteSave.onClick.AddListener(delegate {
+                GetComponent<UI_Confirmation>().RecieveData(gameObject,
+                                                            "saveScript",
+                                                            saveName,
+                                                            "delete");});
         }
-
-        //delete save button
-        UIReuseScript.btn_DeleteSave.interactable = true;
-        UIReuseScript.btn_DeleteSave.onClick.RemoveAllListeners();
-
-        UIReuseScript.btn_DeleteSave.onClick.AddListener(delegate {
-            GetComponent<UI_Confirmation>().RecieveData(gameObject,
-                                                        "saveScript",
-                                                        saveName,
-                                                        "delete");});
 
         //show save name
         UIReuseScript.txt_SaveName.text = saveName.Replace(".txt", "");
@@ -317,27 +328,32 @@ public class Manager_GameSaving : MonoBehaviour
         saveFile.WriteLine("");
 
         saveFile.WriteLine("---GLOBAL VALUES---");
-        saveFile.WriteLine("Time: <UNASSIGNED VALUE>");
+        saveFile.WriteLine("Time and date: " + Mathf.Floor(DateAndTimeScript.second) + ", " 
+                                             + DateAndTimeScript.minute + ", " 
+                                             + DateAndTimeScript.hour + ", "
+                                             + DateAndTimeScript.dayName + ", " 
+                                             + DateAndTimeScript.monthName);
         saveFile.WriteLine("");
 
-        saveFile.WriteLine("---PLAYER VALUES---");
-        float posX = thePlayer.transform.position.x;
-        float posY = thePlayer.transform.position.y;
-        float posZ = thePlayer.transform.position.z;
+        saveFile.WriteLine("---PLAYER POSITION AND ROTATION---");
+        float posX = Mathf.Round(thePlayer.transform.position.x * 100f) / 100f;
+        float posY = Mathf.Round(thePlayer.transform.position.y * 100f) / 100f;
+        float posZ = Mathf.Round(thePlayer.transform.position.z * 100f) / 100f;
         saveFile.WriteLine("PlayerPosition: " + posX + ", " + posY + ", " + posZ);
 
-        float rotX = thePlayer.transform.rotation.x;
-        float rotY = thePlayer.transform.rotation.y;
-        float rotZ = thePlayer.transform.rotation.z;
+        float rotX = Mathf.Round(thePlayer.transform.rotation.x * 100f) / 100f;
+        float rotY = Mathf.Round(thePlayer.transform.rotation.y * 100f) / 100f;
+        float rotZ = Mathf.Round(thePlayer.transform.rotation.z * 100f) / 100f;
         saveFile.WriteLine("PlayerRotation: " + rotX + ", " + rotY + ", " + rotZ);
 
-        float camRotX = thePlayer.GetComponentInChildren<Camera>().transform.rotation.x;
-        float camRotY = thePlayer.GetComponentInChildren<Camera>().transform.rotation.y;
-        float camRotZ = thePlayer.GetComponentInChildren<Camera>().transform.rotation.z;
+        float camRotX = Mathf.Round(thePlayer.GetComponentInChildren<Camera>().transform.rotation.x * 100f) / 100f;
+        float camRotY = Mathf.Round(thePlayer.GetComponentInChildren<Camera>().transform.rotation.y * 100f) / 100f;
+        float camRotZ = Mathf.Round(thePlayer.GetComponentInChildren<Camera>().transform.rotation.z * 100f) / 100f;
         saveFile.WriteLine("PlayerCameraRotation: " + camRotX + ", " + camRotY + ", " + camRotZ);
         saveFile.WriteLine("");
 
-        saveFile.WriteLine("---PLAYER STATS---");
+        saveFile.WriteLine("---PLAYER MAIN VALUES---");
+        saveFile.WriteLine("Level: " + PlayerStatsScript.level + ", " + PlayerStatsScript.level_PointsToNextLevel);
         saveFile.WriteLine("MaxHealth: " + PlayerStatsScript.maxHealth);
         saveFile.WriteLine("Health: " + PlayerStatsScript.currentHealth);
         saveFile.WriteLine("MaxStamina: " + PlayerStatsScript.maxStamina);
@@ -345,6 +361,55 @@ public class Manager_GameSaving : MonoBehaviour
         saveFile.WriteLine("MaxMagicka: " + PlayerStatsScript.maxMagicka);
         saveFile.WriteLine("Magicka: " + PlayerStatsScript.currentMagicka);
         saveFile.WriteLine("MaxInvSpace: " + PlayerStatsScript.maxInvSpace);
+        saveFile.WriteLine("");
+
+        saveFile.WriteLine("---PLAYER ATTRIBUTES---");
+        saveFile.WriteLine("Strength: " + PlayerStatsScript.Attributes["Strength"]);
+        saveFile.WriteLine("Intelligence: " + PlayerStatsScript.Attributes["Intelligence"]);
+        saveFile.WriteLine("Willpower: " + PlayerStatsScript.Attributes["Willpower"]);
+        saveFile.WriteLine("Agility: " + PlayerStatsScript.Attributes["Agility"]);
+        saveFile.WriteLine("Speed: " + PlayerStatsScript.Attributes["Speed"]);
+        saveFile.WriteLine("Endurance: " + PlayerStatsScript.Attributes["Endurance"]);
+        saveFile.WriteLine("Personality: " + PlayerStatsScript.Attributes["Personality"]);
+        saveFile.WriteLine("Luck: " + PlayerStatsScript.Attributes["Luck"]);
+        saveFile.WriteLine("");
+
+        saveFile.WriteLine("---PLAYER SKILLS---");
+        saveFile.WriteLine("Blade: " + PlayerStatsScript.Skills["Blade"] + ", " + PlayerStatsScript.SkillPoints["Blade"]);
+        saveFile.WriteLine("Blunt: " + PlayerStatsScript.Skills["Blunt"] + ", " + PlayerStatsScript.SkillPoints["Blunt"]);
+        saveFile.WriteLine("HandToHand: " + PlayerStatsScript.Skills["HandToHand"] + ", " + PlayerStatsScript.SkillPoints["HandToHand"]);
+        saveFile.WriteLine("Armorer: " + PlayerStatsScript.Skills["Armorer"] + ", " + PlayerStatsScript.SkillPoints["Armorer"]);
+        saveFile.WriteLine("Block: " + PlayerStatsScript.Skills["Block"] + ", " + PlayerStatsScript.SkillPoints["Block"]);
+        saveFile.WriteLine("HeavyArmor: " + PlayerStatsScript.Skills["HeavyArmor"] + ", " + PlayerStatsScript.SkillPoints["HeavyArmor"]);
+        saveFile.WriteLine("Athletics: " + PlayerStatsScript.Skills["Athletics"] + ", " + PlayerStatsScript.SkillPoints["Athletics"]);
+        saveFile.WriteLine("Alteration: " + PlayerStatsScript.Skills["Alteration"] + ", " + PlayerStatsScript.SkillPoints["Alteration"]);
+        saveFile.WriteLine("Destruction: " + PlayerStatsScript.Skills["Destruction"] + ", " + PlayerStatsScript.SkillPoints["Destruction"]);
+        saveFile.WriteLine("Restoration: " + PlayerStatsScript.Skills["Restoration"] + ", " + PlayerStatsScript.SkillPoints["Restoration"]);
+        saveFile.WriteLine("Alchemy: " + PlayerStatsScript.Skills["Alchemy"] + ", " + PlayerStatsScript.SkillPoints["Alchemy"]);
+        saveFile.WriteLine("Conjuration: " + PlayerStatsScript.Skills["Conjuration"] + ", " + PlayerStatsScript.SkillPoints["Conjuration"]);
+        saveFile.WriteLine("Mysticism: " + PlayerStatsScript.Skills["Mysticism"] + ", " + PlayerStatsScript.SkillPoints["Mysticism"]);
+        saveFile.WriteLine("Illusion: " + PlayerStatsScript.Skills["Illusion"] + ", " + PlayerStatsScript.SkillPoints["Illusion"]);
+        saveFile.WriteLine("Security: " + PlayerStatsScript.Skills["Security"] + ", " + PlayerStatsScript.SkillPoints["Security"]);
+        saveFile.WriteLine("Sneak: " + PlayerStatsScript.Skills["Sneak"] + ", " + PlayerStatsScript.SkillPoints["Sneak"]);
+        saveFile.WriteLine("Marksman: " + PlayerStatsScript.Skills["Marksman"] + ", " + PlayerStatsScript.SkillPoints["Marksman"]);
+        saveFile.WriteLine("Acrobatics: " + PlayerStatsScript.Skills["Acrobatics"] + ", " + PlayerStatsScript.SkillPoints["Acrobatics"]);
+        saveFile.WriteLine("LightArmor: " + PlayerStatsScript.Skills["LightArmor"] + ", " + PlayerStatsScript.SkillPoints["LightArmor"]);
+        saveFile.WriteLine("Mercantile: " + PlayerStatsScript.Skills["Mercantile"] + ", " + PlayerStatsScript.SkillPoints["Mercantile"]);
+        saveFile.WriteLine("Speechcraft: " + PlayerStatsScript.Skills["Speechcraft"] + ", " + PlayerStatsScript.SkillPoints["Speechcraft"]);
+        saveFile.WriteLine("");
+
+        saveFile.WriteLine("---PLAYER ITEMS---");
+        int itemCount = 0;
+        foreach (GameObject item in PlayerInventoryScript.playerItems)
+        {
+            Env_Item ItemScript = item.GetComponent<Env_Item>();
+            saveFile.WriteLine(item.name + ": " + ItemScript.itemCount);
+            itemCount++;
+        }
+        if (itemCount == 0)
+        {
+            saveFile.WriteLine("No items were found in player inventory.");
+        }
 
         Debug.Log("Successfully saved game to " + str_SaveFilePath + "!");
     }
@@ -457,6 +522,12 @@ public class Manager_GameSaving : MonoBehaviour
     {
         string str_SaveFileName = "";
 
+        List<string> templateItemNames = new();
+        foreach (GameObject item in PlayerMenuScript.templateItems)
+        {
+            templateItemNames.Add(item.name);
+        }
+
         string[] files = Directory.GetFiles(GameManagerScript.savePath);
         foreach (string file in files)
         {
@@ -475,88 +546,190 @@ public class Manager_GameSaving : MonoBehaviour
                 //split full line between :
                 if (line.Contains(':'))
                 {
-                    //initial value split
                     string[] valueSplit = line.Split(':');
                     string[] values = valueSplit[1].Split(',');
                     string type = valueSplit[0];
 
-                    //sorting between ints and floats
-                    bool isFloat = float.TryParse(values[0], out _);
-                    bool isInt = int.TryParse(values[0], out _);
-                    float floatVal = 0;
-                    float floatVal2 = 0;
-                    float floatVal3 = 0;
-                    int intVal = 0;
-                    if (isFloat)
+                    //load time
+                    if (type == "Time and date")
                     {
-                        floatVal = float.Parse(values[0]);
-                        if (values.Length > 1)
-                        {
-                            floatVal2 = float.Parse(values[1]);
-                            floatVal3 = float.Parse(values[2]);     
-                        }
-                    }
-                    else if (isInt)
-                    {
-                        intVal = int.Parse(values[0]);
+                        float sec = MathF.Floor(float.Parse(values[0]));
+                        int min = int.Parse(values[1]);
+                        int hr = int.Parse(values[2]);
+                        string date = values[3];
+                        string month = values[4];
+
+                        DateAndTimeScript.SetDateAndTime(sec, min, hr, date, month);
                     }
 
-                    //load global values
-                    if (type == "Time")
-                    {
-                        //TODO: save and load game time
-                        //saveFile.WriteLine("Time: <UNASSIGNED VALUE>");
-                    }
-                    //load player values
+                    //load player position and rotation
                     else if (type == "PlayerPosition")
                     {
-                        thePlayer.transform.position = new(floatVal, floatVal2, floatVal3);
+                        thePlayer.transform.position = new(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]));
                     }
                     else if (type == "PlayerRotation")
                     {
-                        Vector3 rot = new(floatVal, floatVal2, floatVal3);
+                        Vector3 rot = new(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]));
                         thePlayer.transform.rotation = Quaternion.Euler(rot);
                     }
                     else if (type == "PlayerCameraRotation")
                     {
-                        Vector3 camRot = new(floatVal, floatVal2, floatVal3);
+                        Vector3 camRot = new(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]));
                         thePlayer.GetComponentInChildren<Camera>().transform.rotation = Quaternion.Euler(camRot);
                     }
-                    //load player stats
+
+                    //load player main values
+                    else if (type == "Level")
+                    {
+                        PlayerStatsScript.level = int.Parse(values[0]);
+                        PlayerStatsScript.level_PointsToNextLevel = int.Parse(values[1]);
+                    }
                     else if (type == "MaxHealth")
                     {
-                        PlayerStatsScript.maxHealth = floatVal;
+                        PlayerStatsScript.maxHealth = float.Parse(values[0]);
                     }
                     else if (type == "Health")
                     {
-                        PlayerStatsScript.currentHealth = floatVal;
+                        PlayerStatsScript.currentHealth = float.Parse(values[0]);
                     }
                     else if (type == "MaxStamina")
                     {
-                        PlayerStatsScript.maxStamina = floatVal;
+                        PlayerStatsScript.maxStamina = float.Parse(values[0]);
                     }
                     else if (type == "Stamina")
                     {
-                        PlayerStatsScript.currentStamina = floatVal;
+                        PlayerStatsScript.currentStamina = float.Parse(values[0]);
                     }
                     else if (type == "MaxMagicka")
                     {
-                        PlayerStatsScript.maxMagicka = floatVal;
+                        PlayerStatsScript.maxMagicka = float.Parse(values[0]);
                     }
                     else if (type == "Magicka")
                     {
-                        PlayerStatsScript.currentMagicka = floatVal;
+                        PlayerStatsScript.currentMagicka = float.Parse(values[0]);
                     }
                     else if (type == "MaxInvSpace")
                     {
-                        PlayerStatsScript.maxInvSpace = intVal;
+                        PlayerStatsScript.maxInvSpace = int.Parse(values[0]);
                     }
 
-                    PlayerStatsScript.UpdateBar(PlayerStatsScript.healthBar);
-                    PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar);
-                    PlayerStatsScript.UpdateBar(PlayerStatsScript.magickaBar);
+                    //load player attributes
+                    else if (type == "Strength"
+                             || type == "Intelligence"
+                             || type == "Willpower"
+                             || type == "Agility"
+                             || type == "Speed"
+                             || type == "Endurance"
+                             || type == "Personality"
+                             || type == "Luck")
+                    {
+                        List<string> attributeNames = new();
+                        List<int> attributeValues = new();
+                        foreach (KeyValuePair<string, int> attributes in PlayerStatsScript.Attributes)
+                        {
+                            attributeNames.Add(attributes.Key);
+                            attributeValues.Add(attributes.Value);
+                        }
+
+                        for (int i = 0; i < attributeNames.Count; i++)
+                        {
+                            string attributeName = attributeNames[i];
+
+                            if (attributeName == type)
+                            {
+                                PlayerStatsScript.Attributes[type] = int.Parse(values[0]);
+                            }
+                        }
+                    }
+
+                    //load player skills
+                    else if (type == "Blade"
+                             || type == "Blunt"
+                             || type == "HandToHand"
+                             || type == "Armorer"
+                             || type == "Block"
+                             || type == "HeavyArmor"
+                             || type == "Athletics"
+                             || type == "Alteration"
+                             || type == "Destruction"
+                             || type == "Restoration"
+                             || type == "Alchemy"
+                             || type == "Conjuration"
+                             || type == "Mysticism"
+                             || type == "Illusion"
+                             || type == "Security"
+                             || type == "Sneak"
+                             || type == "Marksman"
+                             || type == "Acrobatics"
+                             || type == "LightArmor"
+                             || type == "Mercantile"
+                             || type == "Speechcraft")
+                    {
+                        List<string> skillNames = new();
+                        List<int> skillValues = new();
+                        foreach (KeyValuePair<string, int> skills in PlayerStatsScript.Skills)
+                        {
+                            skillNames.Add(skills.Key);
+                            skillValues.Add(skills.Value);
+                        }
+
+                        for (int i = 0; i < skillNames.Count; i++)
+                        {
+                            string skillName = skillNames[i];
+
+                            if (skillName == type)
+                            {
+                                PlayerStatsScript.Skills[type] = int.Parse(values[0]);
+                            }
+                        }
+
+                        List<string> skillPointNames = new();
+                        List<int> skillPointValues = new();
+                        foreach (KeyValuePair<string, int> skillPoints in PlayerStatsScript.SkillPoints)
+                        {
+                            skillPointNames.Add(skillPoints.Key);
+                            skillPointValues.Add(skillPoints.Value);
+                        }
+
+                        for (int i = 0; i < skillPointNames.Count; i++)
+                        {
+                            string skillPointName = skillPointNames[i];
+
+                            if (skillPointName == type)
+                            {
+                                PlayerStatsScript.SkillPoints[type] = int.Parse(values[0]);
+                            }
+                        }
+                    }
+
+                    else if (templateItemNames.Contains(type))
+                    {
+                        GameObject templateItem = null;
+                        foreach (GameObject item in PlayerMenuScript.templateItems)
+                        {
+                            if (item.name == type)
+                            {
+                                templateItem = item;
+                                break;
+                            }
+                        }
+                        GameObject spawnedItem = Instantiate(templateItem,
+                                                             PlayerInventoryScript.par_PlayerItems.transform.position,
+                                                             Quaternion.identity,
+                                                             PlayerInventoryScript.par_PlayerItems.transform);
+                        spawnedItem.SetActive(false);
+                        spawnedItem.name = templateItem.name;
+                        spawnedItem.GetComponent<Env_Item>().itemCount = int.Parse(values[0]);
+
+                        PlayerInventoryScript.playerItems.Add(spawnedItem);
+                        PlayerStatsScript.invSpace += spawnedItem.GetComponent<Env_Item>().itemCount * spawnedItem.GetComponent<Env_Item>().itemWeight;
+                    }
                 }
             }
+
+            PlayerStatsScript.UpdateBar(PlayerStatsScript.healthBar);
+            PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar);
+            PlayerStatsScript.UpdateBar(PlayerStatsScript.magickaBar);
 
             Debug.Log("Successfully loaded save file " + saveFileName.Replace(".txt", "") + " from " + GameManagerScript.savePath + "!");
         }

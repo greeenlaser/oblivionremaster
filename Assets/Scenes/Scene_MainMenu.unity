@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 262.05432, g: 324.6731, b: 429.72687, a: 1}
+  m_IndirectSpecularColor: {r: 262.1853, g: 324.85815, b: 429.9668, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -484,14 +484,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1166655236}
     m_Modifications:
-    - target: {fileID: 982249494395068508, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6516661977195355905, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6874313420527365564, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -579,10 +571,6 @@ PrefabInstance:
     - target: {fileID: 6874313420527365565, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
       propertyPath: m_Name
       value: par_LoadingUI
-      objectReference: {fileID: 0}
-    - target: {fileID: 6874313420527365565, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6b9ff928c5ea2ab4c8852f02e2bfd607, type: 3}
@@ -1912,8 +1900,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb56816eaea32aa4eadd1021b762783d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  par_Managers: {fileID: 720376261}
   thePlayer: {fileID: 0}
+  par_Managers: {fileID: 720376261}
   canToggleConsole: 0
 --- !u!114 &720376268
 MonoBehaviour:

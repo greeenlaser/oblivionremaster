@@ -13,19 +13,36 @@ public class UI_Inventory : MonoBehaviour
 
     [Header("Container assignables")]
     public bool isLocked;
-    public Transform par_ContainerItems;
-    public List<GameObject> containerItems = new();
+    public LockDifficulty lockDifficulty = LockDifficulty.Apprentice;
+    public enum LockDifficulty
+    {
+        Novice,
+        Apprentice,
+        Journeyman,
+        Expert,
+        Master
+    }
+    public string containerName;
+    public ContainerType containerType = ContainerType.player;
+    public enum ContainerType
+    {
+        respawnable,
+        store,
+        player
+    }
 
     //public but hidden variables
     [HideInInspector] public string currentlyOpenedInventory;
     [HideInInspector] public GameObject heldObject;
     [HideInInspector] public GameObject equippedWeapon;
-    public List<GameObject> playerItems = new();
+    [HideInInspector] public List<GameObject> playerItems = new();
+    [HideInInspector] public List<GameObject> containerItems = new();
 
     //scripts
     private UI_PlayerMenu PlayerMenuScript;
     private UI_PauseMenu PauseMenuScript;
     private UI_Confirmation ConfirmationScript;
+    private UI_Lockpicking LockpickingScript;
     private Manager_UIReuse UIReuseScript;
     private UI_Inventory PlayerInventoryScript;
     private Player_Stats PlayerStatsScript;
@@ -36,11 +53,38 @@ public class UI_Inventory : MonoBehaviour
         {
             PlayerInventoryScript = thePlayer.GetComponent<UI_Inventory>();
         }
+        if (containerType == ContainerType.respawnable)
+        {
+            LockpickingScript = par_Managers.GetComponent<UI_Lockpicking>();
+        }
         PlayerStatsScript = GetComponent<Player_Stats>();
         PlayerMenuScript = par_Managers.GetComponent<UI_PlayerMenu>();
         ConfirmationScript = par_Managers.GetComponent<UI_Confirmation>();
         PauseMenuScript = par_Managers.GetComponent<UI_PauseMenu>();
         UIReuseScript = par_Managers.GetComponent<Manager_UIReuse>();
+    }
+
+    //used for only respawnable containers,
+    //checks if the target container is locked or not
+    public void CheckIfLocked()
+    {
+        foreach (GameObject item in PlayerInventoryScript.playerItems)
+        {
+            if (item.name == "Lockpick")
+            {
+                PauseMenuScript.isPlayerMenuOpen = true;
+                if (isLocked)
+                {
+                    LockpickingScript.TargetContainerScript = GetComponent<UI_Inventory>();
+                    LockpickingScript.OpenLockpickUI(containerName,
+                                                     lockDifficulty.ToString());
+                }
+                else
+                {
+                    OpenInventory("container");
+                }
+            }
+        }
     }
 
     public void OpenInventory(string inventoryType)
@@ -56,6 +100,7 @@ public class UI_Inventory : MonoBehaviour
         PlayerMenuScript.btn_ReusedButton4.onClick.RemoveAllListeners();
         PlayerMenuScript.btn_ReusedButton5.onClick.RemoveAllListeners();
 
+        //player inventory UI
         if (inventoryType == "inventory")
         {
             RebuildInventory("allItems");
@@ -65,6 +110,12 @@ public class UI_Inventory : MonoBehaviour
             PlayerMenuScript.btn_ReusedButton4.onClick.AddListener(delegate { RebuildInventory("consumable"); });
             PlayerMenuScript.btn_ReusedButton5.onClick.AddListener(delegate { RebuildInventory("misc"); });
         }
+        //container button UI
+        else if (inventoryType == "container")
+        {
+            //hmm
+        }
+        //magic UI
         else if (inventoryType == "magic")
         {
             RebuildInventory("allMagicka");
@@ -83,6 +134,7 @@ public class UI_Inventory : MonoBehaviour
         UIReuseScript.txt_InventoryCount.text = "";
     }
 
+    //rebuilds the entire inventory UI for target inventory
     public void RebuildInventory(string targetInventory)
     {
         //clear any previously assigned inventory buttons
@@ -213,7 +265,7 @@ public class UI_Inventory : MonoBehaviour
         }
     }
 
-    //show selected item details and interactable buttons
+    //show selected item details and interactable buttons in target inventory
     public void ShowSelectedItemInfo(GameObject targetItem)
     {
         UIReuseScript.CloseSelectedItemInfo();
@@ -232,18 +284,61 @@ public class UI_Inventory : MonoBehaviour
         if (PlayerMenuScript.targetContainer == null)
         {
             UIReuseScript.btn_Use_Take_Place.gameObject.SetActive(true);
-            UIReuseScript.btn_Use_Take_Place.GetComponentInChildren<TMP_Text>().text = "Use";
-            UIReuseScript.btn_Use_Take_Place.onClick.AddListener(
-                delegate { UseItem(targetItem); });
+            UIReuseScript.btn_Use_Take_Place.interactable = false;
+            if (targetItem.GetComponent<Item_Weapon>() != null
+                || targetItem.GetComponent<Item_Armor>() != null
+                || targetItem.GetComponent<Item_Shield>() != null
+                || targetItem.GetComponent<Item_Spell>() != null
+                || targetItem.GetComponent<Item_Ammo>() != null)
+            {
+                UIReuseScript.btn_Use_Take_Place.interactable = true;
+                UIReuseScript.btn_Use_Take_Place.GetComponentInChildren<TMP_Text>().text = "Equip";
+                UIReuseScript.btn_Use_Take_Place.onClick.AddListener(
+                    delegate { UseItem(targetItem); });
+            }
+            else if (targetItem.GetComponent<Item_Consumable>() != null)
+            {
+                UIReuseScript.btn_Use_Take_Place.interactable = true;
+                UIReuseScript.btn_Use_Take_Place.GetComponentInChildren<TMP_Text>().text = "Consume";
+                UIReuseScript.btn_Use_Take_Place.onClick.AddListener(
+                    delegate { UseItem(targetItem); });
+            }
+            else if (targetItem.GetComponent<Item_Readable>() != null)
+            {
+                UIReuseScript.btn_Use_Take_Place.interactable = true;
+                UIReuseScript.btn_Use_Take_Place.GetComponentInChildren<TMP_Text>().text = "Read";
+                UIReuseScript.btn_Use_Take_Place.onClick.AddListener(
+                    delegate { UseItem(targetItem); });
+            }
+            else if (targetItem.GetComponent<Item_AlchemyTool>() != null)
+            {
+                UIReuseScript.btn_Use_Take_Place.interactable = true;
+                UIReuseScript.btn_Use_Take_Place.GetComponentInChildren<TMP_Text>().text = "Use";
+                UIReuseScript.btn_Use_Take_Place.onClick.AddListener(
+                    delegate { UseItem(targetItem); });
+            }
+            else
+            {
+                UIReuseScript.btn_Use_Take_Place.GetComponentInChildren<TMP_Text>().text = "";
+            }
 
             UIReuseScript.btn_Drop.gameObject.SetActive(true);
-            UIReuseScript.btn_Drop.onClick.AddListener(
-                delegate { DropItem(targetItem); });
+            if (!itemScript.isProtected)
+            {
+                UIReuseScript.btn_Drop.interactable = true;
+                UIReuseScript.btn_Drop.onClick.AddListener(
+                    delegate { DropItem(targetItem); });
+            }
+            else
+            {
+                UIReuseScript.btn_Drop.interactable = false;
+            }
         }
         //take method is used when player is in container or taking an item from the world
         else
         {
             UIReuseScript.btn_Use_Take_Place.gameObject.SetActive(true);
+            UIReuseScript.btn_Use_Take_Place.interactable = false;
             UIReuseScript.btn_Use_Take_Place.GetComponentInChildren<TMP_Text>().text = "Take";
             UIReuseScript.btn_Use_Take_Place.onClick.AddListener(
                 delegate { TakeItem(targetItem,
@@ -326,7 +421,7 @@ public class UI_Inventory : MonoBehaviour
         }
     }
 
-    //this method handles item movement when taking a single item
+    //handles item movement when taking a single item
     //or after player has confirmed selected count of stacked item movement
     public void SuccessfulItemMove(int selectedCount,
                                    GameObject originalLocation,

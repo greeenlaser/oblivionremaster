@@ -21,9 +21,18 @@ public class Env_Item : MonoBehaviour
         armor,
         shield,
         consumable,
+        alchemyIngredient,
         spell,
         ammo,
         misc
+    }
+    public ItemQuality itemQuality = ItemQuality.common;
+    public enum ItemQuality
+    {
+        trash,
+        common,
+        rare,
+        legendary
     }
 
     //public but hidden variables
