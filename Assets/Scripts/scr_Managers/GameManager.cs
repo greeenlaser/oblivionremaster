@@ -68,8 +68,8 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        //always recreates the debug log when game is opened,
-        //recreates it in game scene only in engine
+        //always recreates the debug log in main menu scene,
+        //only recreates the debug log in game scene if user is in engine
         if (currentScene == 0
             || (currentScene == 1
             && Application.isEditor))

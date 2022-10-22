@@ -228,30 +228,33 @@ public class Manager_Settings : MonoBehaviour
 
         foreach (GameObject buttonUIParent in settingsParents)
         {
-            Dropdown dropdown;
+            TMP_Dropdown dropdown;
             Slider slider;
             Button button;
 
-            if (buttonUIParent.GetComponentInChildren<Dropdown>() != null
-                && buttonUIParent.GetComponentInChildren<Dropdown>().gameObject.activeInHierarchy)
+            foreach (Transform child in buttonUIParent.transform)
             {
-                dropdown = buttonUIParent.GetComponentInChildren<Dropdown>();
-                dropdown.ClearOptions();
-                AssignEvent(dropdown.gameObject, "dropdown");
-            }
-            else if (buttonUIParent.GetComponentInChildren<Slider>() != null
-                     && buttonUIParent.GetComponentInChildren<Slider>().gameObject.activeInHierarchy)
-            {
-                slider = buttonUIParent.GetComponentInChildren<Slider>();
-                slider.onValueChanged.RemoveAllListeners();
-                AssignEvent(slider.gameObject, "slider");
-            }
-            else if (buttonUIParent.GetComponentInChildren<Button>() != null
-                     && buttonUIParent.GetComponentInChildren<Button>().gameObject.activeInHierarchy)
-            {
-                button = buttonUIParent.GetComponentInChildren<Button>();
-                button.onClick.RemoveAllListeners();
-                AssignEvent(button.gameObject, "button");
+                if (child.name == "dropdown_Settings"
+                    && child.gameObject.activeInHierarchy)
+                {
+                    dropdown = buttonUIParent.GetComponentInChildren<TMP_Dropdown>();
+                    dropdown.ClearOptions();
+                    AssignEvent(dropdown.gameObject, "dropdown");
+                }
+                else if (child.name == "slider_Settings"
+                         && child.gameObject.activeInHierarchy)
+                {
+                    slider = buttonUIParent.GetComponentInChildren<Slider>();
+                    slider.onValueChanged.RemoveAllListeners();
+                    AssignEvent(slider.gameObject, "slider");
+                }
+                else if (child.name == "button_Settings"
+                         && child.gameObject.activeInHierarchy)
+                {
+                    button = buttonUIParent.GetComponentInChildren<Button>();
+                    button.onClick.RemoveAllListeners();
+                    AssignEvent(button.gameObject, "button");
+                }
             }
         }
     }
@@ -264,7 +267,7 @@ public class Manager_Settings : MonoBehaviour
 
         if (targetType == "dropdown")
         {
-            Dropdown dropdown = target.GetComponent<Dropdown>();
+            TMP_Dropdown dropdown = target.GetComponent<TMP_Dropdown>();
 
             //assign preset choices, current choice and event
             if (info == "Preset")
@@ -357,7 +360,7 @@ public class Manager_Settings : MonoBehaviour
             //assign shadow quality choices, current choice and event
             else if (info == "ShadowQuality")
             {
-                List<string> values = new(Enum.GetNames(typeof(ShadowQuality)));
+                List<string> values = new(Enum.GetNames(typeof(UserDefined_ShadowQuality)));
                 dropdown.AddOptions(values);
                 foreach (string res in values)
                 {
@@ -530,7 +533,7 @@ public class Manager_Settings : MonoBehaviour
     }
 
     //the individual dropdown event for every selected dropdown choice
-    public void DropdownEvent(Dropdown target)
+    public void DropdownEvent(TMP_Dropdown target)
     {
         UI_AssignSettings SettingsScript = target.GetComponent<UI_AssignSettings>();
         string info = SettingsScript.str_Info;

@@ -7,8 +7,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using static Manager_Settings;
-using System.Linq;
-using static UnityEditor.Progress;
 
 public class Manager_Console : MonoBehaviour
 {

@@ -101,7 +101,8 @@ public class UI_Inventory : MonoBehaviour
         PlayerMenuScript.btn_ReusedButton5.onClick.RemoveAllListeners();
 
         //player inventory UI
-        if (inventoryType == "inventory")
+        if (inventoryType == "inventory"
+            || inventoryType == "container")
         {
             RebuildInventory("allItems");
             PlayerMenuScript.btn_ReusedButton1.onClick.AddListener(delegate { RebuildInventory("allItems"); });
@@ -109,11 +110,6 @@ public class UI_Inventory : MonoBehaviour
             PlayerMenuScript.btn_ReusedButton3.onClick.AddListener(delegate { RebuildInventory("armor"); });
             PlayerMenuScript.btn_ReusedButton4.onClick.AddListener(delegate { RebuildInventory("consumable"); });
             PlayerMenuScript.btn_ReusedButton5.onClick.AddListener(delegate { RebuildInventory("misc"); });
-        }
-        //container button UI
-        else if (inventoryType == "container")
-        {
-            //hmm
         }
         //magic UI
         else if (inventoryType == "magic")
@@ -258,10 +254,87 @@ public class UI_Inventory : MonoBehaviour
                 }
             }
         }
-        else if (PlayerMenuScript.targetContainer != null
-                 && PlayerMenuScript.isContainerOpen)
+        else if (PlayerMenuScript.targetContainer != null)
         {
-            //TODO: add container-specific actions
+            int invSpace = PlayerStatsScript.invSpace;
+            int maxInvSpace = PlayerStatsScript.maxInvSpace;
+            UIReuseScript.txt_InventoryCount.text = invSpace + "/" + maxInvSpace;
+
+            if (PlayerMenuScript.isContainerOpen)
+            {
+                //create a new inventory button for each inventory item
+                //depending on the selected inventory sort type
+                foreach (GameObject item in containerItems)
+                {
+                    if (item != null)
+                    {
+                        Env_Item itemScript = item.GetComponent<Env_Item>();
+
+                        if ((targetInventory == "allItems"                           //list all regular items only
+                            && itemScript.itemType != Env_Item.ItemType.spell)
+                            || itemScript.itemType.ToString() == targetInventory)    //list specific item type
+                        {
+                            GameObject newButton = Instantiate(UIReuseScript.btn_ItemTemplateButton.gameObject,
+                                                               UIReuseScript.inventoryContent.transform.position,
+                                                               Quaternion.identity,
+                                                               UIReuseScript.inventoryContent.transform);
+
+                            UIReuseScript.inventoryButtons.Add(newButton.GetComponent<Button>());
+
+                            string buttonText = itemScript.str_ItemName;
+                            if (itemScript.itemCount > 1)
+                            {
+                                buttonText += " x" + itemScript.itemCount;
+                            }
+                            newButton.GetComponentInChildren<TMP_Text>().text = buttonText;
+
+                            newButton.GetComponent<Button>().onClick.AddListener(
+                                delegate { ShowSelectedItemInfo(item); });
+                        }
+                    }
+                }
+            }
+            else if (PlayerMenuScript.isPlayerInventoryOpen)
+            {
+                //create a new inventory button for each inventory item
+                //depending on the selected inventory sort type
+                foreach (GameObject item in playerItems)
+                {
+                    if (item != null)
+                    {
+                        Env_Item itemScript = item.GetComponent<Env_Item>();
+
+                        if ((targetInventory == "allItems"                           //list all regular items only
+                            && itemScript.itemType != Env_Item.ItemType.spell)
+                            || (targetInventory == "allSpells"                       //list all spells only
+                            && itemScript.itemType != Env_Item.ItemType.weapon
+                            && itemScript.itemType != Env_Item.ItemType.armor
+                            && itemScript.itemType != Env_Item.ItemType.shield
+                            && itemScript.itemType != Env_Item.ItemType.consumable
+                            && itemScript.itemType != Env_Item.ItemType.ammo
+                            && itemScript.itemType != Env_Item.ItemType.misc)
+                            || itemScript.itemType.ToString() == targetInventory)    //list specific item type
+                        {
+                            GameObject newButton = Instantiate(UIReuseScript.btn_ItemTemplateButton.gameObject,
+                                                               UIReuseScript.inventoryContent.transform.position,
+                                                               Quaternion.identity,
+                                                               UIReuseScript.inventoryContent.transform);
+
+                            UIReuseScript.inventoryButtons.Add(newButton.GetComponent<Button>());
+
+                            string buttonText = itemScript.str_ItemName;
+                            if (itemScript.itemCount > 1)
+                            {
+                                buttonText += " x" + itemScript.itemCount;
+                            }
+                            newButton.GetComponentInChildren<TMP_Text>().text = buttonText;
+
+                            newButton.GetComponent<Button>().onClick.AddListener(
+                                delegate { ShowSelectedItemInfo(item); });
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -333,6 +406,11 @@ public class UI_Inventory : MonoBehaviour
             {
                 UIReuseScript.btn_Drop.interactable = false;
             }
+        }
+        //take and place methods are used when player is taking from and placing to container
+        else if (PlayerMenuScript.targetContainer != null)
+        {
+
         }
         //take method is used when player is in container or taking an item from the world
         else

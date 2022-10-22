@@ -3364,7 +3364,7 @@ GameObject:
   - component: {fileID: 274183523}
   - component: {fileID: 274183524}
   m_Layer: 5
-  m_Name: toggle_Settings
+  m_Name: button_Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11689,6 +11689,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72351333316687140ae5e9de287cfa20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  second: 0
+  minute: 0
+  hour: 0
+  dayName: 
+  monthName: 
 --- !u!114 &922013609 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2607496534327689197, guid: 074b96c3524858349a136b830933d01f, type: 3}
@@ -31331,7 +31336,7 @@ GameObject:
   - component: {fileID: 7271959906406038656}
   - component: {fileID: 7271959906406038655}
   m_Layer: 5
-  m_Name: toggle_Settings
+  m_Name: button_Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35952,7 +35957,7 @@ GameObject:
   - component: {fileID: 8710390394246634188}
   - component: {fileID: 8710390394246634187}
   m_Layer: 5
-  m_Name: toggle_Settings
+  m_Name: button_Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -37790,7 +37795,7 @@ GameObject:
   - component: {fileID: 8262260207074469998}
   - component: {fileID: 8262260207074469997}
   m_Layer: 5
-  m_Name: toggle_Settings
+  m_Name: button_Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -37915,7 +37920,7 @@ GameObject:
   - component: {fileID: 2109165468906358976}
   - component: {fileID: 2109165468906358975}
   m_Layer: 5
-  m_Name: toggle_Settings
+  m_Name: button_Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47948,7 +47953,7 @@ GameObject:
   - component: {fileID: 9156839652904256574}
   - component: {fileID: 9156839652904256573}
   m_Layer: 5
-  m_Name: toggle_Settings
+  m_Name: button_Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -59470,7 +59475,7 @@ GameObject:
   - component: {fileID: 9135521518540449353}
   - component: {fileID: 9135521518540449352}
   m_Layer: 5
-  m_Name: toggle_Settings
+  m_Name: button_Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -59616,7 +59621,7 @@ GameObject:
   - component: {fileID: 4652928744647674969}
   - component: {fileID: 4652928744647674968}
   m_Layer: 5
-  m_Name: toggle_Settings
+  m_Name: button_Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -60390,7 +60395,7 @@ GameObject:
   - component: {fileID: 6379830667663882883}
   - component: {fileID: 6379830667663882882}
   m_Layer: 5
-  m_Name: toggle_Settings
+  m_Name: button_Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -64740,7 +64745,7 @@ GameObject:
   - component: {fileID: 8840922327873842132}
   - component: {fileID: 8840922327873842131}
   m_Layer: 5
-  m_Name: toggle_Settings
+  m_Name: button_Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65899,7 +65904,7 @@ GameObject:
   - component: {fileID: 8434179943348066840}
   - component: {fileID: 8434179943348066839}
   m_Layer: 5
-  m_Name: toggle_Settings
+  m_Name: button_Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -66861,7 +66866,7 @@ GameObject:
   - component: {fileID: 5798562154038104695}
   - component: {fileID: 5798562154038104694}
   m_Layer: 5
-  m_Name: toggle_Settings
+  m_Name: button_Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -67869,7 +67874,7 @@ GameObject:
   - component: {fileID: 5990579260215388795}
   - component: {fileID: 5990579260215388794}
   m_Layer: 5
-  m_Name: toggle_Settings
+  m_Name: button_Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -69914,7 +69919,7 @@ GameObject:
   - component: {fileID: 8900242542294945975}
   - component: {fileID: 8900242542294945974}
   m_Layer: 5
-  m_Name: toggle_Settings
+  m_Name: button_Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -77524,7 +77529,7 @@ GameObject:
   - component: {fileID: 7483623894538715140}
   - component: {fileID: 7483623894538715139}
   m_Layer: 5
-  m_Name: toggle_Settings
+  m_Name: button_Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -78182,7 +78187,7 @@ GameObject:
   - component: {fileID: 7603640485209617627}
   - component: {fileID: 7603640485209617626}
   m_Layer: 5
-  m_Name: toggle_Settings
+  m_Name: button_Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -78766,7 +78771,7 @@ GameObject:
   - component: {fileID: 7685089009186268984}
   - component: {fileID: 7685089009186268983}
   m_Layer: 5
-  m_Name: toggle_Settings
+  m_Name: button_Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -78973,7 +78978,7 @@ GameObject:
   - component: {fileID: 7859634333693149166}
   - component: {fileID: 7859634333693149165}
   m_Layer: 5
-  m_Name: toggle_Settings
+  m_Name: button_Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -79426,7 +79431,7 @@ GameObject:
   - component: {fileID: 7805300507492017001}
   - component: {fileID: 7805300507492017000}
   m_Layer: 5
-  m_Name: toggle_Settings
+  m_Name: button_Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -86295,7 +86300,7 @@ GameObject:
   - component: {fileID: 8752714382244375232}
   - component: {fileID: 8752714382244375231}
   m_Layer: 5
-  m_Name: toggle_Settings
+  m_Name: button_Settings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

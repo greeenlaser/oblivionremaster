@@ -630,6 +630,13 @@ public class UI_Lockpicking : MonoBehaviour
         }
     }
 
+    //when the player successfully unlocks the target container
+    public void UnlockContainer()
+    {
+        CloseLockpickUI();
+        TargetContainerScript.OpenInventory("container");
+    }
+
     //opens the lockpick UI
     public void OpenLockpickUI(string targetContainerName, string lockDifficulty)
     {
@@ -670,11 +677,5 @@ public class UI_Lockpicking : MonoBehaviour
 
         par_Lockpicking.SetActive(false);
         par_LockModel.SetActive(false);
-    }
-
-    //when the player successfully unlocks the target container
-    public void UnlockContainer()
-    {
-        CloseLockpickUI();
     }
 }
