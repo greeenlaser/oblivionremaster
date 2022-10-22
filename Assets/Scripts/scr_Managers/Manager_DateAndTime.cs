@@ -14,11 +14,15 @@ public class Manager_DateAndTime : MonoBehaviour
 
     //time and date values
     private string fullTime;
+    [HideInInspector] public int daysSinceLastRestart = 3;
     [HideInInspector] public float second;
     [HideInInspector] public int minute;
     [HideInInspector] public int hour;
     [HideInInspector] public string dayName;
     [HideInInspector] public string monthName;
+
+    //private variables
+    private Manager_Locations LocationsScript;
 
     private void Awake()
     {
@@ -41,6 +45,8 @@ public class Manager_DateAndTime : MonoBehaviour
                        12,
                        "27 Morndas",
                        "Last Seed");
+
+        LocationsScript = GetComponent<Manager_Locations>();
     }
 
     //apply a date and time that the game starts counting from the launch of the game
@@ -82,6 +88,12 @@ public class Manager_DateAndTime : MonoBehaviour
 
     private void UpdateDayAndMonth()
     {
+        daysSinceLastRestart--;
+        if (daysSinceLastRestart == 0)
+        {
+            LocationsScript.ResetAllLocations();
+        }
+
         string[] dayNameSplit = dayName.Split(" ");
         int dayDate = int.Parse(dayNameSplit[0]);
         int newDayDate = dayDate++;

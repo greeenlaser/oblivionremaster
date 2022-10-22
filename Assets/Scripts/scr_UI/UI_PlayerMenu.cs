@@ -11,10 +11,10 @@ public class UI_PlayerMenu : MonoBehaviour
     public TMP_Text txt_PlayerMenuTitle;
     [SerializeField] private GameObject par_StatsUI;
     [SerializeField] private GameObject par_QuestsAndMapsUI;
-    [SerializeField] private Button btn_ShowStatsUI;
-    [SerializeField] private Button btn_ShowInventoryUI;
-    [SerializeField] private Button btn_ShowMagickaUI;
-    [SerializeField] private Button btn_ShowQuestsAndMapsUI;
+    public Button btn_ShowStatsUI;
+    public Button btn_ShowInventoryUI;
+    public Button btn_ShowMagickaUI;
+    public Button btn_ShowQuestsAndMapsUI;
     public Button btn_ReusedButton1;
     public Button btn_ReusedButton2;
     public Button btn_ReusedButton3;
@@ -31,12 +31,12 @@ public class UI_PlayerMenu : MonoBehaviour
     [HideInInspector] public bool isPlayerInventoryOpen;
     [HideInInspector] public bool isContainerOpen;
     [HideInInspector] public GameObject targetContainer;
+    [HideInInspector] public UI_Inventory PlayerInventoryScript;
 
     //private variables
     private Manager_KeyBindings KeyBindingsScript;
     private UI_PauseMenu PauseMenuScript;
     private Manager_UIReuse UIReuseScript;
-    private UI_Inventory PlayerInventoryScript;
 
     private void Awake()
     {
@@ -46,8 +46,6 @@ public class UI_PlayerMenu : MonoBehaviour
         PlayerInventoryScript = thePlayer.GetComponent<UI_Inventory>();
 
         btn_ShowStatsUI.onClick.AddListener(ShowStatsUI);
-        btn_ShowInventoryUI.onClick.AddListener(ShowInventoryUI);
-        btn_ShowMagickaUI.onClick.AddListener(ShowMagickaUI);
         btn_ShowQuestsAndMapsUI.onClick.AddListener(ShowQuestsAndMapsUI);
     }
 
@@ -77,7 +75,15 @@ public class UI_PlayerMenu : MonoBehaviour
     public void OpenPlayerMenu()
     {
         par_PlayerMenuUI.SetActive(true);
-        ShowInventoryUI();
+
+        if (targetContainer == null)
+        {
+            ShowInventoryUI();
+        }
+        else if (targetContainer != null)
+        {
+            ShowContainerUI();
+        }
 
         PauseMenuScript.PauseWithoutUI();
     }
@@ -85,6 +91,10 @@ public class UI_PlayerMenu : MonoBehaviour
     {
         CloseAllUI();
         par_PlayerMenuUI.SetActive(false);
+
+        targetContainer = null;
+        isPlayerInventoryOpen = false;
+        isContainerOpen = false;
 
         PauseMenuScript.UnpauseGame();
     }
@@ -113,9 +123,30 @@ public class UI_PlayerMenu : MonoBehaviour
         UIReuseScript.par_Inventory.SetActive(true);
         btn_ShowInventoryUI.interactable = false;
 
+        isContainerOpen = false;
+        isPlayerInventoryOpen = true;
+
         PlayerInventoryScript.OpenInventory("inventory");
 
-        isPlayerInventoryOpen = true;
+        btn_ReusedButton1.GetComponentInChildren<TMP_Text>().text = "All items";
+        btn_ReusedButton2.GetComponentInChildren<TMP_Text>().text = "Weapons";
+        btn_ReusedButton3.GetComponentInChildren<TMP_Text>().text = "Armor";
+        btn_ReusedButton4.GetComponentInChildren<TMP_Text>().text = "Alchemy";
+        btn_ReusedButton5.GetComponentInChildren<TMP_Text>().text = "Misc";
+    }
+    public void ShowContainerUI()
+    {
+        CloseAllUI();
+
+        UIReuseScript.par_Inventory.SetActive(true);
+
+        btn_ShowStatsUI.gameObject.SetActive(false);
+        btn_ShowQuestsAndMapsUI.gameObject.SetActive(false);
+
+        isContainerOpen = true;
+        isPlayerInventoryOpen = false;
+
+        PlayerInventoryScript.OpenInventory("container");
 
         btn_ReusedButton1.GetComponentInChildren<TMP_Text>().text = "All items";
         btn_ReusedButton2.GetComponentInChildren<TMP_Text>().text = "Weapons";
@@ -161,14 +192,24 @@ public class UI_PlayerMenu : MonoBehaviour
     private void CloseAllUI()
     {
         par_StatsUI.SetActive(false);
+        btn_ShowStatsUI.gameObject.SetActive(true);
         btn_ShowStatsUI.interactable = true;
 
         PlayerInventoryScript.CloseInventory();
+        btn_ShowInventoryUI.gameObject.SetActive(true);
+        btn_ShowInventoryUI.onClick.RemoveAllListeners();
+        btn_ShowInventoryUI.onClick.AddListener(ShowInventoryUI);
         btn_ShowInventoryUI.interactable = true;
+        btn_ShowInventoryUI.GetComponentInChildren<TMP_Text>().text = "Inventory";
 
+        btn_ShowMagickaUI.gameObject.SetActive(true);
+        btn_ShowMagickaUI.onClick.RemoveAllListeners();
+        btn_ShowMagickaUI.onClick.AddListener(ShowMagickaUI);
         btn_ShowMagickaUI.interactable = true;
+        btn_ShowMagickaUI.GetComponentInChildren<TMP_Text>().text = "Magicka";
 
         par_QuestsAndMapsUI.SetActive(false);
+        btn_ShowQuestsAndMapsUI.gameObject.SetActive(true);
         btn_ShowQuestsAndMapsUI.interactable = true;
 
         btn_ReusedButton1.onClick.RemoveAllListeners();

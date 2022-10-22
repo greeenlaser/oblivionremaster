@@ -16,7 +16,7 @@ public class Manager_UIReuse : MonoBehaviour
 
     [Header("Selected item stats UI")]
     public GameObject par_ItemStats;
-    public Button btn_Use_Take_Place;
+    public Button btn_Interact;
     public Button btn_Drop;
     public Button btn_CloseSelectedItemInfo;
     public TMP_Text txt_ItemName;
@@ -120,8 +120,8 @@ public class Manager_UIReuse : MonoBehaviour
     //clears and closes the selected item info in inventory
     public void CloseSelectedItemInfo()
     {
-        btn_Use_Take_Place.onClick.RemoveAllListeners();
-        btn_Use_Take_Place.gameObject.SetActive(false);
+        btn_Interact.onClick.RemoveAllListeners();
+        btn_Interact.gameObject.SetActive(false);
         btn_Drop.onClick.RemoveAllListeners();
         btn_Drop.gameObject.SetActive(false);
         par_ItemStats.SetActive(false);

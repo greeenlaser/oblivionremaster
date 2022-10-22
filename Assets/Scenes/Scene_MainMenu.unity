@@ -1753,7 +1753,6 @@ GameObject:
   m_Component:
   - component: {fileID: 720376262}
   - component: {fileID: 720376265}
-  - component: {fileID: 720376271}
   - component: {fileID: 720376272}
   - component: {fileID: 720376268}
   - component: {fileID: 720376270}
@@ -1802,7 +1801,7 @@ MonoBehaviour:
   btn_ItemTemplateButton: {fileID: 0}
   inventoryButtons: []
   par_ItemStats: {fileID: 0}
-  btn_Use_Take_Place: {fileID: 0}
+  btn_Interact: {fileID: 0}
   btn_Drop: {fileID: 0}
   btn_CloseSelectedItemInfo: {fileID: 0}
   txt_ItemName: {fileID: 0}
@@ -1993,20 +1992,6 @@ MonoBehaviour:
   par_CombatKeyBindingsParent: {fileID: 0}
   btn_ShowCombatKeyBindings: {fileID: 0}
   combatKeyParents: []
---- !u!114 &720376271
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 720376261}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d8aa9a3a3fc7485448c1e258f4bedce8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  locations: []
-  locationType: 0
 --- !u!114 &720376272
 MonoBehaviour:
   m_ObjectHideFlags: 0

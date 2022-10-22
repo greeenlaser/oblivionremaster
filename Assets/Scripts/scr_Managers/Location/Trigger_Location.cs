@@ -6,7 +6,8 @@ using UnityEngine;
 public class Trigger_Location : MonoBehaviour
 {
     [Header("General")]
-    [SerializeField] private GameObject par_Managers;
+    public string cellName;
+    public List<GameObject> containers;
     public LocationType locationType;
     public enum LocationType
     {
@@ -15,11 +16,12 @@ public class Trigger_Location : MonoBehaviour
         dungeon,
         battle
     }
+    [SerializeField] private GameObject thePlayer;
+    [SerializeField] private GameObject par_Managers;
 
     [Header("Location variables")]
     [SerializeField] private float maxDistanceToEnable;
     [SerializeField] private float maxDistanceToDiscover;
-    [SerializeField] private Transform thePlayer;
     [SerializeField] private GameObject location;
     [SerializeField] private GameObject location_discovered;
 
@@ -30,10 +32,12 @@ public class Trigger_Location : MonoBehaviour
     private Vector3 undiscoveredStartScale;
     private Vector3 discoveredStartScale;
     private Manager_Locations LocationManagerScript;
+    private UI_Lockpicking LockPickingScript;
 
     private void Awake()
     {
         LocationManagerScript = par_Managers.GetComponentInChildren<Manager_Locations>();
+        LockPickingScript = par_Managers.GetComponent<UI_Lockpicking>();
 
         undiscoveredStartScale = location.transform.localScale;
         discoveredStartScale = location_discovered.transform.localScale;
@@ -54,7 +58,7 @@ public class Trigger_Location : MonoBehaviour
                 }
 
                 location.SetActive(true);
-                location.transform.LookAt(2 * location.transform.position - thePlayer.position);
+                location.transform.LookAt(2 * location.transform.position - thePlayer.transform.position);
 
                 float distance = Vector3.Distance(thePlayer.transform.position, location.transform.position);
                 location.transform.localScale = undiscoveredStartScale * distance / 3;
@@ -67,7 +71,7 @@ public class Trigger_Location : MonoBehaviour
                 }
 
                 location_discovered.SetActive(true);
-                location_discovered.transform.LookAt(2 * location_discovered.transform.position - thePlayer.position);
+                location_discovered.transform.LookAt(2 * location_discovered.transform.position - thePlayer.transform.position);
 
                 float distance = Vector3.Distance(thePlayer.transform.position, location_discovered.transform.position);
                 location_discovered.transform.localScale = discoveredStartScale * distance / 3;
@@ -86,6 +90,9 @@ public class Trigger_Location : MonoBehaviour
 
             if (!wasDiscovered)
             {
+                ResetCell();
+                Debug.Log("Discovered " + cellName + "!");
+
                 wasDiscovered = true;
             }
         }
@@ -112,6 +119,25 @@ public class Trigger_Location : MonoBehaviour
             {
                 LocationManagerScript.UpdateCurrentLocation(theLocationType);
             }
+        }
+    }
+
+    //reset all hostile AI and containers in this cell
+    public void ResetCell()
+    {
+        foreach (GameObject container in containers)
+        {
+            UI_Inventory inventory = container.GetComponent<UI_Inventory>();
+            Env_LootTable lootTable = container.GetComponent<Env_LootTable>();
+
+            if (inventory.containerType == UI_Inventory.ContainerType.respawnable
+                || inventory.containerType == UI_Inventory.ContainerType.store)
+            {
+                lootTable.RespawnContainer();
+            }
+
+            Env_LockStatus LockStatusScript = container.GetComponent<Env_LockStatus>();
+            LockPickingScript.SetTumblerPositions(LockStatusScript);
         }
     }
 }

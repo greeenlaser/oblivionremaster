@@ -7,6 +7,8 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using System.Diagnostics.CodeAnalysis;
+using Unity.VisualScripting;
 
 public class Manager_GameSaving : MonoBehaviour
 {
@@ -28,6 +30,7 @@ public class Manager_GameSaving : MonoBehaviour
     private Manager_KeyBindings KeyBindingsScript;
     private UI_LoadingScreen LoadingScreenScript;
     private Manager_DateAndTime DateAndTimeScript;
+    private Manager_Locations LocationsScript;
     private Manager_UIReuse UIReuseScript;
 
     private void Awake()
@@ -49,6 +52,7 @@ public class Manager_GameSaving : MonoBehaviour
             PlayerStatsScript = thePlayer.GetComponent<Player_Stats>();
             PlayerMenuScript = GetComponent<UI_PlayerMenu>();
             DateAndTimeScript = GetComponent<Manager_DateAndTime>();
+            LocationsScript = GetComponent<Manager_Locations>();
         }
     }
 
@@ -328,7 +332,8 @@ public class Manager_GameSaving : MonoBehaviour
         saveFile.WriteLine("");
 
         saveFile.WriteLine("---GLOBAL VALUES---");
-        saveFile.WriteLine("Time and date: " + Mathf.Floor(DateAndTimeScript.second) + ", " 
+        saveFile.WriteLine("DaysSinceReset: " + DateAndTimeScript.daysSinceLastRestart);
+        saveFile.WriteLine("TimeAndDate: " + Mathf.Floor(DateAndTimeScript.second) + ", " 
                                              + DateAndTimeScript.minute + ", " 
                                              + DateAndTimeScript.hour + ", "
                                              + DateAndTimeScript.dayName + ", " 
@@ -409,6 +414,56 @@ public class Manager_GameSaving : MonoBehaviour
         if (itemCount == 0)
         {
             saveFile.WriteLine("No items were found in player inventory.");
+        }
+
+        //get each location in the game
+        foreach (GameObject location in LocationsScript.locations)
+        {
+            Trigger_Location LocationScript = location.GetComponent<Trigger_Location>();
+
+            saveFile.WriteLine("");
+            saveFile.WriteLine("---" + LocationScript.cellName + " info---");
+            saveFile.WriteLine("Cell_" + LocationScript.cellName + "_DiscoverStatus: " + LocationScript.wasDiscovered);
+
+            int foundContainerCount = 0;
+            //get each container in this location
+            foreach (GameObject container in LocationScript.containers)
+            {
+                UI_Inventory ContainerScript = container.GetComponent<UI_Inventory>();
+
+                saveFile.WriteLine("");
+                saveFile.WriteLine("-" + ContainerScript.containerName + " container items-");
+
+                Env_LockStatus LockStatusScript = container.GetComponent<Env_LockStatus>();
+                string lockStatus = LockStatusScript.isUnlocked + ", " +
+                                    LockStatusScript.tumbler1Unlocked + ", " +
+                                    LockStatusScript.tumbler2Unlocked + ", " +
+                                    LockStatusScript.tumbler3Unlocked + ", " +
+                                    LockStatusScript.tumbler4Unlocked + ", " +
+                                    LockStatusScript.tumbler5Unlocked;
+                
+                saveFile.WriteLine("Cell_" + ContainerScript.containerName + "_LockStatus: " + lockStatus);
+
+                int foundItemCount = 0;
+                foreach (GameObject item in ContainerScript.containerItems)
+                {
+                    Env_Item itemScript = item.GetComponent<Env_Item>();
+                    string itemName = itemScript.str_ItemName;
+                    int theItemCount = itemScript.itemCount;
+
+                    saveFile.WriteLine("Cell_" + ContainerScript.containerName + "_" + itemName + ": " + theItemCount);
+                    foundItemCount++;
+                }
+                if (foundItemCount == 0)
+                {
+                    saveFile.WriteLine("No items were found in " + ContainerScript.containerName + " container.");
+                }
+                foundContainerCount++;
+            }
+            if (foundContainerCount == 0)
+            {
+                saveFile.WriteLine("No containers were found in " + LocationScript.cellName + " cell.");
+            }
         }
 
         Debug.Log("Successfully saved game to " + str_SaveFilePath + "!");
@@ -511,6 +566,7 @@ public class Manager_GameSaving : MonoBehaviour
             else
             {
                 Debug.Log("Started new game.");
+                LocationsScript.ResetAllLocations();
             }
 
             //delete load file
@@ -550,8 +606,13 @@ public class Manager_GameSaving : MonoBehaviour
                     string[] values = valueSplit[1].Split(',');
                     string type = valueSplit[0];
 
+                    //set reset time
+                    if (type == "DaysSinceReset")
+                    {
+                        DateAndTimeScript.daysSinceLastRestart = int.Parse(values[0]);
+                    }
                     //load time
-                    if (type == "Time and date")
+                    else if (type == "TimeAndDate")
                     {
                         float sec = MathF.Floor(float.Parse(values[0]));
                         int min = int.Parse(values[1]);
@@ -702,6 +763,7 @@ public class Manager_GameSaving : MonoBehaviour
                         }
                     }
 
+                    //load player items
                     else if (templateItemNames.Contains(type))
                     {
                         GameObject templateItem = null;
@@ -723,6 +785,67 @@ public class Manager_GameSaving : MonoBehaviour
 
                         PlayerInventoryScript.playerItems.Add(spawnedItem);
                         PlayerStatsScript.invSpace += spawnedItem.GetComponent<Env_Item>().itemCount * spawnedItem.GetComponent<Env_Item>().itemWeight;
+                    }
+
+                    //load locations, container lock states and container items
+                    else if (type.Contains("Cell"))
+                    {
+                        foreach (GameObject location in LocationsScript.locations)
+                        {
+                            Trigger_Location LocationScript = location.GetComponent<Trigger_Location>();
+                            string cellName = LocationScript.cellName;
+
+                            if (type.Contains(cellName + "_DiscoverStatus"))
+                            {
+                                LocationScript.wasDiscovered = bool.Parse(values[0]);
+                            }
+                            else
+                            {
+                                foreach (GameObject container in LocationScript.containers)
+                                {
+                                    UI_Inventory ContainerScript = container.GetComponent<UI_Inventory>();
+                                    string containerName = ContainerScript.containerName;
+
+                                    if (type.Contains(containerName))
+                                    {
+                                        ContainerScript.GetComponent<Env_LockStatus>().hasLoadedLock = true;
+
+                                        if (type.Contains("_LockStatus"))
+                                        {
+                                            Env_LockStatus LockStatusScript = container.GetComponent<Env_LockStatus>();
+
+                                            LockStatusScript.isUnlocked = bool.Parse(values[0]);
+                                            LockStatusScript.tumbler1Unlocked = bool.Parse(values[1]);
+                                            LockStatusScript.tumbler2Unlocked = bool.Parse(values[2]);
+                                            LockStatusScript.tumbler3Unlocked = bool.Parse(values[3]);
+                                            LockStatusScript.tumbler4Unlocked = bool.Parse(values[4]);
+                                            LockStatusScript.tumbler5Unlocked = bool.Parse(values[5]);
+                                        }
+                                        else
+                                        {
+                                            foreach (GameObject item in PlayerMenuScript.templateItems)
+                                            {
+                                                if (type.Contains(item.name))
+                                                {
+                                                    int itemCount = int.Parse(values[0]);
+
+                                                    GameObject spawnedItem = Instantiate(item,
+                                                                                         ContainerScript.par_ContainerItems.transform.position,
+                                                                                         Quaternion.identity,
+                                                                                         ContainerScript.par_ContainerItems.transform);
+                                                    Env_Item SpawnedItemScript = spawnedItem.GetComponent<Env_Item>();
+                                                    spawnedItem.name = SpawnedItemScript.str_ItemName;
+                                                    SpawnedItemScript.itemCount = itemCount;
+                                                    ContainerScript.containerItems.Add(spawnedItem);
+
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }

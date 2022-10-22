@@ -113,6 +113,9 @@ public class Manager_Settings : MonoBehaviour
 
     private void Awake()
     {
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 60;
+
         ConfirmationScript = GetComponent<UI_Confirmation>();
         GameManagerScript = GetComponent<GameManager>();
         UIReuseScript = GetComponent<Manager_UIReuse>();
@@ -684,11 +687,11 @@ public class Manager_Settings : MonoBehaviour
             user_EnableVSync = def_EnableVsync;
             if (user_EnableVSync == "true")
             {
-                QualitySettings.vSyncCount = 1;
+                Application.targetFrameRate = 60;
             }
             else if (user_EnableVSync == "false")
             {
-                QualitySettings.vSyncCount = 0;
+                Application.targetFrameRate = 999;
             }
 
             //reset texture quality
@@ -875,11 +878,11 @@ public class Manager_Settings : MonoBehaviour
                 user_EnableVSync = button.GetComponentInChildren<TMP_Text>().text;
                 if (user_EnableVSync == "true")
                 {
-                    QualitySettings.vSyncCount = 1;
+                    Application.targetFrameRate = 60;
                 }
                 else if (user_EnableVSync == "false")
                 {
-                    QualitySettings.vSyncCount = 0;
+                    Application.targetFrameRate = 999;
                 }
             }
             else if (info == "TextureQuality")
@@ -1092,11 +1095,11 @@ public class Manager_Settings : MonoBehaviour
                                 user_EnableVSync = value;
                                 if (user_EnableVSync == "true")
                                 {
-                                    QualitySettings.vSyncCount = 1;
+                                    Application.targetFrameRate = 60;
                                 }
                                 else if (user_EnableVSync == "false")
                                 {
-                                    QualitySettings.vSyncCount = 0;
+                                    Application.targetFrameRate = 999;
                                 }
                             }
                             else if (type == "TextureQuality")

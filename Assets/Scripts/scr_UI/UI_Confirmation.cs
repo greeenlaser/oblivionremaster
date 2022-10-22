@@ -182,7 +182,7 @@ public class UI_Confirmation : MonoBehaviour
 
         UIReuseScript.btn_Cancel.onClick.AddListener(UIReuseScript.ClearConfirmationUI);
 
-        if (callerObject.name == "Player")
+        if (callerObject.GetComponent<UI_Inventory>() != null)
         {
             UI_Inventory targetInventory = callerObject.GetComponent<UI_Inventory>();
             Env_Item itemScript = targetItem.GetComponent<Env_Item>();
@@ -191,13 +191,21 @@ public class UI_Confirmation : MonoBehaviour
             {
                 UIReuseScript.txt_Confirmation.text = "Take " + targetItem.name + "(s).";
                 UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Take selected count";
-                UIReuseScript.btn_Confirm2.GetComponentInChildren<TMP_Text>().text = "Take all";
             }
             else if (callerName == "placeToWorld")
             {
                 UIReuseScript.txt_Confirmation.text = "Drop " + targetItem.name + "(s).";
                 UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Drop selected count";
-                UIReuseScript.btn_Confirm2.GetComponentInChildren<TMP_Text>().text = "Drop all";
+            }
+            else if (callerName == "takeFromContainer")
+            {
+                UIReuseScript.txt_Confirmation.text = "Take " + targetItem.name + "(s).";
+                UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Take selected count";
+            }
+            else if (callerName == "placeToContainer")
+            {
+                UIReuseScript.txt_Confirmation.text = "Place " + targetItem.name + "(s).";
+                UIReuseScript.btn_Confirm1.GetComponentInChildren<TMP_Text>().text = "Place selected count";
             }
 
             UIReuseScript.confirmationSlider.gameObject.SetActive(true);

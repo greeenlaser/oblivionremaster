@@ -15,11 +15,13 @@ public class Env_LootTable : MonoBehaviour
     [SerializeField] private GameObject par_Managers;
 
     //scripts
+    private Player_Stats PlayerStatsScript;
     private UI_Inventory TargetInventory;
     private UI_PlayerMenu PlayerMenuScript;
 
     private void Awake()
     {
+        PlayerStatsScript = thePlayer.GetComponent<Player_Stats>();
         TargetInventory = GetComponent<UI_Inventory>();
         PlayerMenuScript = par_Managers.GetComponent<UI_PlayerMenu>();
     }
@@ -27,36 +29,57 @@ public class Env_LootTable : MonoBehaviour
     //used for restocking stores and refilling refillable containers
     public void RespawnContainer()
     {
-        //ClearTargetInventory();
+        if (TargetInventory.containerItems.Count > 0)
+        {
+            ClearTargetInventory();
+        }
 
-        List<GameObject> realSpawnableItems = new();
         foreach (GameObject item in spawnableItems)
         {
             foreach (Transform templateItem in PlayerMenuScript.par_TemplateItems.transform)
             {
                 if (templateItem.name == item.name)
                 {
-                    int chanceToSpawn = 10;
+                    int randomChance = 0;
+
                     Env_Item itemScript = templateItem.GetComponent<Env_Item>();
+                    string itemQuality = itemScript.itemQuality.ToString();
+                    if (itemQuality == "trash")
+                    {
+                        randomChance = Random.Range(25, 60);
+                    }
+                    else if (itemQuality == "common")
+                    {
+                        randomChance = Random.Range(20, 50);
+                    }
+                    else if (itemQuality == "rare")
+                    {
+                        randomChance = Random.Range(15, 40);
+                    }
+                    else if (itemQuality == "legendary")
+                    {
+                        randomChance = Random.Range(10, 30);
+                    }
 
-                    if (itemScript.itemQuality == Env_Item.ItemQuality.trash)
+                    int luck = PlayerStatsScript.Attributes["Luck"];
+                    int luckChance = 0;
+                    if (luck <= 5)
                     {
-                        chanceToSpawn *= Random.Range(1, 10) * lootQuality;
+                        luckChance = 1;
                     }
-                    else if (itemScript.itemQuality == Env_Item.ItemQuality.trash)
+                    else if (luckChance > 5
+                             && luckChance <= 8)
                     {
-                        chanceToSpawn *= Random.Range(2, 6) * lootQuality;
+                        luckChance = 2;
                     }
-                    else if (itemScript.itemQuality == Env_Item.ItemQuality.trash)
+                    else if (luck > 8)
                     {
-                        chanceToSpawn *= Random.Range(1, 3) * lootQuality;
-                    }
-                    else if (itemScript.itemQuality == Env_Item.ItemQuality.trash)
-                    {
-                        chanceToSpawn *= lootQuality;
+                        luckChance = 3;
                     }
 
-                    if (chanceToSpawn > 50)
+                    int chanceToSpawn = lootQuality * randomChance * luckChance;
+
+                    if (chanceToSpawn >= 50)
                     {
                         GameObject realItem = Instantiate(templateItem.gameObject,
                                                           par_RealSpawnableItems.transform.position,
@@ -65,31 +88,23 @@ public class Env_LootTable : MonoBehaviour
 
                         Env_Item realItemScript = realItem.GetComponent<Env_Item>();
                         realItem.name = realItemScript.str_ItemName;
-                        realSpawnableItems.Add(realItem);
+                        realItem.layer = LayerMask.NameToLayer("LimitedCollision");
+                        TargetInventory.containerItems.Add(realItem);
 
                         if (realItemScript.isStackable)
                         {
-                            int minCount = Random.Range(1, 15);
-                            int maxCount = Random.Range(25, 100);
+                            int count = Random.Range(3, 15);
 
                             if (realItemScript.itemType == Env_Item.ItemType.consumable
-                                || realItemScript.itemType == Env_Item.ItemType.alchemyIngredient)
+                                || realItemScript.itemType == Env_Item.ItemType.alchemyIngredient
+                                || realItemScript.itemType == Env_Item.ItemType.ammo
+                                || realItemScript.itemType == Env_Item.ItemType.misc)
                             {
-                                if (minCount >= 5)
-                                {
-                                    minCount = Mathf.FloorToInt(minCount / Random.Range(3, 8));
-                                }
-                                if (maxCount >= 35)
-                                {
-                                    maxCount = Mathf.FloorToInt(maxCount / Random.Range(4, 10));
-                                }
+                                count *= lootQuality;
                             }
 
-                            realItemScript.itemCount = Random.Range(minCount * lootQuality,
-                                                                    maxCount * lootQuality);
+                            realItemScript.itemCount = count;
                         }
-
-                        Debug.Log("Spawned " + realItemScript.itemCount + " " + realItem.name + "(s) to " + TargetInventory.containerName + "...");
                     }
                     break;
                 }
@@ -101,11 +116,6 @@ public class Env_LootTable : MonoBehaviour
     private void ClearTargetInventory()
     {
         foreach (Transform item in par_RealSpawnableItems.transform)
-        {
-            Destroy(item.gameObject);
-        }
-
-        foreach (Transform item in TargetInventory.transform)
         {
             Destroy(item.gameObject);
         }
