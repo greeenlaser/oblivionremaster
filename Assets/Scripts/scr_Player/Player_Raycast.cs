@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player_Raycast : MonoBehaviour
 {
     [Header("Assignables")]
+    [SerializeField] private RawImage cursor;
+    [SerializeField] private RawImage interactIcon;
     public Transform pos_HoldItem;
     [SerializeField] private GameObject par_Managers;
 
@@ -36,6 +39,9 @@ public class Player_Raycast : MonoBehaviour
         PlayerStatsScript = transform.parent.GetComponent<Player_Stats>();
 
         IgnoredLayermask = LayerMask.NameToLayer("Player");
+
+        cursor.gameObject.SetActive(true);
+        interactIcon.gameObject.SetActive(false);
     }
 
     //checking what collides with the visionCone mesh
@@ -250,6 +256,15 @@ public class Player_Raycast : MonoBehaviour
                 canInteract = false;
             }
 
+            if (cursor.gameObject.activeInHierarchy)
+            {
+                cursor.gameObject.SetActive(false);
+            }
+            if (!interactIcon.gameObject.activeInHierarchy)
+            {
+                interactIcon.gameObject.SetActive(true);
+            }
+
             //interacting with an object
             if (KeyBindingsScript.GetButtonDown("PickUpOrInteract"))
             {
@@ -319,6 +334,15 @@ public class Player_Raycast : MonoBehaviour
                 heldObject.GetComponent<Env_ObjectPickup>().DropObject();
                 heldObject = null;
             }
+        }
+        else if (!canInteract
+                 && (timer > 0
+                 || interactIcon.gameObject.activeInHierarchy))
+        {
+            cursor.gameObject.SetActive(true);
+            interactIcon.gameObject.SetActive(false);
+
+            timer = 0;
         }
     }
 }

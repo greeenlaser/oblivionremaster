@@ -713,13 +713,9 @@ public class UI_Inventory : MonoBehaviour
             PlayerStatsScript.invSpace += totalCount;
         }
 
-        if (PlayerMenuScript.isPlayerInventoryOpen
-            || PlayerMenuScript.isContainerOpen)
-        {
-            PauseMenuScript.UnpauseGame();
-            RemoveDuplicates();
-            PauseMenuScript.PauseWithoutUI();
-        }
+        PauseMenuScript.UnpauseGame();
+        RemoveDuplicates();
+        PauseMenuScript.PauseWithoutUI();
 
         Debug.Log("Successfully moved " + selectedCount + " " + targetItem.name + "(s) from " + originalLocation.transform.parent.name + " to " + targetLocation.transform.parent.name + "!");
     }

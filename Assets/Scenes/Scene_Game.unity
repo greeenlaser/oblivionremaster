@@ -1232,7 +1232,7 @@ RectTransform:
   - {fileID: 892075980}
   - {fileID: 2119816206}
   m_Father: {fileID: 1027914984}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -2952,7 +2952,7 @@ RectTransform:
   m_Children:
   - {fileID: 685006858}
   m_Father: {fileID: 1027914984}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -7551,7 +7551,7 @@ RectTransform:
   - {fileID: 1411049984}
   - {fileID: 578112763}
   m_Father: {fileID: 1027914984}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -9456,6 +9456,79 @@ Transform:
   m_Father: {fileID: 1848623624}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &780299743
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 780299744}
+  - component: {fileID: 780299746}
+  - component: {fileID: 780299745}
+  m_Layer: 0
+  m_Name: interactIcon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &780299744
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 780299743}
+  m_LocalRotation: {x: -0, y: -0, z: -0.7323228, w: 0.6809576}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1027914984}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -94.163}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 21, y: -21}
+  m_SizeDelta: {x: 50, y: 50}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &780299745
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 780299743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Texture: {fileID: 2800000, guid: 4cc222a02ec24a3469fd111d65aeaebd, type: 3}
+  m_UVRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+--- !u!222 &780299746
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 780299743}
+  m_CullTransparentMesh: 1
 --- !u!4 &782628378 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: b8b898b7947e6c043bec56f43e06af83, type: 3}
@@ -12961,6 +13034,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b83a07c410c2d9e409d454614196091f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cursor: {fileID: 2075054695}
+  interactIcon: {fileID: 780299745}
   pos_HoldItem: {fileID: 518731422}
   par_Managers: {fileID: 919376840}
   heldObject: {fileID: 0}
@@ -13576,6 +13651,7 @@ RectTransform:
   m_Children:
   - {fileID: 1827446729}
   - {fileID: 2075054694}
+  - {fileID: 780299744}
   - {fileID: 251540749}
   - {fileID: 601242492}
   - {fileID: 1601618401}
@@ -13900,6 +13976,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isUnlocked: 1
+  hasLoadedLock: 0
   tumbler1Unlocked: 0
   tumbler2Unlocked: 0
   tumbler3Unlocked: 0
@@ -14613,6 +14690,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isUnlocked: 0
+  hasLoadedLock: 0
   tumbler1Unlocked: 0
   tumbler2Unlocked: 0
   tumbler3Unlocked: 0
@@ -21655,7 +21733,7 @@ RectTransform:
   - {fileID: 226407742}
   - {fileID: 749898523}
   m_Father: {fileID: 1027914984}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
