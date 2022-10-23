@@ -6,8 +6,8 @@ public class Env_Item : MonoBehaviour
 {
     public bool isProtected;
     public bool isStackable;
-    public string ItemName = "REPLACE_MY_NAME";
-    public string ItemDescription = "REPLACE_MY_DESCRIPTION";
+    public string itemName = "REPLACE_MY_NAME";
+    public string itemDescription = "REPLACE_MY_DESCRIPTION";
     [Range(0, 25000)]
     public int itemValue = 0;
     [Range(0, 100)]

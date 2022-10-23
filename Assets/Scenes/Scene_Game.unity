@@ -5796,8 +5796,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isProtected: 1
   isStackable: 0
-  ItemName: REPLACE_MY_NAME
-  ItemDescription: REPLACE_MY_DESCRIPTION
+  itemName: test1
+  itemDescription: a basic cube used for testing purposes only...
   itemValue: 25000
   itemWeight: 1
   itemCount: 1
@@ -16315,8 +16315,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isProtected: 0
   isStackable: 1
-  ItemName: REPLACE_MY_NAME
-  ItemDescription: REPLACE_MY_DESCRIPTION
+  itemName: Lockpick
+  itemDescription: A lockpick used to unlock most doors and containers.
   itemValue: 1
   itemWeight: 0
   itemCount: 1

@@ -299,7 +299,7 @@ public class UI_Inventory : MonoBehaviour
 
                         UIReuseScript.inventoryButtons.Add(newButton.GetComponent<Button>());
 
-                        string buttonText = itemScript.ItemName;
+                        string buttonText = itemScript.itemName;
                         if (itemScript.itemCount > 1)
                         {
                             buttonText += " x" + itemScript.itemCount;
@@ -344,7 +344,7 @@ public class UI_Inventory : MonoBehaviour
 
                             UIReuseScript.inventoryButtons.Add(newButton.GetComponent<Button>());
 
-                            string buttonText = itemScript.ItemName;
+                            string buttonText = itemScript.itemName;
                             if (itemScript.itemCount > 1)
                             {
                                 buttonText += " x" + itemScript.itemCount;
@@ -381,7 +381,7 @@ public class UI_Inventory : MonoBehaviour
 
                             UIReuseScript.inventoryButtons.Add(newButton.GetComponent<Button>());
 
-                            string buttonText = itemScript.ItemName;
+                            string buttonText = itemScript.itemName;
                             if (itemScript.itemCount > 1)
                             {
                                 buttonText += " x" + itemScript.itemCount;
@@ -405,8 +405,8 @@ public class UI_Inventory : MonoBehaviour
         Env_Item itemScript = targetItem.GetComponent<Env_Item>();
 
         UIReuseScript.par_ItemStats.SetActive(true);
-        UIReuseScript.txt_ItemName.text = itemScript.ItemName.Replace('_', ' ');
-        UIReuseScript.txt_ItemDescription.text = itemScript.ItemDescription;
+        UIReuseScript.txt_ItemName.text = itemScript.itemName.Replace('_', ' ');
+        UIReuseScript.txt_ItemDescription.text = itemScript.itemDescription;
         UIReuseScript.txt_ItemType.text = "Type: " + itemScript.itemType.ToString();
         UIReuseScript.txt_ItemValue.text = "Value: " + itemScript.itemValue.ToString();
         UIReuseScript.txt_ItemWeight.text = "Weight: " + itemScript.itemWeight.ToString();
@@ -514,7 +514,7 @@ public class UI_Inventory : MonoBehaviour
     //equip/use selected item in player inventory
     public void UseItem(GameObject targetItem)
     {
-        Debug.Log("using/consuming " + targetItem.GetComponent<Env_Item>().ItemName.Replace("_", " ") + "...");
+        Debug.Log("using/consuming " + targetItem.GetComponent<Env_Item>().itemName.Replace("_", " ") + "...");
     }
     //take an item from a container or from the world
     public void TakeItem(GameObject targetItem, 

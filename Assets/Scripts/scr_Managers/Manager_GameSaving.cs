@@ -445,7 +445,7 @@ public class Manager_GameSaving : MonoBehaviour
                 foreach (GameObject item in ContainerScript.containerItems)
                 {
                     Env_Item itemScript = item.GetComponent<Env_Item>();
-                    string itemName = itemScript.ItemName;
+                    string itemName = itemScript.itemName;
                     int theItemCount = itemScript.itemCount;
 
                     saveFile.WriteLine("Cell_" + ContainerScript.containerName + "_" + itemName + ": " + theItemCount);
@@ -831,7 +831,7 @@ public class Manager_GameSaving : MonoBehaviour
                                                                                          Quaternion.identity,
                                                                                          ContainerScript.par_ContainerItems.transform);
                                                     Env_Item SpawnedItemScript = spawnedItem.GetComponent<Env_Item>();
-                                                    spawnedItem.name = SpawnedItemScript.ItemName;
+                                                    spawnedItem.name = SpawnedItemScript.itemName;
                                                     SpawnedItemScript.itemCount = itemCount;
                                                     ContainerScript.containerItems.Add(spawnedItem);
 

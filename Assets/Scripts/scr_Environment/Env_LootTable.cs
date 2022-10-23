@@ -87,7 +87,7 @@ public class Env_LootTable : MonoBehaviour
                                                           par_RealSpawnableItems.transform);
 
                         Env_Item realItemScript = realItem.GetComponent<Env_Item>();
-                        realItem.name = realItemScript.ItemName;
+                        realItem.name = realItemScript.itemName;
                         realItem.layer = LayerMask.NameToLayer("LimitedCollision");
                         TargetInventory.containerItems.Add(realItem);
 
