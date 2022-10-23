@@ -7,8 +7,6 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 using System.Linq;
-using System.Diagnostics.CodeAnalysis;
-using Unity.VisualScripting;
 
 public class Manager_GameSaving : MonoBehaviour
 {
@@ -17,8 +15,8 @@ public class Manager_GameSaving : MonoBehaviour
     [SerializeField] private Canvas canvas;
 
     //private variables
-    private string str_SaveName;
-    private string str_SaveFilePath;
+    private string SaveName;
+    private string SaveFilePath;
     private int currentScene;
     private readonly List<Button> saveButtons = new();
 
@@ -160,8 +158,8 @@ public class Manager_GameSaving : MonoBehaviour
         UIReuseScript.txt_SaveName.text = saveName.Replace(".txt", "");
 
         //show save creation date
-        DateTime str_SaveDate = File.GetLastWriteTime(GameManagerScript.savePath + @"\" + saveName);
-        UIReuseScript.txt_SaveDate.text = str_SaveDate.ToString("d");
+        DateTime SaveDate = File.GetLastWriteTime(GameManagerScript.savePath + @"\" + saveName);
+        UIReuseScript.txt_SaveDate.text = SaveDate.ToString("d");
 
         //find the screenshot from saves directory
         //and apply it to the rawimage texture slot
@@ -270,18 +268,18 @@ public class Manager_GameSaving : MonoBehaviour
                 //increase highest index by 1
                 highestIndex++;
                 //create new file name with new highest index
-                str_SaveName = "Save_" + highestIndex;
+                SaveName = "Save_" + highestIndex;
                 //set save path
-                str_SaveFilePath = GameManagerScript.savePath + @"\" + str_SaveName + ".txt";
+                SaveFilePath = GameManagerScript.savePath + @"\" + SaveName + ".txt";
                 //create a new save file and fill it with data
                 SaveGame();
             }
             //if we dont have any save files
             else
             {
-                str_SaveName = "Save_1";
+                SaveName = "Save_1";
                 //set save path
-                str_SaveFilePath = GameManagerScript.savePath + @"\" + str_SaveName + ".txt";
+                SaveFilePath = GameManagerScript.savePath + @"\" + SaveName + ".txt";
                 //create a new save file and fill it with data
                 SaveGame();
             }
@@ -309,10 +307,10 @@ public class Manager_GameSaving : MonoBehaviour
             }
             else
             {
-                str_SaveName = saveName;
+                SaveName = saveName;
 
                 //set save path
-                str_SaveFilePath = GameManagerScript.savePath + @"\" + str_SaveName + ".txt";
+                SaveFilePath = GameManagerScript.savePath + @"\" + SaveName + ".txt";
                 //create a new save file and fill it with data
                 SaveGame();
             }
@@ -325,7 +323,7 @@ public class Manager_GameSaving : MonoBehaviour
         StartCoroutine(TakeScreenshot());
 
         //create a new save file and fill it with data
-        using StreamWriter saveFile = File.CreateText(str_SaveFilePath);
+        using StreamWriter saveFile = File.CreateText(SaveFilePath);
 
         saveFile.WriteLine("Save file for " + UIReuseScript.txt_GameVersion.text + ".");
         saveFile.WriteLine("WARNING - Invalid values will break the game - edit at your own risk!");
@@ -333,11 +331,10 @@ public class Manager_GameSaving : MonoBehaviour
 
         saveFile.WriteLine("---GLOBAL VALUES---");
         saveFile.WriteLine("DaysSinceReset: " + DateAndTimeScript.daysSinceLastRestart);
-        saveFile.WriteLine("TimeAndDate: " + Mathf.Floor(DateAndTimeScript.second) + ", " 
-                                             + DateAndTimeScript.minute + ", " 
-                                             + DateAndTimeScript.hour + ", "
-                                             + DateAndTimeScript.dayName + ", " 
-                                             + DateAndTimeScript.monthName);
+        saveFile.WriteLine("TimeAndDate: " + DateAndTimeScript.minute + ", " 
+                                           + DateAndTimeScript.hour + ", "
+                                           + DateAndTimeScript.dayName + ", " 
+                                           + DateAndTimeScript.monthName);
         saveFile.WriteLine("");
 
         saveFile.WriteLine("---PLAYER POSITION AND ROTATION---");
@@ -448,7 +445,7 @@ public class Manager_GameSaving : MonoBehaviour
                 foreach (GameObject item in ContainerScript.containerItems)
                 {
                     Env_Item itemScript = item.GetComponent<Env_Item>();
-                    string itemName = itemScript.str_ItemName;
+                    string itemName = itemScript.ItemName;
                     int theItemCount = itemScript.itemCount;
 
                     saveFile.WriteLine("Cell_" + ContainerScript.containerName + "_" + itemName + ": " + theItemCount);
@@ -466,14 +463,14 @@ public class Manager_GameSaving : MonoBehaviour
             }
         }
 
-        Debug.Log("Successfully saved game to " + str_SaveFilePath + "!");
+        Debug.Log("Successfully saved game to " + SaveFilePath + "!");
     }
 
     //creates a load file where the game scene
     //reads the load file from to load the correct game save
     public void CreateLoadFile(string saveName)
     {
-        str_SaveName = "";
+        SaveName = "";
 
         //load newest save
         if (saveName == "")
@@ -485,8 +482,8 @@ public class Manager_GameSaving : MonoBehaviour
             if (files.Length > 0)
             {
                 //get newest save file name
-                str_SaveName = files.Last().Name;
-                Debug.Log(str_SaveName);
+                SaveName = files.Last().Name;
+                Debug.Log(SaveName);
             }
             else
             {
@@ -507,7 +504,7 @@ public class Manager_GameSaving : MonoBehaviour
                     if (saveName == file.Name)
                     {
                         //get custom save file name if it exists
-                        str_SaveName = saveName;
+                        SaveName = saveName;
                         break;
                     }
                 }
@@ -518,14 +515,14 @@ public class Manager_GameSaving : MonoBehaviour
             }
         }
 
-        if (str_SaveName != "")
+        if (SaveName != "")
         {
             LoadingScreenScript.OpenLoadingScreen();
             LoadingScreenScript.UpdateLoadingScreenBar(10);
 
             //create a new load file and add which save file we want to load
             using StreamWriter loadFile = File.CreateText(GameManagerScript.gamePath + @"\loadfile.txt");
-            loadFile.WriteLine(str_SaveName);
+            loadFile.WriteLine(SaveName);
 
             //switch to the game scene
             SceneManager.LoadScene(1);
@@ -538,7 +535,7 @@ public class Manager_GameSaving : MonoBehaviour
     //find the correct save file to load from the load file
     public void ReadLoadFile()
     {
-        string str_loadFileName = "";
+        string loadFileName = "";
 
         //get game path
         DirectoryInfo info = new(GameManagerScript.gamePath);
@@ -553,15 +550,15 @@ public class Manager_GameSaving : MonoBehaviour
                 if (file.Name == "loadfile.txt")
                 {
                     //read the first line in the load file
-                    str_loadFileName = File.ReadLines(GameManagerScript.gamePath + @"\loadfile.txt").First();
+                    loadFileName = File.ReadLines(GameManagerScript.gamePath + @"\loadfile.txt").First();
                     break;
                 }
             }
 
             //loads game data if game isnt restarting
-            if (str_loadFileName != "restart")
+            if (loadFileName != "restart")
             {
-                LoadGame(str_loadFileName);
+                LoadGame(loadFileName);
             }
             else
             {
@@ -576,7 +573,7 @@ public class Manager_GameSaving : MonoBehaviour
     //load game data from save file
     private void LoadGame(string saveFileName)
     {
-        string str_SaveFileName = "";
+        string SaveFileName = "";
 
         List<string> templateItemNames = new();
         foreach (GameObject item in PlayerMenuScript.templateItems)
@@ -590,14 +587,14 @@ public class Manager_GameSaving : MonoBehaviour
             if (saveFileName != ""
                 && file.Contains(saveFileName))
             {
-                str_SaveFileName = GameManagerScript.savePath + @"\" + saveFileName;
+                SaveFileName = GameManagerScript.savePath + @"\" + saveFileName;
                 break;
             }
         }
 
-        if (str_SaveFileName != "")
+        if (SaveFileName != "")
         {
-            foreach (string line in File.ReadLines(str_SaveFileName))
+            foreach (string line in File.ReadLines(SaveFileName))
             {
                 //split full line between :
                 if (line.Contains(':'))
@@ -620,7 +617,7 @@ public class Manager_GameSaving : MonoBehaviour
                         string date = values[3];
                         string month = values[4];
 
-                        DateAndTimeScript.SetDateAndTime(sec, min, hr, date, month);
+                        DateAndTimeScript.SetDateAndTime(min, hr, date, month);
                     }
 
                     //load player position and rotation
@@ -834,7 +831,7 @@ public class Manager_GameSaving : MonoBehaviour
                                                                                          Quaternion.identity,
                                                                                          ContainerScript.par_ContainerItems.transform);
                                                     Env_Item SpawnedItemScript = spawnedItem.GetComponent<Env_Item>();
-                                                    spawnedItem.name = SpawnedItemScript.str_ItemName;
+                                                    spawnedItem.name = SpawnedItemScript.ItemName;
                                                     SpawnedItemScript.itemCount = itemCount;
                                                     ContainerScript.containerItems.Add(spawnedItem);
 
@@ -860,7 +857,7 @@ public class Manager_GameSaving : MonoBehaviour
 
     private IEnumerator TakeScreenshot()
     {
-        string screenshotPath = str_SaveFilePath.Replace(".txt", ".png");
+        string screenshotPath = SaveFilePath.Replace(".txt", ".png");
 
         canvas.enabled = false;
 

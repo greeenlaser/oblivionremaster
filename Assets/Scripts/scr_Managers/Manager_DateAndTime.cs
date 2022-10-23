@@ -5,6 +5,14 @@ using UnityEngine;
 
 public class Manager_DateAndTime : MonoBehaviour
 {
+    [Header("Assignables")]
+    [Range(0.1f, 10000)]
+    [SerializeField] private float timeSpeed;
+    [SerializeField] private float rotationSpeed;
+    [SerializeField] private GameObject sun;
+    [SerializeField] private GameObject pos_SunLookAt;
+    [SerializeField] private GameObject pos_RotationCenter;
+
     //day and month names
     private readonly string[] Days = new string[]
     {
@@ -15,13 +23,15 @@ public class Manager_DateAndTime : MonoBehaviour
     //time and date values
     private string fullTime;
     [HideInInspector] public int daysSinceLastRestart = 3;
-    [HideInInspector] public float second;
     [HideInInspector] public int minute;
     [HideInInspector] public int hour;
     [HideInInspector] public string dayName;
     [HideInInspector] public string monthName;
 
     //private variables
+    private bool moveSun;
+    private float clockTimer = 2;
+    private float sunCountdownTimer;
     private Manager_Locations LocationsScript;
 
     private void Awake()
@@ -41,33 +51,40 @@ public class Manager_DateAndTime : MonoBehaviour
 
         //apply default date
         SetDateAndTime(0,
-                       0,
                        12,
                        "27 Morndas",
                        "Last Seed");
 
+        sun.transform.LookAt(pos_SunLookAt.transform.position);
+        
         LocationsScript = GetComponent<Manager_Locations>();
-    }
-
-    //apply a date and time that the game starts counting from the launch of the game
-    public void SetDateAndTime(float sec, int min, int hr, string dateNumberAndDay, string month)
-    {
-        second = sec;
-        minute = min;
-        hour = hr;
-        dayName = dateNumberAndDay;
-        monthName = month;
     }
 
     private void Update()
     {
-        second += Time.deltaTime * 30;
-        if (second >= 60)
+        if (moveSun)
+        {
+            sunCountdownTimer -= Time.deltaTime;
+
+            float step = rotationSpeed * Time.deltaTime;
+            pos_RotationCenter.transform.Rotate(new Vector3(0, 0, 1) * step);
+            sun.transform.LookAt(pos_SunLookAt.transform.position);
+
+            if (sunCountdownTimer <= 0)
+            {
+                moveSun = false;
+            }
+        }
+
+        clockTimer -= Time.deltaTime * timeSpeed;
+        if (clockTimer <= 0)
         {
             minute++;
 
             if (minute >= 60)
             {
+                SetSunPosition();
+
                 hour++;
 
                 if (hour >= 24)
@@ -80,10 +97,27 @@ public class Manager_DateAndTime : MonoBehaviour
                 minute = 0;
             }
 
-            second = 0;
+            clockTimer = 2;
         }
 
-        fullTime = Mathf.Floor(second) + ":" + minute + ":" + hour + ", " + dayName + " of " + monthName + " in the 3rd era 433";
+        fullTime = minute + ":" + hour + ", " + dayName + " of " + monthName + " in the 3rd era 433";
+    }
+
+    //update sun position after every 30 in-game minutes
+    public void SetSunPosition()
+    {
+        sunCountdownTimer = 1;
+
+        moveSun = true;
+    }
+
+    //apply a date and time that the game starts counting from the launch of the game
+    public void SetDateAndTime(int min, int hr, string dateNumberAndDay, string month)
+    {
+        minute = min;
+        hour = hr;
+        dayName = dateNumberAndDay;
+        monthName = month;
     }
 
     private void UpdateDayAndMonth()
@@ -106,6 +140,7 @@ public class Manager_DateAndTime : MonoBehaviour
         {
             newDayIndex = 0;
         }
+        Debug.Log("Trying to set " + newDayIndex + " as new day index...");
         dayName = newDayDate + " " + Days[newDayIndex];
 
         List<string> monthNames = new();

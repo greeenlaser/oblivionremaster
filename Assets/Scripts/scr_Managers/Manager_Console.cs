@@ -44,6 +44,7 @@ public class Manager_Console : MonoBehaviour
     private UI_PauseMenu PauseMenuScript;
     private Manager_KeyBindings KeyBindingsScript;
     private Manager_Settings SettingsScript;
+    private Manager_GameSaving GameSavingScript;
     private Manager_UIReuse UIReuseScript;
 
     private void Awake()
@@ -52,6 +53,7 @@ public class Manager_Console : MonoBehaviour
         PauseMenuScript = GetComponent<UI_PauseMenu>();
         KeyBindingsScript = GetComponent<Manager_KeyBindings>();
         SettingsScript = GetComponent<Manager_Settings>();
+        GameSavingScript = GetComponent<Manager_GameSaving>();
         UIReuseScript = GetComponent<Manager_UIReuse>();
 
         currentScene = SceneManager.GetActiveScene().buildIndex;
@@ -539,14 +541,14 @@ public class Manager_Console : MonoBehaviour
     {
         if (!debugMenuEnabled)
         {
-            GetComponent<Manager_UIReuse>().par_DebugMenu.transform.position -= new Vector3(0, 114, 0);
+            UIReuseScript.par_DebugMenu.transform.position -= new Vector3(0, 114, 0);
 
             CreateNewConsoleLine("Enabled debug menu.", "CONSOLE_INFO_MESSAGE");
             debugMenuEnabled = true;
         }
         else
         {
-            GetComponent<Manager_UIReuse>().par_DebugMenu.transform.position += new Vector3(0, 114, 0);
+            UIReuseScript.par_DebugMenu.transform.position += new Vector3(0, 114, 0);
 
             CreateNewConsoleLine("Disabled debug menu.", "CONSOLE_INFO_MESSAGE");
             debugMenuEnabled = false;
@@ -614,7 +616,7 @@ public class Manager_Console : MonoBehaviour
     {
         //save the potential save name
         string saveName = separatedWords[1];
-        GetComponent<Manager_GameSaving>().CreateSaveFile(saveName);
+        GameSavingScript.CreateSaveFile(saveName);
     }
     //load game save with name
     private void Command_LoadWithName()
@@ -622,7 +624,7 @@ public class Manager_Console : MonoBehaviour
         string path = GameManagerScript.savePath;
         if (File.Exists(path + @"\" + separatedWords[1] + ".txt"))
         {
-            GetComponent<Manager_GameSaving>().CreateLoadFile(separatedWords[1] + ".txt");
+            GameSavingScript.CreateLoadFile(separatedWords[1] + ".txt");
         }
         else
         {
@@ -690,7 +692,7 @@ public class Manager_Console : MonoBehaviour
                 TMP_Text buttonText = button.GetComponentInChildren<TMP_Text>();
                 UI_AssignKey AssignScript = button.GetComponentInChildren<UI_AssignKey>();
 
-                if (AssignScript.str_Info == userKey)
+                if (AssignScript.info == userKey)
                 {
                     buttonText.text = userValue.ToString().Replace("KeyCode.", "");
 
@@ -743,7 +745,7 @@ public class Manager_Console : MonoBehaviour
 
         foreach (Transform par in parents)
         {
-            string info = par.GetComponentInChildren<UI_AssignSettings>().str_Info;
+            string info = par.GetComponentInChildren<UI_AssignSettings>().info;
 
             //general settings
             if (info == "Difficulty")

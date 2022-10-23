@@ -6,7 +6,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using UnityEngine.Rendering;
 
 public class Manager_Settings : MonoBehaviour
 {
@@ -101,8 +100,6 @@ public class Manager_Settings : MonoBehaviour
     [HideInInspector] public int user_NPCVolume;
 
     //private variables
-    private float timer;
-    private float deltaTime;
     private int currentScene;
 
     //scripts
@@ -130,22 +127,6 @@ public class Manager_Settings : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        //framerate block beginning
-        deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
-        float msec = Mathf.FloorToInt(deltaTime * 1000.0f);
-        float fps = Mathf.FloorToInt(1.0f / deltaTime);
-
-        timer += Time.unscaledDeltaTime;
-        if (timer > 0.1f)
-        {
-            UIReuseScript.txt_FPS.text = fps + " (" + msec + ")";
-            timer = 0;
-        }
-        //framerate block ending
-    }
-
     //set slider limits to all sliders
     private void SetSliderLimits()
     {
@@ -169,7 +150,7 @@ public class Manager_Settings : MonoBehaviour
             {
                 Slider slider = par.GetComponentInChildren<Slider>();
                 UI_AssignSettings AssignScript = slider.GetComponent<UI_AssignSettings>();
-                string info = AssignScript.str_Info;
+                string info = AssignScript.info;
 
                 if (info == "Difficulty")
                 {
@@ -266,7 +247,7 @@ public class Manager_Settings : MonoBehaviour
     public void AssignEvent(GameObject target, string targetType)
     {
         UI_AssignSettings AssignScript = target.GetComponent<UI_AssignSettings>();
-        string info = AssignScript.str_Info;
+        string info = AssignScript.info;
 
         if (targetType == "dropdown")
         {
@@ -539,7 +520,7 @@ public class Manager_Settings : MonoBehaviour
     public void DropdownEvent(TMP_Dropdown target)
     {
         UI_AssignSettings SettingsScript = target.GetComponent<UI_AssignSettings>();
-        string info = SettingsScript.str_Info;
+        string info = SettingsScript.info;
 
         string newValue = target.value.ToString();
 
@@ -568,7 +549,7 @@ public class Manager_Settings : MonoBehaviour
     public void SliderEvent(Slider target, TMP_Text sliderText)
     {
         UI_AssignSettings SettingsScript = target.GetComponent<UI_AssignSettings>();
-        string info = SettingsScript.str_Info;
+        string info = SettingsScript.info;
 
         if (info == "Difficulty"         //general settings
             || info == "MouseSpeed"
@@ -592,7 +573,7 @@ public class Manager_Settings : MonoBehaviour
     public void ButtonEvent(Button target)
     { 
         UI_AssignSettings SettingsScript = target.GetComponent<UI_AssignSettings>();
-        string info = SettingsScript.str_Info;
+        string info = SettingsScript.info;
         if (info == "VSyncState")
         {
             if (target.GetComponentInChildren<TMP_Text>().text == "true")
@@ -796,21 +777,21 @@ public class Manager_Settings : MonoBehaviour
             {
                 dropDown = par.GetComponentInChildren<Dropdown>();
                 AssignScript = dropDown.GetComponent<UI_AssignSettings>();
-                info = AssignScript.str_Info;
+                info = AssignScript.info;
             }
             else if (par.GetComponentInChildren<Slider>() != null
                      && par.GetComponentInChildren<Slider>().gameObject.activeInHierarchy)
             {
                 slider = par.GetComponentInChildren<Slider>();
                 AssignScript = slider.GetComponent<UI_AssignSettings>();
-                info = AssignScript.str_Info;
+                info = AssignScript.info;
             }
             else if (par.GetComponentInChildren<Button>() != null
                      && par.GetComponentInChildren<Button>().gameObject.activeInHierarchy)
             {
                 button = par.GetComponentInChildren<Button>();
                 AssignScript = button.GetComponent<UI_AssignSettings>();
-                info = AssignScript.str_Info;
+                info = AssignScript.info;
             }
 
             //general settings
@@ -1020,7 +1001,7 @@ public class Manager_Settings : MonoBehaviour
             foreach (Transform parent in parents)
             {
                 UI_AssignSettings AssignScript = parent.transform.GetComponentInChildren<UI_AssignSettings>();
-                string info = AssignScript.str_Info;
+                string info = AssignScript.info;
 
                 foreach (string line in File.ReadLines(settingsFilePath))
                 {

@@ -122,7 +122,7 @@ public class Manager_KeyBindings : MonoBehaviour
             //get the assign script from the button
             UI_AssignKey AssignScript = keyButton.GetComponent<UI_AssignKey>();
             //get the info from the script - what will the pressed button do
-            string info = AssignScript.str_Info;
+            string info = AssignScript.info;
 
             //get all keys from key bindings keycodes and convert to string array
             string[] values = new string[KeyBindings.Keys.Count];
@@ -180,7 +180,7 @@ public class Manager_KeyBindings : MonoBehaviour
                 {
                     Button btn = buttonParent.GetComponentInChildren<Button>();
                     string buttonText = btn.GetComponentInChildren<TMP_Text>().text;
-                    string buttonInfo = btn.GetComponentInChildren<UI_AssignKey>().str_Info;
+                    string buttonInfo = btn.GetComponentInChildren<UI_AssignKey>().info;
                     if (buttonInfo == key)
                     {
                         buttonText = "None";

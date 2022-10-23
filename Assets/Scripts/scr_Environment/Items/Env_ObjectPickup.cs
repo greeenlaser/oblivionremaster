@@ -26,6 +26,7 @@ public class Env_ObjectPickup : MonoBehaviour
     private float distanceToGround;
     private Collider theCollider;
     private Rigidbody rb;
+    private Env_Item ItemScript;
     private UI_Inventory PlayerInventoryScript;
     private Player_Raycast PlayerRaycastScript;
 
@@ -33,6 +34,8 @@ public class Env_ObjectPickup : MonoBehaviour
     {
         distanceToGround = GetComponent<Collider>().bounds.extents.y;
         rb = GetComponent<Rigidbody>();
+
+        ItemScript = GetComponent<Env_Item>();
 
         PlayerInventoryScript = thePlayer.GetComponent<UI_Inventory>();
         PlayerRaycastScript = thePlayer.GetComponentInChildren<Player_Raycast>();
@@ -60,9 +63,9 @@ public class Env_ObjectPickup : MonoBehaviour
             {
                 rb.useGravity = false;
             }
-            if (gameObject.GetComponent<Env_Item>().droppedObject)
+            if (ItemScript.droppedObject)
             {
-                gameObject.GetComponent<Env_Item>().droppedObject = false;
+                ItemScript.droppedObject = false;
             }
 
             Vector3 targetPoint = PlayerRaycastScript.pos_HoldItem.transform.position;
@@ -88,7 +91,7 @@ public class Env_ObjectPickup : MonoBehaviour
             if (Vector3.Distance(transform.position, PlayerRaycastScript.pos_HoldItem.transform.position) > 3)
             {
                 DropObject();
-                //Debug.Log("Dropped " + gameObject.GetComponent<Env_Item>().str_fakeName + " because player went too far from it!");
+                //Debug.Log("Dropped " + gameObject.GetComponent<Env_Item>().fakeName + " because player went too far from it!");
             }
             //throws held object if player presses right mouse button
             if (Input.GetKeyDown(KeyCode.Mouse1))
@@ -142,6 +145,6 @@ public class Env_ObjectPickup : MonoBehaviour
         rb.useGravity = true;
         isColliding = false;
         isHolding = false;
-        GetComponent<Env_Item>().droppedObject = true;
+        ItemScript.droppedObject = true;
     }
 }

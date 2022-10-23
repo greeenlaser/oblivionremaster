@@ -1759,6 +1759,7 @@ GameObject:
   - component: {fileID: 720376269}
   - component: {fileID: 720376267}
   - component: {fileID: 720376264}
+  - component: {fileID: 720376273}
   - component: {fileID: 720376263}
   m_Layer: 0
   m_Name: par_Managers
@@ -1880,8 +1881,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d80c2ab430a9deb488d6b298e8c4310e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  str_GameVersion: OblivionUnity_0.1.1
+  gameVersion: OblivionUnity_0.1.1
   thePlayer: {fileID: 0}
+  realGameVersion: 
   parentPath: 
   gamePath: 
   savePath: 
@@ -2028,6 +2030,18 @@ MonoBehaviour:
   - If you do enough damage to an opponent, you will stagger them.
   - Resting restores your Health, Magicka, and Fatigue.
   thePlayer: {fileID: 0}
+--- !u!114 &720376273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 720376261}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e32d48c3b174f1b49b95383c5ff298b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &756988145
 GameObject:
   m_ObjectHideFlags: 0
