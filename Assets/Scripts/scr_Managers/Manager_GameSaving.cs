@@ -419,17 +419,18 @@ public class Manager_GameSaving : MonoBehaviour
             Trigger_Location LocationScript = location.GetComponent<Trigger_Location>();
 
             saveFile.WriteLine("");
-            saveFile.WriteLine("---" + LocationScript.cellName + " info---");
+            saveFile.WriteLine("---" + LocationScript.cellName + " cell data---");
             saveFile.WriteLine("Cell_" + LocationScript.cellName + "_DiscoverStatus: " + LocationScript.wasDiscovered);
+            saveFile.WriteLine("");
 
+            saveFile.WriteLine("-" + LocationScript.cellName + " containers-");
             int foundContainerCount = 0;
             //get each container in this location
             foreach (GameObject container in LocationScript.containers)
             {
                 UI_Inventory ContainerScript = container.GetComponent<UI_Inventory>();
 
-                saveFile.WriteLine("");
-                saveFile.WriteLine("-" + ContainerScript.containerName + " container items-");
+                saveFile.WriteLine("-" + ContainerScript.containerName + " items-");
 
                 Env_LockStatus LockStatusScript = container.GetComponent<Env_LockStatus>();
                 string lockStatus = LockStatusScript.isUnlocked + ", " +
@@ -453,21 +454,21 @@ public class Manager_GameSaving : MonoBehaviour
                 }
                 if (foundItemCount == 0)
                 {
-                    saveFile.WriteLine("No items were found in " + ContainerScript.containerName + " container.");
+                    saveFile.WriteLine("No items were found in " + ContainerScript.containerName + ".");
                 }
                 foundContainerCount++;
             }
             if (foundContainerCount == 0)
             {
-                saveFile.WriteLine("No containers were found in " + LocationScript.cellName + " cell.");
+                saveFile.WriteLine("No containers were found at " + LocationScript.cellName + ".");
             }
 
+            saveFile.WriteLine("-" + LocationScript.cellName + " doors-");
             int foundDoorCount = 0;
             foreach (GameObject door in LocationScript.doors)
             {
                 Manager_Door DoorManagerScript = door.GetComponent<Manager_Door>();
 
-                saveFile.WriteLine("");
                 saveFile.WriteLine("-" + DoorManagerScript.doorName + " status-");
 
                 Env_LockStatus LockStatusScript = door.GetComponent<Env_LockStatus>();
@@ -486,7 +487,7 @@ public class Manager_GameSaving : MonoBehaviour
             }
             if (foundDoorCount == 0)
             {
-                saveFile.WriteLine("No doors were found in " + LocationScript.cellName + " cell.");
+                saveFile.WriteLine("No doors were found at " + LocationScript.cellName + ".");
             }
         }
 
