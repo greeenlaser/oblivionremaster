@@ -461,6 +461,33 @@ public class Manager_GameSaving : MonoBehaviour
             {
                 saveFile.WriteLine("No containers were found in " + LocationScript.cellName + " cell.");
             }
+
+            int foundDoorCount = 0;
+            foreach (GameObject door in LocationScript.doors)
+            {
+                Manager_Door DoorManagerScript = door.GetComponent<Manager_Door>();
+
+                saveFile.WriteLine("");
+                saveFile.WriteLine("-" + DoorManagerScript.doorName + " status-");
+
+                Env_LockStatus LockStatusScript = door.GetComponent<Env_LockStatus>();
+                if (DoorManagerScript.doorType != Manager_Door.DoorType.gate)
+                {
+                    string lockStatus = LockStatusScript.isUnlocked + ", " +
+                                        LockStatusScript.tumbler1Unlocked + ", " +
+                                        LockStatusScript.tumbler2Unlocked + ", " +
+                                        LockStatusScript.tumbler3Unlocked + ", " +
+                                        LockStatusScript.tumbler4Unlocked + ", " +
+                                        LockStatusScript.tumbler5Unlocked;
+                    saveFile.WriteLine("Cell_" + DoorManagerScript.doorName + "_LockStatus: " + lockStatus);
+                }
+                saveFile.WriteLine("Cell_" + DoorManagerScript.doorName + "_OpenStatus: " + DoorManagerScript.isDoorOpen.ToString());
+                foundDoorCount++;
+            }
+            if (foundDoorCount == 0)
+            {
+                saveFile.WriteLine("No doors were found in " + LocationScript.cellName + " cell.");
+            }
         }
 
         Debug.Log("Successfully saved game to " + SaveFilePath + "!");
@@ -611,11 +638,10 @@ public class Manager_GameSaving : MonoBehaviour
                     //load time
                     else if (type == "TimeAndDate")
                     {
-                        float sec = MathF.Floor(float.Parse(values[0]));
-                        int min = int.Parse(values[1]);
-                        int hr = int.Parse(values[2]);
-                        string date = values[3];
-                        string month = values[4];
+                        int min = int.Parse(values[0]);
+                        int hr = int.Parse(values[1]);
+                        string date = values[2];
+                        string month = values[3];
 
                         DateAndTimeScript.SetDateAndTime(min, hr, date, month);
                     }
@@ -798,6 +824,7 @@ public class Manager_GameSaving : MonoBehaviour
                             }
                             else
                             {
+                                //load each container and its lock status
                                 foreach (GameObject container in LocationScript.containers)
                                 {
                                     UI_Inventory ContainerScript = container.GetComponent<UI_Inventory>();
@@ -805,12 +832,11 @@ public class Manager_GameSaving : MonoBehaviour
 
                                     if (type.Contains(containerName))
                                     {
-                                        ContainerScript.GetComponent<Env_LockStatus>().hasLoadedLock = true;
+                                        Env_LockStatus LockStatusScript = container.GetComponent<Env_LockStatus>();
+                                        LockStatusScript.hasLoadedLock = true;
 
                                         if (type.Contains("_LockStatus"))
                                         {
-                                            Env_LockStatus LockStatusScript = container.GetComponent<Env_LockStatus>();
-
                                             LockStatusScript.isUnlocked = bool.Parse(values[0]);
                                             LockStatusScript.tumbler1Unlocked = bool.Parse(values[1]);
                                             LockStatusScript.tumbler2Unlocked = bool.Parse(values[2]);
@@ -838,6 +864,34 @@ public class Manager_GameSaving : MonoBehaviour
                                                     break;
                                                 }
                                             }
+                                        }
+                                    }
+                                }
+                                //load each door and its open and lock status
+                                foreach (GameObject door in LocationScript.doors)
+                                {
+                                    Manager_Door DoorManagerScript = door.GetComponent<Manager_Door>();
+                                    string doorName = DoorManagerScript.doorName;
+
+                                    if (type.Contains(doorName))
+                                    {
+                                        Env_LockStatus LockStatusScript = door.GetComponent<Env_LockStatus>();
+                                        if (type.Contains("_LockStatus")
+                                            && DoorManagerScript.doorType != Manager_Door.DoorType.gate)
+                                        {
+                                            LockStatusScript.hasLoadedLock = true;
+
+                                            LockStatusScript.isUnlocked = bool.Parse(values[0]);
+                                            LockStatusScript.tumbler1Unlocked = bool.Parse(values[1]);
+                                            LockStatusScript.tumbler2Unlocked = bool.Parse(values[2]);
+                                            LockStatusScript.tumbler3Unlocked = bool.Parse(values[3]);
+                                            LockStatusScript.tumbler4Unlocked = bool.Parse(values[4]);
+                                            LockStatusScript.tumbler5Unlocked = bool.Parse(values[5]);
+                                        }
+                                        else if (type.Contains("_OpenStatus")
+                                                 && bool.Parse(values[0]) == true)
+                                        {
+                                            DoorManagerScript.OpenDoor();
                                         }
                                     }
                                 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Runtime.CompilerServices;
 
 public class UI_Inventory : MonoBehaviour
 {
@@ -12,17 +13,7 @@ public class UI_Inventory : MonoBehaviour
     [SerializeField] private GameObject par_Managers;
 
     [Header("Container assignables")]
-    public bool isLocked;
     public GameObject par_ContainerItems;
-    public LockDifficulty lockDifficulty = LockDifficulty.Apprentice;
-    public enum LockDifficulty
-    {
-        Novice,
-        Apprentice,
-        Journeyman,
-        Expert,
-        Master
-    }
     public string containerName;
     public ContainerType containerType = ContainerType.player;
     public enum ContainerType
@@ -31,7 +22,6 @@ public class UI_Inventory : MonoBehaviour
         store,
         player
     }
-    
 
     //public but hidden variables
     [HideInInspector] public bool tumbler1Unlocked;
@@ -80,42 +70,71 @@ public class UI_Inventory : MonoBehaviour
     //checks if the target container is locked or not
     public void CheckIfLocked()
     {
-        if (containerType == ContainerType.respawnable)
-        {
-            bool hasLockpicks = false;
-            foreach (GameObject item in PlayerInventoryScript.playerItems)
-            {
-                if (item.name == "Lockpick")
-                {
-                    PauseMenuScript.isPlayerMenuOpen = true;
-                    if (!LockStatusScript.isUnlocked)
-                    {
-                        hasLockpicks = true;
-
-                        LockpickingScript.TargetContainerScript = GetComponent<UI_Inventory>();
-                        LockpickingScript.OpenLockpickUI(containerName,
-                                                         lockDifficulty.ToString());
-                        break;
-                    }
-                    else
-                    {
-                        PlayerMenuScript.targetContainer = gameObject;
-                        PlayerMenuScript.isContainerOpen = true;
-                        PauseMenuScript.isPlayerMenuOpen = true;
-                    }
-                }
-            }
-            if (!LockStatusScript.isUnlocked
-                && !hasLockpicks)
-            {
-                Debug.Log("Player tried to pick " + containerName + " lock with no lockpicks.");
-            }
-        }
-        else
+        if (LockStatusScript.isUnlocked)
         {
             PlayerMenuScript.targetContainer = gameObject;
             PlayerMenuScript.isContainerOpen = true;
             PauseMenuScript.isPlayerMenuOpen = true;
+        }
+        else if (!LockStatusScript.isUnlocked
+                 && containerType == ContainerType.respawnable)
+        {
+            if (!LockStatusScript.needsKey)
+            {
+                bool hasLockpicks = false;
+                foreach (GameObject item in PlayerInventoryScript.playerItems)
+                {
+                    if (item.name == "Lockpick")
+                    {
+                        PauseMenuScript.isPlayerMenuOpen = true;
+                        hasLockpicks = true;
+
+                        LockpickingScript.targetLock = gameObject;
+                        LockpickingScript.OpenLockpickUI(containerName,
+                                                         LockStatusScript.lockDifficulty.ToString());
+                        break;
+                    }
+                }
+                if (!hasLockpicks)
+                {
+                    Debug.Log("Player tried to pick " + containerName + " lock with no lockpicks.");
+                }
+            }
+            else
+            {
+                bool foundKey = false;
+                foreach (GameObject item in PlayerInventoryScript.playerItems)
+                {
+                    if (item == LockStatusScript.key)
+                    {
+                        foundKey = true;
+                        break;
+                    }
+                }
+
+                if (!foundKey)
+                {
+                    Debug.Log("Player tried to unlock " + containerName + " lock without proper key.");
+                }
+                else
+                {
+                    PlayerInventoryScript.playerItems.Remove(LockStatusScript.key);
+                    foreach (Transform item in PlayerInventoryScript.par_PlayerItems.transform)
+                    {
+                        if (item.gameObject == LockStatusScript.key)
+                        {
+                            Destroy(item.gameObject);
+                            LockStatusScript.isUnlocked = true;
+
+                            PlayerMenuScript.targetContainer = gameObject;
+                            PlayerMenuScript.isContainerOpen = true;
+                            PauseMenuScript.isPlayerMenuOpen = true;
+
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 

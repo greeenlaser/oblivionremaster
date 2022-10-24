@@ -69,7 +69,7 @@ public class UI_Lockpicking : MonoBehaviour
     [SerializeField] private GameObject thePlayer;
 
     //public but hidden variables
-    [HideInInspector] public UI_Inventory TargetContainerScript;
+    [HideInInspector] public GameObject targetLock;
 
     //private variables
     private bool goingLeft;
@@ -220,7 +220,7 @@ public class UI_Lockpicking : MonoBehaviour
                 }
                 else if (pickStep == 0)
                 {
-                    if (TargetContainerScript != null)
+                    if (targetLock != null)
                     {
                         CloseLockpickUI();
                     }
@@ -246,18 +246,19 @@ public class UI_Lockpicking : MonoBehaviour
 
     public void SetTumblerPositions(Env_LockStatus lockStatusScript)
     {
-        if (TargetContainerScript == null)
+        if (targetLock == null)
         {
-            TargetContainerScript = lockStatusScript.gameObject.GetComponent<UI_Inventory>();
+            targetLock = lockStatusScript.gameObject;
         }
         if (LockStatusScript == null)
         {
-            LockStatusScript = TargetContainerScript.LockStatusScript;
+            LockStatusScript = targetLock.GetComponent<Env_LockStatus>();
         }
 
-        if (!TargetContainerScript.LockStatusScript.hasLoadedLock)
+        if (targetLock.GetComponent<Env_LockStatus>() != null
+            && !targetLock.GetComponent<Env_LockStatus>().hasLoadedLock)
         {
-            int containerDifficulty = (int)TargetContainerScript.lockDifficulty;
+            int containerDifficulty = (int)targetLock.GetComponent<Env_LockStatus>().lockDifficulty;
             if (containerDifficulty == 0)
             {
                 if (par_LockModel.activeInHierarchy)
@@ -711,7 +712,7 @@ public class UI_Lockpicking : MonoBehaviour
             && LockStatusScript.tumbler4Unlocked
             && LockStatusScript.tumbler5Unlocked)
         {
-            if (TargetContainerScript != null)
+            if (targetLock != null)
             {
                 pick.SetActive(false);
 
@@ -722,7 +723,14 @@ public class UI_Lockpicking : MonoBehaviour
 
                 LockStatusScript.isUnlocked = true;
 
-                Debug.Log("Successfully unlocked " + TargetContainerScript.containerName + "!");
+                if (targetLock.GetComponent<UI_Inventory>() != null)
+                {
+                    Debug.Log("Successfully unlocked " + targetLock.GetComponent<UI_Inventory>().containerName + "!");
+                }
+                else if (targetLock.GetComponent<Manager_Door>() != null)
+                {
+                    Debug.Log("Successfully unlocked " + targetLock.GetComponent<Manager_Door>().doorType.ToString().Replace("_", " ") + "!");
+                }
             }
         }
     }
@@ -736,12 +744,12 @@ public class UI_Lockpicking : MonoBehaviour
         pick.SetActive(true);
         ResetPickPosition();
 
-        if (TargetContainerScript != null)
+        if (targetLock != null)
         {
-            LockStatusScript = TargetContainerScript.LockStatusScript;
+            LockStatusScript = targetLock.GetComponent<Env_LockStatus>();
         }
 
-        SetTumblerPositions(TargetContainerScript.LockStatusScript);
+        SetTumblerPositions(LockStatusScript);
 
         theLock.transform.localPosition = pos_LockLocked.localPosition;
         gear1.transform.localEulerAngles = gearOriginalRotation;

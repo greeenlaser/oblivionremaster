@@ -8,6 +8,7 @@ public class Trigger_Location : MonoBehaviour
     [Header("General")]
     public string cellName;
     public List<GameObject> containers;
+    public List<GameObject> doors;
     public LocationType locationType;
     public enum LocationType
     {
@@ -127,6 +128,17 @@ public class Trigger_Location : MonoBehaviour
     {
         foreach (GameObject container in containers)
         {
+            //all lockable containers are always locked again after a restart
+            if (container.GetComponent<Env_LockStatus>().lockedAtRestart)
+            {
+                container.GetComponent<Env_LockStatus>().isUnlocked = false;
+                container.GetComponent<Env_LockStatus>().hasLoadedLock = false;
+            }
+            else
+            {
+                container.GetComponent<Env_LockStatus>().isUnlocked = true;
+            }
+
             UI_Inventory inventory = container.GetComponent<UI_Inventory>();
             Env_LootTable lootTable = container.GetComponent<Env_LootTable>();
 

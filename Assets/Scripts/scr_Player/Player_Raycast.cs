@@ -20,13 +20,11 @@ public class Player_Raycast : MonoBehaviour
     private bool canInteract;
     private float timer;
     private GameObject target;
-    //private GameObject deadAIContainer;
     private LayerMask IgnoredLayermask;
 
     //scripts
     private UI_PauseMenu PauseMenuScript;
     private Manager_KeyBindings KeyBindingsScript;
-    //private Player_Movement PlayerMovementScript;
     private UI_Inventory PlayerInventoryScript;
     private Player_Stats PlayerStatsScript;
 
@@ -34,7 +32,6 @@ public class Player_Raycast : MonoBehaviour
     {
         PauseMenuScript = par_Managers.GetComponent<UI_PauseMenu>();
         KeyBindingsScript = par_Managers.GetComponent<Manager_KeyBindings>();
-        //PlayerMovementScript = transform.parent.GetComponent<Player_Movement>();
         PlayerInventoryScript = transform.parent.GetComponent<UI_Inventory>();
         PlayerStatsScript = transform.parent.GetComponent<Player_Stats>();
 
@@ -44,7 +41,6 @@ public class Player_Raycast : MonoBehaviour
         interactIcon.gameObject.SetActive(false);
     }
 
-    //checking what collides with the visionCone mesh
     private void OnTriggerEnter(Collider other)
     {
         if (!targets.Contains(other.gameObject)
@@ -82,149 +78,23 @@ public class Player_Raycast : MonoBehaviour
                                     IgnoredLayermask,
                                     QueryTriggerInteraction.Ignore))
                 {
-                    /*
-                    //if the target is AI and it doesn't have a health script
-                    //or it has a health script and it is alive
-                    if (hitTarget.transform.GetComponent<UI_AIContent>() != null
-                        && hitTarget.transform.GetComponent<AI_Health>() == null
-                        || (hitTarget.transform.GetComponent<AI_Health>() != null
-                        && hitTarget.transform.GetComponent<AI_Health>().isAlive))
+                    if (hitTarget.transform.GetComponent<Env_Item>() != null                   //item
+                        || hitTarget.transform.GetComponent<UI_Inventory>() != null            //container
+                        || (hitTarget.transform.GetComponent<Env_Door>() != null               //door, gates are not allowed to be opened directly
+                        && hitTarget.transform.GetComponent<Env_Door>().DoorManagerScript.doorType  
+                        != Manager_Door.DoorType.gate)
+                        || hitTarget.transform.GetComponent<Env_InteractWithObject>() != null) //button or lever
                     {
                         if (target != hitTarget.transform.gameObject)
                         {
                             target = hitTarget.transform.gameObject;
-                            //Debug.Log(target.name);
-                        }
 
-                        if (QuickLootScript.targetContainer != null)
-                        {
-                            QuickLootScript.targetContainer = null;
-                        }
-
-                        par_Managers.GetComponent<Manager_UIReuse>().txt_HoverItemCount.text = "";
-                        par_Managers.GetComponent<Manager_UIReuse>().bgr_HoverItemCountBackground.gameObject.SetActive(false);
-
-                        timer = 0;
-                        canInteract = true;
-                    }
-                    //if the target is an AI but it has a health script and it is dead
-                    else if (hitTarget.transform.GetComponent<UI_AIContent>() != null
-                             && hitTarget.transform.GetComponent<AI_Health>() != null
-                             && !hitTarget.transform.GetComponent<AI_Health>().isAlive)
-                    {
-                        target = hitTarget.transform.gameObject;
-
-                        //gets the parent of the target and looks for the correct child
-                        //which has the dead AI loot script
-                        GameObject par = target.transform.parent.gameObject;
-                        foreach (Transform child in par.transform)
-                        {
-                            if (child.name.Contains("Dead")
-                                && child.GetComponent<Inv_Container>() != null)
-                            {
-                                deadAIContainer = child.transform.gameObject;
-                                //Debug.Log(deadAIContainer.name);
-
-                                par_Managers.GetComponent<Manager_UIReuse>().txt_HoverItemCount.text = "";
-                                par_Managers.GetComponent<Manager_UIReuse>().bgr_HoverItemCountBackground.gameObject.SetActive(false);
-
-                                timer = 0;
-                                canInteract = true;
-                            }
-                        }
-                    }
-                    */
-
-                    //if the target is an item
-                    if (hitTarget.transform.GetComponent<Env_Item>() != null)
-                    {
-                        target = hitTarget.transform.gameObject;
-
-                        timer = 0;
-                        canInteract = true;
-                    }
-
-                    
-                    //if the target is a container
-                    else if (hitTarget.transform.GetComponent<UI_Inventory>() != null)
-                    {
-                        if (target != hitTarget.transform.gameObject)
-                        {
-                            target = hitTarget.transform.gameObject;
-                            //Debug.Log(target.name);
+                            //Debug.Log("looking at " + target.name + "...");
                         }
 
                         timer = 0;
                         canInteract = true;
                     }
-
-                    /*
-                    //if the target is a workbench
-                    else if (hitTarget.transform.GetComponent<Env_Workbench>() != null)
-                    {
-                        if (target != hitTarget.transform.gameObject)
-                        {
-                            target = hitTarget.transform.gameObject;
-                            //Debug.Log(target.name);
-                        }
-
-                        if (QuickLootScript.targetContainer != null)
-                        {
-                            QuickLootScript.targetContainer = null;
-                        }
-
-                        timer = 0;
-                        canInteract = true;
-                    }
-
-                    //if the target is a waitable
-                    else if (hitTarget.transform.GetComponent<Env_Wait>() != null)
-                    {
-                        if (target != hitTarget.transform.gameObject)
-                        {
-                            target = hitTarget.transform.gameObject;
-                            //Debug.Log(target.name);
-                        }
-
-                        if (QuickLootScript.targetContainer != null)
-                        {
-                            QuickLootScript.targetContainer = null;
-                        }
-
-                        timer = 0;
-                        canInteract = true;
-                    }
-
-                    //special case where we need to get the locked doors trigger
-                    //which the raycast is actually ignoring by default
-                    //to allow interacting with other gameobjects
-                    //if theyre inside a trigger we dont want to interact with
-                    else if (hitTarget.transform.name == "door_interactable")
-                    {
-                        Transform doorParent = hitTarget.transform.parent.parent;
-                        foreach (Transform child in doorParent)
-                        {
-                            if (child.GetComponent<Env_Door>() != null
-                                && child.GetComponent<Env_Door>().isLocked
-                                && !child.GetComponent<Env_Door>().controlledByComputer)
-                            {
-                                if (target != child.gameObject)
-                                {
-                                    target = child.gameObject;
-                                    //Debug.Log(target.name);
-                                }
-
-                                if (QuickLootScript.targetContainer != null)
-                                {
-                                    QuickLootScript.targetContainer = null;
-                                }
-
-                                timer = 0;
-                                canInteract = true;
-                            }
-                        }
-                    }
-                    */
                 }
             }
         }
@@ -256,6 +126,7 @@ public class Player_Raycast : MonoBehaviour
                 canInteract = false;
             }
 
+            //disables cursor and re-enables interact icon
             if (cursor.gameObject.activeInHierarchy)
             {
                 cursor.gameObject.SetActive(false);
@@ -268,21 +139,6 @@ public class Player_Raycast : MonoBehaviour
             //interacting with an object
             if (KeyBindingsScript.GetButtonDown("PickUpOrInteract"))
             {
-                /*
-                //hit alive npc
-                if (target.GetComponent<UI_AIContent>() != null
-                    && target.GetComponent<UI_AIContent>().hasDialogue)
-                {
-                    target.GetComponent<UI_AIContent>().OpenNPCDialogue();
-                }
-                //hit dead npc
-                else if (deadAIContainer != null
-                         && deadAIContainer.GetComponent<Inv_Container>() != null
-                         && deadAIContainer.GetComponent<Env_Follow>() != null)
-                {
-                    deadAIContainer.GetComponent<Inv_Container>().CheckIfLocked();
-                }
-                */
                 //hit item
                 if (target.GetComponent<Env_Item>() != null)
                 {
@@ -294,24 +150,18 @@ public class Player_Raycast : MonoBehaviour
                 {
                     target.GetComponent<UI_Inventory>().CheckIfLocked();
                 }
-                /*
-                //hit workbench
-                else if (target.GetComponent<Env_Workbench>() != null)
+
+                //hit door, gates are not allowed to be opened directly
+                else if (target.GetComponent<Env_Door>() != null)
                 {
-                    target.GetComponent<Env_Workbench>().OpenWorkbenchUI();
+                    target.GetComponent<Env_Door>().Interact();
                 }
-                //hit waitable
-                else if (target.GetComponent<Env_Wait>() != null)
+
+                //hit button or lever
+                else if (target.GetComponent<Env_InteractWithObject>() != null)
                 {
-                    target.GetComponent<Env_Wait>().OpenTimeSlider();
+                    target.GetComponent<Env_InteractWithObject>().Interact();
                 }
-                //hit door
-                else if (target.GetComponent<Env_Door>() != null
-                         && target.GetComponent<Env_Door>().isLocked)
-                {
-                    target.GetComponent<Env_Door>().CheckIfKeyIsNeeded();
-                }
-                */
             }
 
             //holding an item
@@ -335,6 +185,7 @@ public class Player_Raycast : MonoBehaviour
                 heldObject = null;
             }
         }
+        //re-enables cursor and disables interact icon
         else if (!canInteract
                  && (timer > 0
                  || interactIcon.gameObject.activeInHierarchy))

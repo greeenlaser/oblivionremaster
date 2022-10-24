@@ -4,10 +4,22 @@ using UnityEngine;
 
 public class Env_LockStatus : MonoBehaviour
 {
-    [Header("Assignables")]
-    public bool isUnlocked = true;
+    [Header("Lock status")]
+    public bool lockedAtRestart;
+    public bool needsKey;
+    public GameObject key;
+    public LockDifficulty lockDifficulty = LockDifficulty.Apprentice;
+    public enum LockDifficulty
+    {
+        Novice,
+        Apprentice,
+        Journeyman,
+        Expert,
+        Master
+    }
 
     //public but hidden variables
+    [HideInInspector] public bool isUnlocked;
     [HideInInspector] public bool hasLoadedLock;
     [HideInInspector] public bool tumbler1Unlocked;
     [HideInInspector] public bool tumbler2Unlocked;
