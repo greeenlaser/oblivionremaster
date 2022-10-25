@@ -7,6 +7,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using static Manager_Settings;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
+using System.Reflection;
 
 public class Manager_Console : MonoBehaviour
 {
@@ -18,6 +20,8 @@ public class Manager_Console : MonoBehaviour
     [HideInInspector] public bool canToggleConsole;
 
     //private variables
+    private bool isConsoleOpen;
+    private bool debugMenuEnabled;
     private bool startedConsoleSetupWait;
     private string input;
     private string output;
@@ -32,9 +36,11 @@ public class Manager_Console : MonoBehaviour
         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k' , 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
     };
 
-    //private variables
-    private bool isConsoleOpen;
-    private bool debugMenuEnabled;
+    //target selection
+    private bool isSelectingTarget;
+    private GameObject target;
+    private Vector3 consoleHiddenPosition = new(0, -1460, 0);
+    private Vector3 consoleVisiblePosition = new(0, 0, 0);
 
     //scripts
     private UI_Inventory PlayerInventoryScript;
@@ -121,6 +127,13 @@ public class Manager_Console : MonoBehaviour
             {
                 if (currentScene == 1)
                 {
+                    if (isSelectingTarget)
+                    {
+                        CreateNewConsoleLine("Cancelled target selection command.", "CONSOLE_INFO_MESSAGE");
+                        UIReuseScript.par_Console.transform.localPosition = consoleVisiblePosition;
+                        isSelectingTarget = false;
+                    }
+
                     PauseMenuScript.UnpauseGame();
                 }
                 CloseConsole();
@@ -140,6 +153,13 @@ public class Manager_Console : MonoBehaviour
                     || Input.GetKeyDown(KeyCode.DownArrow))
                     && UIReuseScript.consoleInputField.text == "")
                 {
+                    if (isSelectingTarget)
+                    {
+                        CreateNewConsoleLine("Cancelled target selection command.", "CONSOLE_INFO_MESSAGE");
+                        UIReuseScript.par_Console.transform.localPosition = consoleVisiblePosition;
+                        isSelectingTarget = false;
+                    }
+
                     currentSelectedInsertedCommand = insertedCommands.Count - 1;
                     UIReuseScript.consoleInputField.text = insertedCommands[^1];
                     UIReuseScript.consoleInputField.MoveToEndOfLine(false, false);
@@ -148,6 +168,13 @@ public class Manager_Console : MonoBehaviour
                 {
                     if (Input.GetKeyDown(KeyCode.UpArrow))
                     {
+                        if (isSelectingTarget)
+                        {
+                            CreateNewConsoleLine("Cancelled target selection command.", "CONSOLE_INFO_MESSAGE");
+                            UIReuseScript.par_Console.transform.localPosition = consoleVisiblePosition;
+                            isSelectingTarget = false;
+                        }
+
                         currentSelectedInsertedCommand--;
                         if (currentSelectedInsertedCommand < 0)
                         {
@@ -159,6 +186,13 @@ public class Manager_Console : MonoBehaviour
                     }
                     else if (Input.GetKeyDown(KeyCode.DownArrow))
                     {
+                        if (isSelectingTarget)
+                        {
+                            CreateNewConsoleLine("Cancelled target selection command.", "CONSOLE_INFO_MESSAGE");
+                            UIReuseScript.par_Console.transform.localPosition = consoleVisiblePosition;
+                            isSelectingTarget = false;
+                        }
+
                         currentSelectedInsertedCommand++;
                         if (currentSelectedInsertedCommand == insertedCommands.Count)
                         {
@@ -168,6 +202,45 @@ public class Manager_Console : MonoBehaviour
                         UIReuseScript.consoleInputField.text = insertedCommands[currentSelectedInsertedCommand];
                         UIReuseScript.consoleInputField.MoveToEndOfLine(false, false);
                     }
+                }
+            }
+        }
+
+        //if target is being selected
+        if (isSelectingTarget)
+        {
+            if (UIReuseScript.par_Console.transform.localPosition != consoleHiddenPosition)
+            {
+                UIReuseScript.par_Console.transform.localPosition = consoleHiddenPosition;
+            }
+
+            //pressing left mouse button selects a target
+            if (Input.GetMouseButtonDown(0))
+            {
+                bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo);
+                if (hit)
+                {
+                    if (hitInfo.transform.GetComponent<Env_Item>() != null
+                        || hitInfo.transform.GetComponent<UI_Inventory>() != null
+                        || hitInfo.transform.GetComponent<Env_Door>() != null)
+                    {
+                        CreateNewConsoleLine("Hit " + hitInfo.transform.name + ".", "CONSOLE_INFO_MESSAGE");
+                        target = hitInfo.transform.gameObject;
+                    }
+                    else
+                    {
+                        CreateNewConsoleLine("Did not hit anything interactable...", "CONSOLE_INFO_MESSAGE");
+                    }
+
+                    UIReuseScript.par_Console.transform.localPosition = consoleVisiblePosition;
+
+                    isSelectingTarget = false;
+                }
+                else
+                {
+                    CreateNewConsoleLine("Cancelled target selection command.", "CONSOLE_INFO_MESSAGE");
+                    UIReuseScript.par_Console.transform.localPosition = consoleVisiblePosition;
+                    isSelectingTarget = false;
                 }
             }
         }
@@ -405,6 +478,20 @@ public class Manager_Console : MonoBehaviour
                     {
                         Command_RemoveItem();
                     }
+                    //show all item stats
+                    else if (separatedWords[1] == "shis"
+                             && separatedWords.Count == 4
+                             && PlayerStatsScript.currentHealth > 0)
+                    {
+                        Command_ShowItemStats();
+                    }
+                    //set item stat
+                    else if (separatedWords[1] == "sest"
+                             && separatedWords.Count == 6
+                             && PlayerStatsScript.currentHealth > 0)
+                    {
+                        Command_SetItemStat();
+                    }
 
                     else
                     {
@@ -415,6 +502,13 @@ public class Manager_Console : MonoBehaviour
                     }
                 }
 
+                //select target
+                else if (separatedWords[0] == "st"
+                         && separatedWords.Count == 1
+                         && currentScene == 1)
+                {
+                    Command_SelectTarget();
+                }
                 //list all target commands
                 else if (separatedWords[0] == "help"
                          && separatedWords[1] == "target"
@@ -423,23 +517,16 @@ public class Manager_Console : MonoBehaviour
                 {
                     Command_Help();
                 }
-                //select target
-                else if (separatedWords[0] == "st"
-                         && separatedWords.Count == 1
-                         && currentScene == 1)
-                {
-                    Command_SelectTarget();
-                }
                 //target commands
                 else if (separatedWords[0] == "target"
                          && currentScene == 1
                          && PlayerStatsScript.currentHealth > 0)
                 {
-                    //disable target
-                    if (separatedWords[1] == "disable"
-                        && separatedWords.Count == 2)
+                    //unlock target
+                    if (separatedWords[1] == "unlock"
+                             && separatedWords.Count == 2)
                     {
-                        Command_DisableTarget();
+                        Command_UnlockTarget();
                     }
                     else
                     {
@@ -514,12 +601,14 @@ public class Manager_Console : MonoBehaviour
                 CreateNewConsoleLine("player sapi - list all player inventory items, their counts and protected state.", "CONSOLE_INFO_MESSAGE");
                 CreateNewConsoleLine("player additem itemname itemcount - add itemcount of itemname(s) to players inventory.", "CONSOLE_INFO_MESSAGE");
                 CreateNewConsoleLine("player removeitem itemname itemcount - remove itemcount of itemname(s) from players inventory.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("player shis itemname itemposition - show all stats for itename at itemposition in player inventory.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("player sest itemname itemposition statname statvalue - set stat statname to statvalue for itemname at itemposition in player inventory.", "CONSOLE_INFO_MESSAGE");
             }
             else if (separatedWords[1] == "target")
             {
                 CreateNewConsoleLine("---TARGET COMMANDS---.", "CONSOLE_INFO_MESSAGE");
-                CreateNewConsoleLine("st - select target.", "CONSOLE_INFO_MESSAGE");
-                CreateNewConsoleLine("target disable - disable selected target.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("st - select target with left mouse button (key binding not editable).", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("target unlock - unlock selected target (doors and containers only).", "CONSOLE_INFO_MESSAGE");
             }
         }
     }
@@ -1809,7 +1898,7 @@ public class Manager_Console : MonoBehaviour
             {
                 Env_Item ItemScript = item.GetComponent<Env_Item>();
 
-                CreateNewConsoleLine(item.name + ", count: " + ItemScript.itemCount + ", is protected: " + ItemScript.isProtected, "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine(item.name + " x" + ItemScript.itemCount, "CONSOLE_INFO_MESSAGE");
             }
         }
         else
@@ -1867,34 +1956,43 @@ public class Manager_Console : MonoBehaviour
                     int currentInventorySpace = PlayerStatsScript.invSpace;
                     int totalTakenSpace = currentInventorySpace + (ItemScript.itemWeight * itemCount);
 
-                    if (totalTakenSpace <= maxInventorySpace)
+                    if ((!ItemScript.isStackable
+                        && itemCount == 1)
+                        || ItemScript.isStackable)
                     {
-                        if (existingItem != null)
+                        if (totalTakenSpace <= maxInventorySpace)
                         {
-                            existingItem.GetComponent<Env_Item>().itemCount += itemCount;
-                            PlayerStatsScript.invSpace += totalTakenSpace;
+                            if (existingItem != null)
+                            {
+                                existingItem.GetComponent<Env_Item>().itemCount += itemCount;
+                                PlayerStatsScript.invSpace += totalTakenSpace;
 
-                            CreateNewConsoleLine("Successfully added " + itemCount + " " + itemName + "(s) to player inventory!", "CONSOLE_SUCCESS_MESSAGE");
+                                CreateNewConsoleLine("Successfully added " + itemCount + " " + itemName + "(s) to player inventory!", "CONSOLE_SUCCESS_MESSAGE");
+                            }
+                            else
+                            {
+                                GameObject newItem = Instantiate(targetTemplateItem,
+                                                                 PlayerInventoryScript.par_PlayerItems.transform.position,
+                                                                 Quaternion.identity,
+                                                                 PlayerInventoryScript.par_PlayerItems.transform);
+                                newItem.SetActive(false);
+                                newItem.name = targetTemplateItem.name;
+                                newItem.GetComponent<Env_Item>().itemCount = itemCount;
+
+                                PlayerInventoryScript.playerItems.Add(newItem);
+                                PlayerStatsScript.invSpace += totalTakenSpace;
+
+                                CreateNewConsoleLine("Successfully added " + itemCount + " " + itemName + "(s) to player inventory!", "CONSOLE_SUCCESS_MESSAGE");
+                            }
                         }
                         else
                         {
-                            GameObject newItem = Instantiate(targetTemplateItem,
-                                                             PlayerInventoryScript.par_PlayerItems.transform.position,
-                                                             Quaternion.identity,
-                                                             PlayerInventoryScript.par_PlayerItems.transform);
-                            newItem.SetActive(false);
-                            newItem.name = targetTemplateItem.name;
-                            newItem.GetComponent<Env_Item>().itemCount = itemCount;
-
-                            PlayerInventoryScript.playerItems.Add(newItem);
-                            PlayerStatsScript.invSpace += totalTakenSpace;
-
-                            CreateNewConsoleLine("Successfully added " + itemCount + " " + itemName + "(s) to player inventory!", "CONSOLE_SUCCESS_MESSAGE");
+                            CreateNewConsoleLine("Error: Not enough inventory space to add " + itemCount + " " + itemName + "(s)!", "CONSOLE_ERROR_MESSAGE");
                         }
                     }
                     else
                     {
-                        CreateNewConsoleLine("Error: Not enough inventory space to add " + itemCount + " " + itemName + "(s)!", "CONSOLE_ERROR_MESSAGE");
+                        CreateNewConsoleLine("Error: Cannot add more than one of " + itemName + " because it is not stackable!", "CONSOLE_ERROR_MESSAGE");
                     }
                 }
                 else
@@ -1945,26 +2043,35 @@ public class Manager_Console : MonoBehaviour
             {
                 if (!targetPlayerItem.GetComponent<Env_Item>().isProtected)
                 {
-                    if (itemCount > 0
+                    if (itemCount >= 1
                         && itemCount <= targetPlayerItem.GetComponent<Env_Item>().itemCount)
                     {
                         Env_Item ItemScript = targetPlayerItem.GetComponent<Env_Item>();
                         int totalTakenWeight = ItemScript.itemWeight * ItemScript.itemCount;
 
-                        if (itemCount < targetPlayerItem.GetComponent<Env_Item>().itemCount)
+                        if ((!ItemScript.isStackable
+                            && itemCount == 1)
+                            || ItemScript.isStackable)
                         {
-                            targetPlayerItem.GetComponent<Env_Item>().itemCount -= itemCount;
-                            PlayerStatsScript.invSpace -= totalTakenWeight;
+                            if (itemCount < targetPlayerItem.GetComponent<Env_Item>().itemCount)
+                            {
+                                targetPlayerItem.GetComponent<Env_Item>().itemCount -= itemCount;
+                                PlayerStatsScript.invSpace -= totalTakenWeight;
 
-                            CreateNewConsoleLine("Successfully removed " + itemCount + " " + itemName + "(s) from player inventory!", "CONSOLE_SUCCESS_MESSAGE");
+                                CreateNewConsoleLine("Successfully removed " + itemCount + " " + itemName + "(s) from player inventory!", "CONSOLE_SUCCESS_MESSAGE");
+                            }
+                            else
+                            {
+                                PlayerStatsScript.invSpace -= totalTakenWeight;
+                                PlayerInventoryScript.playerItems.Remove(targetPlayerItem);
+                                Destroy(targetPlayerItem);
+
+                                CreateNewConsoleLine("Successfully removed " + itemCount + " " + itemName + "(s) from player inventory!", "CONSOLE_SUCCESS_MESSAGE");
+                            }
                         }
                         else
                         {
-                            PlayerStatsScript.invSpace -= totalTakenWeight;
-                            PlayerInventoryScript.playerItems.Remove(targetPlayerItem);
-                            Destroy(targetPlayerItem);
-
-                            CreateNewConsoleLine("Successfully removed " + itemCount + " " + itemName + "(s) from player inventory!", "CONSOLE_SUCCESS_MESSAGE");
+                            CreateNewConsoleLine("Error: Cannot remove more than one of " + itemName + " because it is not stackable!", "CONSOLE_ERROR_MESSAGE");
                         }
                     }
                     else
@@ -1987,16 +2094,226 @@ public class Manager_Console : MonoBehaviour
             CreateNewConsoleLine("Error: Item count must be an integer!", "CONSOLE_ERROR_MESSAGE");
         }
     }
+    //show item stats
+    private void Command_ShowItemStats()
+    {
+        GameObject targetPlayerItem = null;
+        string itemName = separatedWords[2];
+
+        bool isItemIndexInt = int.TryParse(separatedWords[3], out _);
+        if (isItemIndexInt)
+        {
+            List<GameObject> sameItems = new();
+            foreach (GameObject item in PlayerInventoryScript.playerItems)
+            {
+                if (itemName == item.name)
+                {
+                    sameItems.Add(item);
+                }
+            }
+            foreach (GameObject item in sameItems)
+            {
+                if (int.Parse(separatedWords[3]) == sameItems.IndexOf(item))
+                {
+                    targetPlayerItem = item;
+                    break;
+                }
+            }
+        }
+
+        if (targetPlayerItem == null)
+        {
+            CreateNewConsoleLine("Error: Item position or name is invalid! Type player sapi to list all player items.", "CONSOLE_ERROR_MESSAGE");
+        }
+        else
+        {
+            Env_Item ItemScript = targetPlayerItem.GetComponent<Env_Item>();
+            CreateNewConsoleLine("isProtected (not editable): " + ItemScript.isProtected + "", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("isStackable (not editable): " + ItemScript.isStackable + "", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("value: " + ItemScript.itemValue + "", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("weight: " + ItemScript.itemWeight + "", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("count: " + ItemScript.itemCount + "", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("type (not editable): " + ItemScript.itemType.ToString() + "", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("quality (not editable): " + ItemScript.itemQuality.ToString() + "", "CONSOLE_INFO_MESSAGE");
+        }
+    }
+    //set item stat
+    private void Command_SetItemStat()
+    {
+        GameObject targetPlayerItem = null;
+        string itemName = separatedWords[2];
+
+        bool isItemIndexInt = int.TryParse(separatedWords[3], out _);
+        if (isItemIndexInt)
+        {
+            List<GameObject> sameItems = new();
+            foreach (GameObject item in PlayerInventoryScript.playerItems)
+            {
+                if (itemName == item.name)
+                {
+                    sameItems.Add(item);
+                }
+            }
+            foreach (GameObject item in sameItems)
+            {
+                if (int.Parse(separatedWords[3]) == sameItems.IndexOf(item))
+                {
+                    targetPlayerItem = item;
+                    break;
+                }
+            }
+        }
+
+        if (targetPlayerItem == null)
+        {
+            CreateNewConsoleLine("Error: Item position or name is invalid! Type player sapi to list all player items.", "CONSOLE_ERROR_MESSAGE");
+        }
+        else
+        {
+            Env_Item ItemScript = targetPlayerItem.GetComponent<Env_Item>();
+            bool isStatValueInt = int.TryParse(separatedWords[5], out _);
+
+            if (separatedWords[4] != "value"
+                && separatedWords[4] != "weight"
+                && separatedWords[4] != "count")
+            {
+                CreateNewConsoleLine("Error: Stat name " + separatedWords[4] + " is invalid or not editable! Type player shis " + separatedWords[1] + " to list all stats for this item.", "CONSOLE_ERROR_MESSAGE");
+            }
+            else
+            {
+                if (!isStatValueInt)
+                {
+                    CreateNewConsoleLine("Error: Stat value " + separatedWords[4] + " must be an integer!", "CONSOLE_ERROR_MESSAGE");
+                }
+                else
+                {
+                    int statValue = int.Parse(separatedWords[5]);
+                    if (separatedWords[4] == "value")
+                    {
+                        if (statValue >= 0 
+                            && statValue <= 25000)
+                        {
+                            ItemScript.itemValue = statValue;
+                            CreateNewConsoleLine("Successfully set " + separatedWords[2] + " item value to " + statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                        }
+                        else
+                        {
+                            CreateNewConsoleLine("Error: Item value must be between 0 and 25000!", "CONSOLE_ERROR_MESSAGE");
+                        }
+                    }
+                    else if (separatedWords[4] == "weight")
+                    {
+                        if (statValue >= 0
+                            && statValue <= 100)
+                        {
+                            ItemScript.itemWeight = statValue;
+                            CreateNewConsoleLine("Successfully set " + separatedWords[2] + " item weight to " + statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                        }
+                        else
+                        {
+                            CreateNewConsoleLine("Error: Item weight must be between 0 and 100!", "CONSOLE_ERROR_MESSAGE");
+                        }
+                    }
+                    else if (separatedWords[4] == "count")
+                    {
+                        if (ItemScript.isStackable)
+                        {
+                            if (statValue >= 1
+                                && statValue <= 1000000)
+                            {
+                                int currentSingleWeight = ItemScript.itemWeight;
+                                int currentTotalWeight = ItemScript.itemCount * ItemScript.itemWeight;
+                                int currentTakenSpace = PlayerStatsScript.invSpace;
+                                int maxSpace = PlayerStatsScript.maxInvSpace;
+
+                                int availableSpaceWithoutItem = maxSpace - currentTakenSpace - currentTotalWeight;
+                                int availableSpaceWithNewCount = maxSpace - availableSpaceWithoutItem + currentSingleWeight * statValue;
+
+                                if (availableSpaceWithNewCount >= 0)
+                                {
+                                    ItemScript.itemCount = statValue;
+                                    PlayerStatsScript.invSpace = availableSpaceWithNewCount;
+                                    CreateNewConsoleLine("Successfully set " + separatedWords[2] + " item count to " + statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                                }
+                                else
+                                {
+                                    CreateNewConsoleLine("Error: Cannot set item count to " + statValue + " because it would take more space than available space!", "CONSOLE_ERROR_MESSAGE");
+                                }
+                            }
+                            else
+                            {
+                                CreateNewConsoleLine("Error: Item count must be between 0 and 1000000!", "CONSOLE_ERROR_MESSAGE");
+                            }
+                        }
+                        else
+                        {
+                            CreateNewConsoleLine("Error: Cannot edit non-stackable item count!", "CONSOLE_ERROR_MESSAGE");
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     //select target
     private void Command_SelectTarget()
     {
-        CreateNewConsoleLine("Command does not yet have any functions...", "CONSOLE_INFO_MESSAGE");
+        target = null;
+        isSelectingTarget = true;
+        CreateNewConsoleLine("Selecting target...", "CONSOLE_INFO_MESSAGE");
     }
-    //disable selected target
-    private void Command_DisableTarget()
+    //unlock selected target
+    private void Command_UnlockTarget()
     {
-        CreateNewConsoleLine("Command does not yet have any functions...", "CONSOLE_INFO_MESSAGE");
+        if (target == null)
+        {
+            CreateNewConsoleLine("Error: No target selected! Type st to select a target.", "CONSOLE_ERROR_MESSAGE");
+        }
+        else
+        {
+            //unlock respawnable container
+            if (target.GetComponent<UI_Inventory>() 
+                && target.GetComponent<UI_Inventory>().containerType
+                == UI_Inventory.ContainerType.respawnable)
+            {
+                if (!target.GetComponent<Env_LockStatus>().isUnlocked)
+                {
+                    target.GetComponent<Env_LockStatus>().isUnlocked = true;
+                    CreateNewConsoleLine("Successfully unlocked container " + target.GetComponent<UI_Inventory>().containerName + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Selected container " + target.GetComponent<UI_Inventory>().containerName + " is already unlocked!", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+            //unlock door or open gate
+            else if (target.GetComponent<Env_Door>())
+            {
+                Manager_Door DoorManagerScript = target.GetComponent<Env_Door>().DoorManagerScript;
+                if (DoorManagerScript.doorType == Manager_Door.DoorType.door_Single 
+                    || DoorManagerScript.doorType == Manager_Door.DoorType.door_Double)
+                {
+                    if (!DoorManagerScript.GetComponent<Env_LockStatus>().isUnlocked)
+                    {
+                        DoorManagerScript.GetComponent<Env_LockStatus>().isUnlocked = true;
+                        CreateNewConsoleLine("Successfully unlocked " + DoorManagerScript.doorName + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    }
+                    else
+                    {
+                        CreateNewConsoleLine("Error: Selected door " + DoorManagerScript.doorName + " is already unlocked!", "CONSOLE_ERROR_MESSAGE");
+                    }
+                }
+                else if (DoorManagerScript.doorType == Manager_Door.DoorType.gate)
+                {
+                    DoorManagerScript.OpenDoor();
+                    CreateNewConsoleLine("Successfully opened " + DoorManagerScript.doorName + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+            }
+            else
+            {
+                CreateNewConsoleLine("Error: Selected target is not an unlockable object!", "CONSOLE_ERROR_MESSAGE");
+            }
+        }
     }
 
     public void HandleLog(string logString, string unusedStackString, LogType type)

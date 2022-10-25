@@ -123,7 +123,7 @@ public class Trigger_Location : MonoBehaviour
         }
     }
 
-    //reset all hostile AI and containers in this cell
+    //reset all containers and doors
     public void ResetCell()
     {
         foreach (GameObject container in containers)
@@ -150,6 +150,21 @@ public class Trigger_Location : MonoBehaviour
 
             Env_LockStatus LockStatusScript = container.GetComponent<Env_LockStatus>();
             LockPickingScript.SetTumblerPositions(LockStatusScript);
+        }
+        foreach (GameObject door in doors)
+        {
+            Manager_Door DoorManagerScript = door.GetComponent<Env_Door>().DoorManagerScript;
+
+            //all lockable doors are always locked again after a restart
+            if (door.GetComponent<Env_LockStatus>().lockedAtRestart)
+            {
+                DoorManagerScript.GetComponent<Env_LockStatus>().isUnlocked = false;
+                DoorManagerScript.GetComponent<Env_LockStatus>().hasLoadedLock = false;
+            }
+            else
+            {
+                DoorManagerScript.GetComponent<Env_LockStatus>().isUnlocked = true;
+            }
         }
     }
 }

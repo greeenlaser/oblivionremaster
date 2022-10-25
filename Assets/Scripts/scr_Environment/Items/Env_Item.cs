@@ -12,7 +12,7 @@ public class Env_Item : MonoBehaviour
     public int itemValue = 0;
     [Range(0, 100)]
     public int itemWeight = 0;
-    [Range(1, 999)]
+    [Range(1, 1000000)]
     public int itemCount = 1;
     public ItemType itemType = ItemType.misc;
     public enum ItemType

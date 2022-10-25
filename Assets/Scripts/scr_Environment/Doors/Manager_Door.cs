@@ -206,6 +206,7 @@ public class Manager_Door : MonoBehaviour
     }
 
     //opens the door if game was loaded and save file had this door open
+    //or if door was unlocked through console
     public void OpenDoor()
     {
         isDoorMoving = true;

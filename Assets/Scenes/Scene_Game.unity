@@ -25772,7 +25772,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a9307889823c0a4993fa2c3b9fc0575, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lockedAtRestart: 0
+  lockedAtRestart: 1
   needsKey: 0
   key: {fileID: 0}
   lockDifficulty: 1
