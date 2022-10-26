@@ -601,7 +601,7 @@ public class Manager_Console : MonoBehaviour
                 CreateNewConsoleLine("player sapi - list all player inventory items, their counts and protected state.", "CONSOLE_INFO_MESSAGE");
                 CreateNewConsoleLine("player additem itemname itemcount - add itemcount of itemname(s) to players inventory.", "CONSOLE_INFO_MESSAGE");
                 CreateNewConsoleLine("player removeitem itemname itemcount - remove itemcount of itemname(s) from players inventory.", "CONSOLE_INFO_MESSAGE");
-                CreateNewConsoleLine("player shis itemname itemposition - show all stats for itename at itemposition in player inventory.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("player shis itemname itemposition - show all stats for itemname at itemposition in player inventory.", "CONSOLE_INFO_MESSAGE");
                 CreateNewConsoleLine("player sest itemname itemposition statname statvalue - set stat statname to statvalue for itemname at itemposition in player inventory.", "CONSOLE_INFO_MESSAGE");
             }
             else if (separatedWords[1] == "target")

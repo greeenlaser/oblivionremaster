@@ -153,7 +153,7 @@ public class Trigger_Location : MonoBehaviour
         }
         foreach (GameObject door in doors)
         {
-            Manager_Door DoorManagerScript = door.GetComponent<Env_Door>().DoorManagerScript;
+            Manager_Door DoorManagerScript = door.GetComponent<Manager_Door>();
 
             //all lockable doors are always locked again after a restart
             if (door.GetComponent<Env_LockStatus>().lockedAtRestart)
