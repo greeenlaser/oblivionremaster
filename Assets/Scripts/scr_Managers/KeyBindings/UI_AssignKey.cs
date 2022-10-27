@@ -26,7 +26,7 @@ public class UI_AssignKey : MonoBehaviour
         KeyBindingsScript = par_Managers.GetComponent<Manager_KeyBindings>();
         UIReuseScript = par_Managers.GetComponent<Manager_UIReuse>();
 
-        foreach (GameObject item in transform.parent)
+        foreach (Transform item in transform.parent)
         {
             if (item.name == "txt_KeyBinding")
             {

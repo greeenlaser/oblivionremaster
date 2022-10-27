@@ -63,6 +63,12 @@ public class UI_PauseMenu : MonoBehaviour
 
     private void Start()
     {
+        //odd way to fix settings not fully loading
+        PauseWithUI();
+        ShowSettingsContent();
+        UnpauseGame();
+
+        //game is always paused at first when game scene is loaded
         PauseWithoutUI();
     }
 
