@@ -592,6 +592,12 @@ public class Manager_GameSaving : MonoBehaviour
             {
                 Debug.Log("Started new game.");
                 LocationsScript.ResetAllLocations();
+
+                //apply default date
+                DateAndTimeScript.SetDateAndTime(0,
+                                                 12,
+                                                 "27 Morndas",
+                                                 "Last Seed");
             }
 
             //delete load file

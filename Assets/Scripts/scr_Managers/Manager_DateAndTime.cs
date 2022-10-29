@@ -26,7 +26,6 @@ public class Manager_DateAndTime : MonoBehaviour
 
     //private variables
     private bool moveSun;
-    private readonly float timeSpeed = 1;
     private float sunCountdownTimer;
     private int tenMinuteCounter = 10;
     private float clockTimer = 2;
@@ -48,15 +47,7 @@ public class Manager_DateAndTime : MonoBehaviour
         Months["Sun's Dusk"] = 30;
         Months["Evening Star"] = 31;
 
-        //apply default date
-        SetDateAndTime(0,
-                       12,
-                       "27 Morndas",
-                       "Last Seed");
-
         LocationsScript = GetComponent<Manager_Locations>();
-
-        sun.transform.LookAt(par_SunLookAt.transform);
     }
 
     private void Update()
@@ -75,15 +66,14 @@ public class Manager_DateAndTime : MonoBehaviour
             }
         }
 
-        clockTimer -= Time.deltaTime * timeSpeed;
+        clockTimer -= Time.deltaTime * 1;
         if (clockTimer <= 0)
         {
-            Debug.Log("Time is " + hour + ": " + minute + ".");
-
             minute++;
             tenMinuteCounter--;
             if (tenMinuteCounter == 0)
             {
+                Debug.Log("Time is " + hour + ":00.");
                 SetSunPosition();
             }
 
@@ -101,10 +91,10 @@ public class Manager_DateAndTime : MonoBehaviour
                 minute = 0;
             }
 
+            fullTime = minute + ":" + hour + ", " + dayName + " of " + monthName + " in the 3rd era 433";
+
             clockTimer = 2;
         }
-
-        fullTime = minute + ":" + hour + ", " + dayName + " of " + monthName + " in the 3rd era 433";
     }
 
     //update sun position after every 60 in-game minutes
@@ -116,14 +106,47 @@ public class Manager_DateAndTime : MonoBehaviour
     }
 
     //apply a date and time that the game starts counting from the launch of the game
-    public void SetDateAndTime(int min, int hr, string dateNumberAndDay, string month)
+    public void SetDateAndTime(int min, 
+                               int hr, 
+                               string dateNumberAndDay, 
+                               string month)
     {
         minute = min;
         hour = hr;
         dayName = dateNumberAndDay;
         monthName = month;
+
+        bool continueCounting = false;
+        float x = 0;
+        int total = 0;
+        if (hour == 0)
+        {
+            if (minute == 0)
+            {
+                StartCoroutine(SetSunRotationAtStart(x));
+            }
+            else
+            {
+                continueCounting = true;
+                total = minute;
+            }
+        }
+        else
+        {
+            continueCounting = true;
+            total = minute + (hour * 60);
+        }
+
+        if (continueCounting)
+        {
+            int count = total / 20;
+            x = 2.5f * count;
+
+            StartCoroutine(SetSunRotationAtStart(x));
+        }
     }
 
+    //updates day name, day number and month
     private void UpdateDayAndMonth()
     {
         daysSinceLastRestart--;
@@ -133,45 +156,59 @@ public class Manager_DateAndTime : MonoBehaviour
         }
 
         string[] dayNameSplit = dayName.Split(" ");
+
         int dayDate = int.Parse(dayNameSplit[0]);
-        int newDayDate = dayDate++;
+        dayDate++;
 
         string theDayName = dayNameSplit[1];
 
         int currentDayIndex = Array.IndexOf(Days, theDayName);
-        int newDayIndex = currentDayIndex++;
-        if (newDayIndex > 6)
+        currentDayIndex++;
+        if (currentDayIndex > 6)
         {
-            newDayIndex = 0;
+            currentDayIndex = 0;
         }
-        Debug.Log("Trying to set " + newDayIndex + " as new day index...");
-        dayName = newDayDate + " " + Days[newDayIndex];
+
+        dayName = dayDate + " " + Days[currentDayIndex];
 
         List<string> monthNames = new();
         foreach (KeyValuePair<string, int> months in Months)
         {
             monthNames.Add(months.Key);
         }
+
         int monthIndex = monthNames.IndexOf(monthName);
-        int newMonthIndex = monthIndex++;
-        if (newMonthIndex > 11)
+        foreach (string monthName in monthNames)
         {
-            newMonthIndex = 0;
-        }
-        string newMonthName = monthNames[newMonthIndex];
-
-        foreach (KeyValuePair<string, int> months in Months)
-        {
-            string month = months.Key;
-            int daysInMonth = months.Value;
-
-            if (month == monthName
-                && daysInMonth > newDayIndex)
+            if (fullTime.Contains(monthName)
+                && dayDate > Months[monthName])
             {
-                dayName = "1 " + newMonthName;
+                dayName = 1 + " " + Days[currentDayIndex];
+                monthIndex++;
+                if (monthIndex > 11)
+                {
+                    monthIndex = 0;
+                }
+                break;
             }
         }
+        monthName = monthNames[monthIndex];
 
-        Debug.Log(fullTime);
+        fullTime = minute + ":" + hour + ", " + dayName + " of " + monthName + " in the 3rd era 433";
+    }
+
+    private IEnumerator SetSunRotationAtStart(float targetAngle)
+    {
+        yield return null;
+        float x = 0;
+
+        //rotates 2.5 degrees per turn until it reaches target angle
+        while (x < targetAngle + 2.5f)
+        {
+            par_RotationCenter.transform.rotation = Quaternion.Euler(x, 0, -30);
+            x += 2.5f;
+        }
+
+        sun.transform.LookAt(par_SunLookAt.transform);
     }
 }
