@@ -6,12 +6,16 @@ using UnityEngine;
 public class Manager_DateAndTime : MonoBehaviour
 {
     [Header("Assignables")]
-    [Range(0.1f, 10000)]
-    [SerializeField] private float timeSpeed;
-    [SerializeField] private float rotationSpeed;
     [SerializeField] private GameObject sun;
-    [SerializeField] private GameObject pos_SunLookAt;
-    [SerializeField] private GameObject pos_RotationCenter;
+    [SerializeField] private GameObject par_RotationCenter;
+    [SerializeField] private GameObject par_SunLookAt;
+
+    //public but hidden variables
+    [HideInInspector] public int daysSinceLastRestart = 3;
+    [HideInInspector] public int minute;
+    [HideInInspector] public int hour;
+    [HideInInspector] public string dayName;
+    [HideInInspector] public string monthName;
 
     //day and month names
     private readonly string[] Days = new string[]
@@ -20,18 +24,13 @@ public class Manager_DateAndTime : MonoBehaviour
     };
     private readonly Dictionary<string, int> Months = new();
 
-    //time and date values
-    private string fullTime;
-    [HideInInspector] public int daysSinceLastRestart = 3;
-    [HideInInspector] public int minute;
-    [HideInInspector] public int hour;
-    [HideInInspector] public string dayName;
-    [HideInInspector] public string monthName;
-
     //private variables
     private bool moveSun;
-    private float clockTimer = 2;
+    private readonly float timeSpeed = 1;
     private float sunCountdownTimer;
+    private int tenMinuteCounter = 10;
+    private float clockTimer = 2;
+    private string fullTime;
     private Manager_Locations LocationsScript;
 
     private void Awake()
@@ -55,9 +54,9 @@ public class Manager_DateAndTime : MonoBehaviour
                        "27 Morndas",
                        "Last Seed");
 
-        sun.transform.LookAt(pos_SunLookAt.transform.position);
-        
         LocationsScript = GetComponent<Manager_Locations>();
+
+        sun.transform.LookAt(par_SunLookAt.transform);
     }
 
     private void Update()
@@ -66,9 +65,9 @@ public class Manager_DateAndTime : MonoBehaviour
         {
             sunCountdownTimer -= Time.deltaTime;
 
-            float step = rotationSpeed * Time.deltaTime;
-            pos_RotationCenter.transform.Rotate(new Vector3(0, 0, 1) * step);
-            sun.transform.LookAt(pos_SunLookAt.transform.position);
+            float step = 2.5f * Time.deltaTime;
+            par_RotationCenter.transform.Rotate(new Vector3(1, 0, 0) * step);
+            sun.transform.LookAt(par_SunLookAt.transform);
 
             if (sunCountdownTimer <= 0)
             {
@@ -79,12 +78,17 @@ public class Manager_DateAndTime : MonoBehaviour
         clockTimer -= Time.deltaTime * timeSpeed;
         if (clockTimer <= 0)
         {
+            Debug.Log("Time is " + hour + ": " + minute + ".");
+
             minute++;
+            tenMinuteCounter--;
+            if (tenMinuteCounter == 0)
+            {
+                SetSunPosition();
+            }
 
             if (minute >= 60)
             {
-                SetSunPosition();
-
                 hour++;
 
                 if (hour >= 24)
@@ -103,11 +107,11 @@ public class Manager_DateAndTime : MonoBehaviour
         fullTime = minute + ":" + hour + ", " + dayName + " of " + monthName + " in the 3rd era 433";
     }
 
-    //update sun position after every 30 in-game minutes
-    public void SetSunPosition()
+    //update sun position after every 60 in-game minutes
+    private void SetSunPosition()
     {
+        tenMinuteCounter = 10;
         sunCountdownTimer = 1;
-
         moveSun = true;
     }
 
