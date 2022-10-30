@@ -7,8 +7,8 @@ https://drive.google.com/drive/folders/16P1RfEkzp85Qq82Crk5J4U1xqiITIg4q?usp=sha
 
 # HOW TO SET UP
 1) download unity hub and the required unity version
-2) download Github Desktop or your preferred git software
-3) create a folder in your chosen location with the name Oblivion Unity
-4) pull the repository in main branch and place it into the newly created folder (steps 2-4 can be ignored if you download the repository straight from the github website or from the release)
+2) create a folder in your chosen location with the name Oblivion Unity
+3) download Github Desktop or your preferred git software
+4) pull the repository in main branch and place it into the newly created folder (steps 3-4 can be ignored if you download the repository straight from the github website or from the release)
 5) download the art and audio zip file
 6) extract the art and audio zip file into the Assets folder in your local project folder
