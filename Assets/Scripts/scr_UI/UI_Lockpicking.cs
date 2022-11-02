@@ -78,7 +78,6 @@ public class UI_Lockpicking : MonoBehaviour
     private bool movingLock;
     private bool confirmedUnlockAttempt;
     private bool succeeded;
-    private int finalSuccessChance;
     private int tumbler = 1;
     private int pickStep;
     private float timer;
@@ -120,7 +119,12 @@ public class UI_Lockpicking : MonoBehaviour
                 && !goingRight
                 && !goingUp
                 && !goingDown
-                && !movingLock)
+                && !movingLock
+                && !LockStatusScript.tumbler1Unlocked
+                && !LockStatusScript.tumbler2Unlocked
+                && !LockStatusScript.tumbler3Unlocked
+                && !LockStatusScript.tumbler4Unlocked
+                && !LockStatusScript.tumbler5Unlocked)
             {
                 if (KeyBindingsScript.GetButtonDown("WalkLeft"))
                 {
@@ -200,7 +204,7 @@ public class UI_Lockpicking : MonoBehaviour
                     timer -= Time.unscaledDeltaTime;
                     if (timer <= 0)
                     {
-                        theLock.transform.localPosition = new(theLock.transform.localPosition.x - 2.5f,
+                        theLock.transform.localPosition = new(theLock.transform.localPosition.x - 1.5f,
                                                               theLock.transform.localPosition.y,
                                                               theLock.transform.localPosition.z);
 
@@ -665,7 +669,7 @@ public class UI_Lockpicking : MonoBehaviour
     //successful user unlock attempt unlocks the selected tumbler
     private void CheckAttempt(int tumbler)
     {
-        finalSuccessChance = Random.Range(1, 100) + PlayerStatsScript.Skills["Security"] * PlayerStatsScript.Attributes["Luck"];
+        int finalSuccessChance = Random.Range(1, 100) + PlayerStatsScript.Skills["Security"] * PlayerStatsScript.Attributes["Luck"];
         if (finalSuccessChance >= 50)
         {
             //Debug.Log("lockpicking succeedeed with tumbler nr " + tumbler + " at chance of " + finalSuccessChance + " out of 75!");
@@ -722,7 +726,42 @@ public class UI_Lockpicking : MonoBehaviour
     //auto-attempt to unlock the lock
     public void AutoAttempt()
     {
-        
+        if (!LockStatusScript.tumbler1Unlocked
+            || !LockStatusScript.tumbler2Unlocked
+            || !LockStatusScript.tumbler3Unlocked
+            || !LockStatusScript.tumbler4Unlocked
+            || !LockStatusScript.tumbler5Unlocked)
+        {
+            float finalSuccessChance = Random.Range(1, 100);
+            if (finalSuccessChance >= 95)
+            {
+                LockStatusScript.tumbler1Unlocked = true;
+                tumbler1.transform.position = pos_Unlocked1.position;
+                spring1.transform.localScale = new(1, 0.46f, 1);
+
+                LockStatusScript.tumbler2Unlocked = true;
+                tumbler2.transform.position = pos_Unlocked2.position;
+                spring2.transform.localScale = new(1, 0.46f, 1);
+
+                LockStatusScript.tumbler3Unlocked = true;
+                tumbler3.transform.position = pos_Unlocked3.position;
+                spring3.transform.localScale = new(1, 0.46f, 1);
+
+                LockStatusScript.tumbler4Unlocked = true;
+                tumbler4.transform.position = pos_Unlocked4.position;
+                spring4.transform.localScale = new(1, 0.46f, 1);
+
+                LockStatusScript.tumbler5Unlocked = true;
+                tumbler5.transform.position = pos_Unlocked5.position;
+                spring5.transform.localScale = new(1, 0.46f, 1);
+
+                CheckLockStatus();
+            }
+            else
+            {
+                FailedAttempt();
+            }
+        }
     }
 
     //some tumblers will reset to their original positions after a failed lock picking attempt
