@@ -133,6 +133,9 @@ public class Trigger_Location : MonoBehaviour
             {
                 container.GetComponent<Env_LockStatus>().isUnlocked = false;
                 container.GetComponent<Env_LockStatus>().hasLoadedLock = false;
+
+                Env_LockStatus LockStatusScript = container.GetComponent<Env_LockStatus>();
+                LockPickingScript.SetTumblerPositions(LockStatusScript);
             }
             else
             {
@@ -147,9 +150,6 @@ public class Trigger_Location : MonoBehaviour
             {
                 lootTable.RespawnContainer();
             }
-
-            Env_LockStatus LockStatusScript = container.GetComponent<Env_LockStatus>();
-            LockPickingScript.SetTumblerPositions(LockStatusScript);
         }
         foreach (GameObject door in doors)
         {
@@ -160,6 +160,9 @@ public class Trigger_Location : MonoBehaviour
             {
                 DoorManagerScript.GetComponent<Env_LockStatus>().isUnlocked = false;
                 DoorManagerScript.GetComponent<Env_LockStatus>().hasLoadedLock = false;
+
+                Env_LockStatus LockStatusScript = DoorManagerScript.GetComponent<Env_LockStatus>();
+                LockPickingScript.SetTumblerPositions(LockStatusScript);
             }
             else
             {

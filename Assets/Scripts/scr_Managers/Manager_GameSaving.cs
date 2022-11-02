@@ -432,15 +432,27 @@ public class Manager_GameSaving : MonoBehaviour
 
                 saveFile.WriteLine("-" + ContainerScript.containerName + " items-");
 
-                Env_LockStatus LockStatusScript = container.GetComponent<Env_LockStatus>();
-                string lockStatus = LockStatusScript.isUnlocked + ", " +
-                                    LockStatusScript.tumbler1Unlocked + ", " +
-                                    LockStatusScript.tumbler2Unlocked + ", " +
-                                    LockStatusScript.tumbler3Unlocked + ", " +
-                                    LockStatusScript.tumbler4Unlocked + ", " +
-                                    LockStatusScript.tumbler5Unlocked;
-                
-                saveFile.WriteLine("Cell_" + ContainerScript.containerName + "_LockStatus: " + lockStatus);
+                if (container.GetComponent<Env_LockStatus>().lockedAtRestart)
+                {
+                    Env_LockStatus LockStatusScript = container.GetComponent<Env_LockStatus>();
+                    string lockStatus = LockStatusScript.isUnlocked + ", " +
+                                        LockStatusScript.tumbler1Unlocked + ", " +
+                                        LockStatusScript.tumbler2Unlocked + ", " +
+                                        LockStatusScript.tumbler3Unlocked + ", " +
+                                        LockStatusScript.tumbler4Unlocked + ", " +
+                                        LockStatusScript.tumbler5Unlocked + ", " +
+                                        LockStatusScript.tumbler1Weight + ", " +
+                                        LockStatusScript.tumbler2Weight + ", " +
+                                        LockStatusScript.tumbler3Weight + ", " +
+                                        LockStatusScript.tumbler4Weight + ", " +
+                                        LockStatusScript.tumbler5Weight;
+
+                    saveFile.WriteLine("Cell_" + ContainerScript.containerName + "_LockStatus: " + lockStatus);
+                }
+                else
+                {
+                    saveFile.WriteLine("Cell_" + ContainerScript.containerName + " is not a lockable container.");
+                }
 
                 int foundItemCount = 0;
                 foreach (GameObject item in ContainerScript.containerItems)
@@ -454,13 +466,13 @@ public class Manager_GameSaving : MonoBehaviour
                 }
                 if (foundItemCount == 0)
                 {
-                    saveFile.WriteLine("No items were found in " + ContainerScript.containerName + ".");
+                    saveFile.WriteLine("Cell_" + ContainerScript.containerName + " has no items.");
                 }
                 foundContainerCount++;
             }
             if (foundContainerCount == 0)
             {
-                saveFile.WriteLine("No containers were found at " + LocationScript.cellName + ".");
+                saveFile.WriteLine("Cell_" + LocationScript.cellName + " has no containers.");
             }
 
             saveFile.WriteLine("-" + LocationScript.cellName + " doors-");
@@ -472,22 +484,32 @@ public class Manager_GameSaving : MonoBehaviour
                 saveFile.WriteLine("-" + DoorManagerScript.doorName + " status-");
 
                 Env_LockStatus LockStatusScript = door.GetComponent<Env_LockStatus>();
-                if (DoorManagerScript.doorType != Manager_Door.DoorType.gate)
+                if (DoorManagerScript.doorType != Manager_Door.DoorType.gate
+                    && DoorManagerScript.GetComponent<Env_LockStatus>().lockedAtRestart)
                 {
                     string lockStatus = LockStatusScript.isUnlocked + ", " +
                                         LockStatusScript.tumbler1Unlocked + ", " +
                                         LockStatusScript.tumbler2Unlocked + ", " +
                                         LockStatusScript.tumbler3Unlocked + ", " +
                                         LockStatusScript.tumbler4Unlocked + ", " +
-                                        LockStatusScript.tumbler5Unlocked;
+                                        LockStatusScript.tumbler5Unlocked + ", " +
+                                        LockStatusScript.tumbler1Weight + ", " +
+                                        LockStatusScript.tumbler2Weight + ", " +
+                                        LockStatusScript.tumbler3Weight + ", " +
+                                        LockStatusScript.tumbler4Weight + ", " +
+                                        LockStatusScript.tumbler5Weight;
                     saveFile.WriteLine("Cell_" + DoorManagerScript.doorName + "_LockStatus: " + lockStatus);
+                }
+                else
+                {
+                    saveFile.WriteLine("Cell_" + DoorManagerScript.doorName + " is not a lockable door/gate.");
                 }
                 saveFile.WriteLine("Cell_" + DoorManagerScript.doorName + "_OpenStatus: " + DoorManagerScript.isDoorOpen.ToString());
                 foundDoorCount++;
             }
             if (foundDoorCount == 0)
             {
-                saveFile.WriteLine("No doors were found at " + LocationScript.cellName + ".");
+                saveFile.WriteLine("Cell_" + LocationScript.cellName + " has no doors.");
             }
         }
 
@@ -837,7 +859,8 @@ public class Manager_GameSaving : MonoBehaviour
                                     UI_Inventory ContainerScript = container.GetComponent<UI_Inventory>();
                                     string containerName = ContainerScript.containerName;
 
-                                    if (type.Contains(containerName))
+                                    if (type.Contains(containerName)
+                                        && container.GetComponent<Env_LockStatus>().lockedAtRestart)
                                     {
                                         Env_LockStatus LockStatusScript = container.GetComponent<Env_LockStatus>();
                                         LockStatusScript.hasLoadedLock = true;
@@ -850,6 +873,11 @@ public class Manager_GameSaving : MonoBehaviour
                                             LockStatusScript.tumbler3Unlocked = bool.Parse(values[3]);
                                             LockStatusScript.tumbler4Unlocked = bool.Parse(values[4]);
                                             LockStatusScript.tumbler5Unlocked = bool.Parse(values[5]);
+                                            LockStatusScript.tumbler1Weight = int.Parse(values[6]);
+                                            LockStatusScript.tumbler2Weight = int.Parse(values[7]);
+                                            LockStatusScript.tumbler3Weight = int.Parse(values[8]);
+                                            LockStatusScript.tumbler4Weight = int.Parse(values[9]);
+                                            LockStatusScript.tumbler5Weight = int.Parse(values[10]);
                                         }
                                         else
                                         {
@@ -880,7 +908,8 @@ public class Manager_GameSaving : MonoBehaviour
                                     Manager_Door DoorManagerScript = door.GetComponent<Manager_Door>();
                                     string doorName = DoorManagerScript.doorName;
 
-                                    if (type.Contains(doorName))
+                                    if (type.Contains(doorName)
+                                        && door.GetComponent<Env_LockStatus>().lockedAtRestart)
                                     {
                                         Env_LockStatus LockStatusScript = door.GetComponent<Env_LockStatus>();
                                         if (type.Contains("_LockStatus")

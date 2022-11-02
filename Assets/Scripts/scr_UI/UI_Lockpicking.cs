@@ -16,8 +16,7 @@ public class UI_Lockpicking : MonoBehaviour
     [SerializeField] private Button btn_CloseLockpickUI;
 
     [Header("Lock model")]
-    [SerializeField] private GameObject par_LockModel;
-    [SerializeField] private GameObject pick;
+    [SerializeField] private Transform pick;
     [SerializeField] private Transform pos_PickDown1;
     [SerializeField] private Transform pos_PickDown2;
     [SerializeField] private Transform pos_PickDown3;
@@ -30,9 +29,9 @@ public class UI_Lockpicking : MonoBehaviour
     [SerializeField] private Transform pos_PickUp5;
 
     [Header("Lock")]
-    [SerializeField] private GameObject gear1;
-    [SerializeField] private GameObject gear2;
-    [SerializeField] private GameObject theLock;
+    [SerializeField] private Transform gear1;
+    [SerializeField] private Transform gear2;
+    [SerializeField] private Transform theLock;
     [SerializeField] private Transform pos_LockLocked;
 
     [Header("Tumbler 1")]
@@ -42,26 +41,26 @@ public class UI_Lockpicking : MonoBehaviour
     [SerializeField] private Transform pos_Locked1;
 
     [Header("Tumbler 2")]
-    [SerializeField] private GameObject tumbler2;
-    [SerializeField] private GameObject spring2;
+    [SerializeField] private Transform tumbler2;
+    [SerializeField] private Transform spring2;
     [SerializeField] private Transform pos_Unlocked2;
     [SerializeField] private Transform pos_Locked2;
 
     [Header("Tumbler 3")]
-    [SerializeField] private GameObject tumbler3;
-    [SerializeField] private GameObject spring3;
+    [SerializeField] private Transform tumbler3;
+    [SerializeField] private Transform spring3;
     [SerializeField] private Transform pos_Unlocked3;
     [SerializeField] private Transform pos_Locked3;
 
     [Header("Tumbler 4")]
-    [SerializeField] private GameObject tumbler4;
-    [SerializeField] private GameObject spring4;
+    [SerializeField] private Transform tumbler4;
+    [SerializeField] private Transform spring4;
     [SerializeField] private Transform pos_Unlocked4;
     [SerializeField] private Transform pos_Locked4;
 
     [Header("Tumbler 5")]
-    [SerializeField] private GameObject tumbler5;
-    [SerializeField] private GameObject spring5;
+    [SerializeField] private Transform tumbler5;
+    [SerializeField] private Transform spring5;
     [SerializeField] private Transform pos_Unlocked5;
     [SerializeField] private Transform pos_Locked5;
 
@@ -77,8 +76,8 @@ public class UI_Lockpicking : MonoBehaviour
     private bool goingUp;
     private bool goingDown;
     private bool movingLock;
+    private bool confirmedUnlockAttempt;
     private bool succeeded;
-    private bool calledChanceOnce;
     private int finalSuccessChance;
     private int tumbler = 1;
     private int pickStep;
@@ -104,8 +103,11 @@ public class UI_Lockpicking : MonoBehaviour
         btn_AutoAttempt.onClick.AddListener(AutoAttempt);
         btn_CloseLockpickUI.onClick.AddListener(CloseLockpickUI);
 
-        gearOriginalRotation = gear1.transform.localEulerAngles;
+        gearOriginalRotation = gear1.localEulerAngles;
+    }
 
+    private void Start()
+    {
         CloseLockpickUI();
     }
 
@@ -160,17 +162,15 @@ public class UI_Lockpicking : MonoBehaviour
                             if (goingUp)
                             {
                                 pick.transform.position = new(pick.transform.position.x,
-                                                              pick.transform.position.y + 0.003f,
+                                                              pick.transform.position.y + 3f,
                                                               pick.transform.position.z);
-
                                 MoveTumblerUp();
                             }
                             else if (goingDown)
                             {
                                 pick.transform.position = new(pick.transform.position.x,
-                                                              pick.transform.position.y - 0.003f,
+                                                              pick.transform.position.y - 3f,
                                                               pick.transform.position.z);
-
                                 MoveTumblerDown();
                             }
 
@@ -200,18 +200,18 @@ public class UI_Lockpicking : MonoBehaviour
                     timer -= Time.unscaledDeltaTime;
                     if (timer <= 0)
                     {
-                        theLock.transform.localPosition = new(theLock.transform.localPosition.x + 0.0025f,
+                        theLock.transform.localPosition = new(theLock.transform.localPosition.x - 2.5f,
                                                               theLock.transform.localPosition.y,
                                                               theLock.transform.localPosition.z);
 
-                        gear1.transform.Rotate(gear1.transform.localRotation.x,
-                                               gear1.transform.localRotation.y,
-                                               gear1.transform.localRotation.z - 2f, 
+                        gear1.transform.Rotate(gear1.localRotation.x,
+                                               gear1.localRotation.y,
+                                               gear1.localRotation.z + 2f, 
                                                Space.Self);
 
-                        gear2.transform.Rotate(gear2.transform.localRotation.x,
-                                               gear2.transform.localRotation.y,
-                                               gear2.transform.localRotation.z - 2f,
+                        gear2.transform.Rotate(gear2.localRotation.x,
+                                               gear2.localRotation.y,
+                                               gear2.localRotation.z + 2f,
                                                Space.Self);
 
                         pickStep--;
@@ -261,16 +261,16 @@ public class UI_Lockpicking : MonoBehaviour
             int containerDifficulty = (int)targetLock.GetComponent<Env_LockStatus>().lockDifficulty;
             if (containerDifficulty == 0)
             {
-                if (par_LockModel.activeInHierarchy)
+                if (par_Lockpicking.activeInHierarchy)
                 {
                     tumbler2.transform.position = pos_Unlocked2.position;
-                    spring2.transform.localScale = new(1, 0.58f, 1);
+                    spring2.transform.localScale = new(1, 0.46f, 1);
                     tumbler3.transform.position = pos_Unlocked3.position;
-                    spring3.transform.localScale = new(1, 0.58f, 1);
+                    spring3.transform.localScale = new(1, 0.46f, 1);
                     tumbler4.transform.position = pos_Unlocked4.position;
-                    spring4.transform.localScale = new(1, 0.58f, 1);
+                    spring4.transform.localScale = new(1, 0.46f, 1);
                     tumbler5.transform.position = pos_Unlocked5.position;
-                    spring5.transform.localScale = new(1, 0.58f, 1);
+                    spring5.transform.localScale = new(1, 0.46f, 1);
                 }
                 LockStatusScript.tumbler2Unlocked = true;
                 LockStatusScript.tumbler3Unlocked = true;
@@ -279,14 +279,14 @@ public class UI_Lockpicking : MonoBehaviour
             }
             else if (containerDifficulty == 1)
             {
-                if (par_LockModel.activeInHierarchy)
+                if (par_Lockpicking.activeInHierarchy)
                 {
                     tumbler3.transform.position = pos_Unlocked3.position;
-                    spring3.transform.localScale = new(1, 0.58f, 1);
+                    spring3.transform.localScale = new(1, 0.46f, 1);
                     tumbler4.transform.position = pos_Unlocked4.position;
-                    spring4.transform.localScale = new(1, 0.58f, 1);
+                    spring4.transform.localScale = new(1, 0.46f, 1);
                     tumbler5.transform.position = pos_Unlocked5.position;
-                    spring5.transform.localScale = new(1, 0.58f, 1);
+                    spring5.transform.localScale = new(1, 0.46f, 1);
                 }
                 LockStatusScript.tumbler3Unlocked = true;
                 LockStatusScript.tumbler4Unlocked = true;
@@ -294,22 +294,22 @@ public class UI_Lockpicking : MonoBehaviour
             }
             else if (containerDifficulty == 2)
             {
-                if (par_LockModel.activeInHierarchy)
+                if (par_Lockpicking.activeInHierarchy)
                 {
                     tumbler4.transform.position = pos_Unlocked4.position;
-                    spring4.transform.localScale = new(1, 0.58f, 1);
+                    spring4.transform.localScale = new(1, 0.46f, 1);
                     tumbler5.transform.position = pos_Unlocked5.position;
-                    spring5.transform.localScale = new(1, 0.58f, 1);
+                    spring5.transform.localScale = new(1, 0.46f, 1);
                 }
                 LockStatusScript.tumbler4Unlocked = true;
                 LockStatusScript.tumbler5Unlocked = true;
             }
             else if (containerDifficulty == 3)
             {
-                if (par_LockModel.activeInHierarchy)
+                if (par_Lockpicking.activeInHierarchy)
                 {
                     tumbler5.transform.position = pos_Unlocked5.position;
-                    spring5.transform.localScale = new(1, 0.58f, 1);
+                    spring5.transform.localScale = new(1, 0.46f, 1);
                 }
                 LockStatusScript.tumbler5Unlocked = true;
             }
@@ -319,28 +319,49 @@ public class UI_Lockpicking : MonoBehaviour
             if (LockStatusScript.tumbler1Unlocked)
             {
                 tumbler1.transform.position = pos_Unlocked1.position;
-                spring1.transform.localScale = new(1, 0.58f, 1);
+                spring1.transform.localScale = new(1, 0.46f, 1);
             }
             if (LockStatusScript.tumbler2Unlocked)
             {
                 tumbler2.transform.position = pos_Unlocked2.position;
-                spring2.transform.localScale = new(1, 0.58f, 1);
+                spring2.transform.localScale = new(1, 0.46f, 1);
             }
             if (LockStatusScript.tumbler3Unlocked)
             {
                 tumbler3.transform.position = pos_Unlocked3.position;
-                spring3.transform.localScale = new(1, 0.58f, 1);
+                spring3.transform.localScale = new(1, 0.46f, 1);
             }
             if (LockStatusScript.tumbler4Unlocked)
             {
                 tumbler4.transform.position = pos_Unlocked4.position;
-                spring4.transform.localScale = new(1, 0.58f, 1);
+                spring4.transform.localScale = new(1, 0.46f, 1);
             }
             if (LockStatusScript.tumbler5Unlocked)
             {
                 tumbler5.transform.position = pos_Unlocked5.position;
-                spring5.transform.localScale = new(1, 0.58f, 1);
+                spring5.transform.localScale = new(1, 0.46f, 1);
             }
+        }
+
+        if (!LockStatusScript.tumbler1Unlocked)
+        {
+            lockStatusScript.tumbler1Weight = Random.Range(1, 5);
+        }
+        if (!LockStatusScript.tumbler2Unlocked)
+        {
+            lockStatusScript.tumbler2Weight = Random.Range(1, 5);
+        }
+        if (!LockStatusScript.tumbler3Unlocked)
+        {
+            lockStatusScript.tumbler3Weight = Random.Range(1, 5);
+        }
+        if (!LockStatusScript.tumbler4Unlocked)
+        {
+            lockStatusScript.tumbler4Weight = Random.Range(1, 5);
+        }
+        if (!LockStatusScript.tumbler5Unlocked)
+        {
+            lockStatusScript.tumbler5Weight = Random.Range(1, 5);
         }
     }
 
@@ -476,183 +497,226 @@ public class UI_Lockpicking : MonoBehaviour
 
     private void MoveTumblerUp()
     {
-        calledChanceOnce = false;
-        succeeded = false;
-
         if (tumbler == 1
             && !LockStatusScript.tumbler1Unlocked)
         {
             tumbler1.transform.position = new(tumbler1.transform.position.x,
-                                              tumbler1.transform.position.y + 0.003f,
+                                              tumbler1.transform.position.y + 3,
                                               tumbler1.transform.position.z);
             spring1.transform.localScale = new(spring1.transform.localScale.x,
                                                spring1.transform.localScale.y - 0.042f,
                                                spring1.transform.localScale.z);
+
+            if (Input.GetKeyDown(KeyCode.Mouse0)
+                && !confirmedUnlockAttempt)
+            {
+                CheckAttempt(tumbler);
+            }
         }
         else if (tumbler == 2
                  && !LockStatusScript.tumbler2Unlocked)
         {
             tumbler2.transform.position = new(tumbler2.transform.position.x,
-                                              tumbler2.transform.position.y + 0.003f,
+                                              tumbler2.transform.position.y + 3,
                                               tumbler2.transform.position.z);
             spring2.transform.localScale = new(spring2.transform.localScale.x,
                                                spring2.transform.localScale.y - 0.042f,
                                                spring2.transform.localScale.z);
+
+            if (Input.GetKeyDown(KeyCode.Mouse0)
+                && !confirmedUnlockAttempt)
+            {
+                CheckAttempt(tumbler);
+            }
         }
         else if (tumbler == 3
                  && !LockStatusScript.tumbler3Unlocked)
         {
             tumbler3.transform.position = new(tumbler3.transform.position.x,
-                                              tumbler3.transform.position.y + 0.003f,
+                                              tumbler3.transform.position.y + 3,
                                               tumbler3.transform.position.z);
             spring3.transform.localScale = new(spring3.transform.localScale.x,
                                                spring3.transform.localScale.y - 0.042f,
                                                spring3.transform.localScale.z);
+
+            if (Input.GetKeyDown(KeyCode.Mouse0)
+                && !confirmedUnlockAttempt)
+            {
+                CheckAttempt(tumbler);
+            }
         }
         else if (tumbler == 4
                  && !LockStatusScript.tumbler4Unlocked)
         {
             tumbler4.transform.position = new(tumbler4.transform.position.x,
-                                              tumbler4.transform.position.y + 0.003f,
+                                              tumbler4.transform.position.y + 3,
                                               tumbler4.transform.position.z);
             spring4.transform.localScale = new(spring4.transform.localScale.x,
                                                spring4.transform.localScale.y - 0.042f,
                                                spring4.transform.localScale.z);
+
+            if (Input.GetKeyDown(KeyCode.Mouse0)
+                && !confirmedUnlockAttempt)
+            {
+                CheckAttempt(tumbler);
+            }
         }
         else if (tumbler == 5
                  && !LockStatusScript.tumbler5Unlocked)
         {
             tumbler5.transform.position = new(tumbler5.transform.position.x,
-                                              tumbler5.transform.position.y + 0.003f,
+                                              tumbler5.transform.position.y + 3,
                                               tumbler5.transform.position.z);
             spring5.transform.localScale = new(spring5.transform.localScale.x,
                                                spring5.transform.localScale.y - 0.042f,
                                                spring5.transform.localScale.z);
+
+            if (Input.GetKeyDown(KeyCode.Mouse0)
+                && !confirmedUnlockAttempt)
+            {
+                CheckAttempt(tumbler);
+            }
         }
     }
     private void MoveTumblerDown()
     {
-        if (!calledChanceOnce
-            && ((tumbler == 1
-            && !LockStatusScript.tumbler1Unlocked)
-            || (tumbler == 2
-            && !LockStatusScript.tumbler2Unlocked)
-            || (tumbler == 3
-            && !LockStatusScript.tumbler3Unlocked)
-            || (tumbler == 4
-            && !LockStatusScript.tumbler4Unlocked)
-            || (tumbler == 5
-            && !LockStatusScript.tumbler5Unlocked)))
-        {
-            finalSuccessChance = Mathf.Clamp(Random.Range(1, 75) + PlayerStatsScript.Skills["Security"], 1, 75);
-            if (finalSuccessChance >= 75)
-            {
-                //Debug.Log("lockpicking succeedeed with tumbler nr " + tumbler + " at chance of " + finalSuccessChance + " out of 75!");
-                succeeded = true;
-            }
-            else
-            {
-                //Debug.Log("lockpicking failed with tumbler nr " + tumbler + " at chance of " + finalSuccessChance + " out of 75...");
-                FailedAttempt();
-            }
-            calledChanceOnce = true;
-        }
-
         if (tumbler == 1
             && !LockStatusScript.tumbler1Unlocked)
         {
-            if (succeeded)
-            {
-                LockStatusScript.tumbler1Unlocked = true;
+            tumbler1.transform.position = new(tumbler1.transform.position.x,
+                                              tumbler1.transform.position.y - 3,
+                                              tumbler1.transform.position.z);
+            spring1.transform.localScale = new(spring1.transform.localScale.x,
+                                               spring1.transform.localScale.y + 0.042f,
+                                               spring1.transform.localScale.z);
 
-                CheckLockStatus();
-            }
-            else
+            if (Input.GetKeyDown(KeyCode.Mouse0)
+                && !confirmedUnlockAttempt)
             {
-                tumbler1.transform.position = new(tumbler1.transform.position.x,
-                                                  tumbler1.transform.position.y - 0.003f,
-                                                  tumbler1.transform.position.z);
-                spring1.transform.localScale = new(spring1.transform.localScale.x,
-                                                   spring1.transform.localScale.y + 0.042f,
-                                                   spring1.transform.localScale.z);
+                CheckAttempt(tumbler);
             }
         }
         else if (tumbler == 2
                  && !LockStatusScript.tumbler2Unlocked)
         {
-            if (succeeded)
-            {
-                LockStatusScript.tumbler2Unlocked = true;
+            tumbler2.transform.position = new(tumbler2.transform.position.x,
+                                              tumbler2.transform.position.y - 3,
+                                              tumbler2.transform.position.z);
+            spring2.transform.localScale = new(spring2.transform.localScale.x,
+                                               spring2.transform.localScale.y + 0.042f,
+                                               spring2.transform.localScale.z);
 
-                CheckLockStatus();
-            }
-            else
+            if (Input.GetKeyDown(KeyCode.Mouse0)
+                && !confirmedUnlockAttempt)
             {
-                tumbler2.transform.position = new(tumbler2.transform.position.x,
-                                                  tumbler2.transform.position.y - 0.003f,
-                                                  tumbler2.transform.position.z);
-                spring2.transform.localScale = new(spring2.transform.localScale.x,
-                                                   spring2.transform.localScale.y + 0.042f,
-                                                   spring2.transform.localScale.z);
+                CheckAttempt(tumbler);
             }
         }
         else if (tumbler == 3
                  && !LockStatusScript.tumbler3Unlocked)
         {
-            if (succeeded)
-            {
-                LockStatusScript.tumbler3Unlocked = true;
+            tumbler3.transform.position = new(tumbler3.transform.position.x,
+                                              tumbler3.transform.position.y - 3,
+                                              tumbler3.transform.position.z);
+            spring3.transform.localScale = new(spring3.transform.localScale.x,
+                                               spring3.transform.localScale.y + 0.042f,
+                                               spring3.transform.localScale.z);
 
-                CheckLockStatus();
-            }
-            else
+            if (Input.GetKeyDown(KeyCode.Mouse0)
+                && !confirmedUnlockAttempt)
             {
-                tumbler3.transform.position = new(tumbler3.transform.position.x,
-                                                  tumbler3.transform.position.y - 0.003f,
-                                                  tumbler3.transform.position.z);
-                spring3.transform.localScale = new(spring3.transform.localScale.x,
-                                                   spring3.transform.localScale.y + 0.042f,
-                                                   spring3.transform.localScale.z);
+                CheckAttempt(tumbler);
             }
         }
         else if (tumbler == 4
                  && !LockStatusScript.tumbler4Unlocked)
         {
-            if (succeeded)
-            {
-                LockStatusScript.tumbler4Unlocked = true;
+            tumbler4.transform.position = new(tumbler4.transform.position.x,
+                                              tumbler4.transform.position.y - 3,
+                                              tumbler4.transform.position.z);
+            spring4.transform.localScale = new(spring4.transform.localScale.x,
+                                               spring4.transform.localScale.y + 0.042f,
+                                               spring4.transform.localScale.z);
 
-                CheckLockStatus();
-            }
-            else
+            if (Input.GetKeyDown(KeyCode.Mouse0)
+                && !confirmedUnlockAttempt)
             {
-                tumbler4.transform.position = new(tumbler4.transform.position.x,
-                                                  tumbler4.transform.position.y - 0.003f,
-                                                  tumbler4.transform.position.z);
-                spring4.transform.localScale = new(spring4.transform.localScale.x,
-                                                   spring4.transform.localScale.y + 0.042f,
-                                                   spring4.transform.localScale.z);
+                CheckAttempt(tumbler);
             }
         }
         else if (tumbler == 5
                  && !LockStatusScript.tumbler5Unlocked)
         {
-            if (succeeded)
-            {
-                LockStatusScript.tumbler5Unlocked = true;
+            tumbler5.transform.position = new(tumbler5.transform.position.x,
+                                              tumbler5.transform.position.y - 3,
+                                              tumbler5.transform.position.z);
+            spring5.transform.localScale = new(spring5.transform.localScale.x,
+                                               spring5.transform.localScale.y + 0.042f,
+                                               spring5.transform.localScale.z);
 
-                CheckLockStatus();
-            }
-            else
+            if (Input.GetKeyDown(KeyCode.Mouse0)
+                && !confirmedUnlockAttempt)
             {
-                tumbler5.transform.position = new(tumbler5.transform.position.x,
-                                                  tumbler5.transform.position.y - 0.003f,
-                                                  tumbler5.transform.position.z);
-                spring5.transform.localScale = new(spring5.transform.localScale.x,
-                                                   spring5.transform.localScale.y + 0.042f,
-                                                   spring5.transform.localScale.z);
+                CheckAttempt(tumbler);
             }
         }
+    }
+
+    //successful user unlock attempt unlocks the selected tumbler
+    private void CheckAttempt(int tumbler)
+    {
+        finalSuccessChance = Random.Range(1, 100) + PlayerStatsScript.Skills["Security"] * PlayerStatsScript.Attributes["Luck"];
+        if (finalSuccessChance >= 50)
+        {
+            //Debug.Log("lockpicking succeedeed with tumbler nr " + tumbler + " at chance of " + finalSuccessChance + " out of 75!");
+            succeeded = true;
+        }
+        else
+        {
+            //Debug.Log("lockpicking failed with tumbler nr " + tumbler + " at chance of " + finalSuccessChance + " out of 75...");
+            FailedAttempt();
+        }
+
+        Debug.Log("Confirmed attempt for tumbler " + tumbler + " with success chance of " + finalSuccessChance);
+
+        if (succeeded)
+        {
+            if (tumbler == 1)
+            {
+                LockStatusScript.tumbler1Unlocked = true;
+                tumbler1.transform.position = pos_Unlocked1.position;
+                spring1.transform.localScale = new(1, 0.46f, 1);
+            }
+            if (tumbler == 2)
+            {
+                LockStatusScript.tumbler2Unlocked = true;
+                tumbler2.transform.position = pos_Unlocked2.position;
+                spring2.transform.localScale = new(1, 0.46f, 1);
+            }
+            if (tumbler == 3)
+            {
+                LockStatusScript.tumbler3Unlocked = true;
+                tumbler3.transform.position = pos_Unlocked3.position;
+                spring3.transform.localScale = new(1, 0.46f, 1);
+            }
+            if (tumbler == 4)
+            {
+                LockStatusScript.tumbler4Unlocked = true;
+                tumbler4.transform.position = pos_Unlocked4.position;
+                spring4.transform.localScale = new(1, 0.46f, 1);
+            }
+            if (tumbler == 5)
+            {
+                LockStatusScript.tumbler5Unlocked = true;
+                tumbler5.transform.position = pos_Unlocked5.position;
+                spring5.transform.localScale = new(1, 0.46f, 1);
+            }
+
+            CheckLockStatus();
+        }
+
+        succeeded = false;
+        confirmedUnlockAttempt = false;
     }
 
     //auto-attempt to unlock the lock
@@ -714,7 +778,7 @@ public class UI_Lockpicking : MonoBehaviour
         {
             if (targetLock != null)
             {
-                pick.SetActive(false);
+                pick.gameObject.SetActive(false);
 
                 timer = 0.01f;
                 pickStep = 100;
@@ -738,10 +802,11 @@ public class UI_Lockpicking : MonoBehaviour
     //opens the lockpick UI
     public void OpenLockpickUI(string targetContainerName, string lockDifficulty)
     {
-        par_Lockpicking.SetActive(true);
-        par_LockModel.SetActive(true);
+        Time.timeScale = 1;
 
-        pick.SetActive(true);
+        par_Lockpicking.SetActive(true);
+
+        pick.gameObject.SetActive(true);
         ResetPickPosition();
 
         if (targetLock != null)
@@ -779,6 +844,7 @@ public class UI_Lockpicking : MonoBehaviour
         int securitySkill = PlayerStatsScript.Skills["Security"];
         txt_PlayerLockPickingLevel.text = "Skill: " + securitySkill.ToString();
     }
+
     //closes the lockpick UI
     public void CloseLockpickUI()
     {
@@ -787,7 +853,7 @@ public class UI_Lockpicking : MonoBehaviour
             PauseMenuScript.isPlayerMenuOpen = false;
 
             par_Lockpicking.SetActive(false);
-            par_LockModel.SetActive(false);
+            par_Lockpicking.SetActive(false);
         }
     }
 }
