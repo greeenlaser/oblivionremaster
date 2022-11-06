@@ -28,16 +28,18 @@ public class Player_Movement : MonoBehaviour
     private Camera PlayerCamera;
     private CharacterController CharacterController;
     private GameObject checkSphere;
-    //private float minVelocity;
+    private float minVelocity;
 
     //scripts
     private Player_Stats PlayerStatsScript;
     private Manager_KeyBindings KeyBindingsScript;
+    private Manager_DealEffect EffectManagerScript;
 
     private void Awake()
     {
         PlayerStatsScript = GetComponent<Player_Stats>();
         KeyBindingsScript = par_Managers.GetComponent<Manager_KeyBindings>();
+        EffectManagerScript = par_Managers.GetComponent<Manager_DealEffect>();
 
         PlayerCamera = GetComponentInChildren<Camera>();
         CharacterController = GetComponent<CharacterController>();
@@ -83,13 +85,15 @@ public class Player_Movement : MonoBehaviour
                 isGrounded = false;
             }
 
-            PlayerRegularMovement();
+            if (PlayerStatsScript.currentHealth > 0)
+            {
+                PlayerRegularMovement();
+            }
         }
     }
 
     private void PlayerRegularMovement()
     {
-        /*
         //gravity if player is grounded
         if (velocity.y < 0
             && isGrounded)
@@ -101,8 +105,8 @@ public class Player_Movement : MonoBehaviour
             }
 
             //check if smallest velocity is less than or equal to -25f
-            if (minVelocity <= -25f
-                && PlayerHealthScript.canTakeDamage)
+            if (minVelocity <= -25f)
+                //&& PlayerHealthScript.canTakeDamage)
             {
                 ApplyFallDamage();
                 minVelocity = -2f;
@@ -110,7 +114,6 @@ public class Player_Movement : MonoBehaviour
 
             velocity.y = -2f;
         }
-        */
 
         //gravity if player isnt grounded
         if (!isGrounded)
@@ -223,8 +226,6 @@ public class Player_Movement : MonoBehaviour
 
                 if (isCrouching)
                 {
-                    //Debug.Log("Player is crouching!");
-
                     currentSpeed = PlayerStatsScript.crouchSpeed;
 
                     CharacterController.height = originalHeight / 2;
@@ -233,8 +234,6 @@ public class Player_Movement : MonoBehaviour
                 }
                 else if (!isCrouching)
                 {
-                    //Debug.Log("Player is no longer crouching...");
-
                     currentSpeed = PlayerStatsScript.walkSpeed;
 
                     CharacterController.height = originalHeight;
@@ -245,13 +244,15 @@ public class Player_Movement : MonoBehaviour
         }
     }
 
-    /*
     //deal damage based off of velocity when hitting ground
     private void ApplyFallDamage()
     {
         float damageDealt = Mathf.Round(Mathf.Abs(velocity.y * 1.2f) * 10) / 10;
 
-        PlayerHealthScript.DealDamage("Ground", "gravity", damageDealt);
+        EffectManagerScript.DealEffect(null,
+                                       gameObject,
+                                       "drainHealth",
+                                       damageDealt,
+                                       0);
     }
-    */
 }

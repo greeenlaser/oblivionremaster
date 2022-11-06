@@ -9,6 +9,8 @@ public class Manager_Locations : MonoBehaviour
     [Header("Assignables")]
     public List<GameObject> locations = new();
 
+    public List<GameObject> lootTables;
+
     //public but hidden variables
     [HideInInspector] public LocationType locationType;
     public enum LocationType

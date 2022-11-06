@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Runtime.CompilerServices;
 
 public class UI_Inventory : MonoBehaviour
 {
@@ -44,6 +43,7 @@ public class UI_Inventory : MonoBehaviour
     private Manager_UIReuse UIReuseScript;
     private UI_Inventory PlayerInventoryScript;
     private Player_Stats PlayerStatsScript;
+    private Manager_Announcements AnnouncementScript;
 
     private void Awake()
     {
@@ -64,6 +64,7 @@ public class UI_Inventory : MonoBehaviour
         ConfirmationScript = par_Managers.GetComponent<UI_Confirmation>();
         PauseMenuScript = par_Managers.GetComponent<UI_PauseMenu>();
         UIReuseScript = par_Managers.GetComponent<Manager_UIReuse>();
+        AnnouncementScript = par_Managers.GetComponent<Manager_Announcements>();
     }
 
     //used for only respawnable containers,
@@ -90,14 +91,14 @@ public class UI_Inventory : MonoBehaviour
                         hasLockpicks = true;
 
                         LockpickingScript.targetLock = gameObject;
-                        LockpickingScript.OpenLockpickUI(containerName,
+                        LockpickingScript.OpenLockpickUI(gameObject,
                                                          LockStatusScript.lockDifficulty.ToString());
                         break;
                     }
                 }
                 if (!hasLockpicks)
                 {
-                    Debug.Log("Player tried to pick " + containerName + " lock with no lockpicks.");
+                    AnnouncementScript.CreateAnnouncement("Did not find lockpicks to unlock " + containerName + "!");
                 }
             }
             else
@@ -114,7 +115,7 @@ public class UI_Inventory : MonoBehaviour
 
                 if (!foundKey)
                 {
-                    Debug.Log("Player tried to unlock " + containerName + " lock without proper key.");
+                    AnnouncementScript.CreateAnnouncement("Did not find right key to unlock " + containerName + "!");
                 }
                 else
                 {
@@ -567,8 +568,12 @@ public class UI_Inventory : MonoBehaviour
                                             par_PlayerItems,
                                             targetItem);
             }
+            else
+            {
+                AnnouncementScript.CreateAnnouncement("Not enough space to take " + targetItem.name + "(s)!");
+            }
         }
-        //player takes items from container
+        //player takes/places items from/to container
         else
         {
             if (originalContainer == par_ContainerItems)
@@ -590,6 +595,10 @@ public class UI_Inventory : MonoBehaviour
                                                 par_ContainerItems,
                                                 par_PlayerItems,
                                                 targetItem);
+                }
+                else
+                {
+                    AnnouncementScript.CreateAnnouncement("Not enough space to take " + targetItem.name + "(s)!");
                 }
             }
             else if (originalContainer == par_PlayerItems)
@@ -655,6 +664,12 @@ public class UI_Inventory : MonoBehaviour
     {
         Env_Item itemScript = item.GetComponent<Env_Item>();
         GameObject targetItem;
+
+        if (originalLocation == PlayerMenuScript.par_DroppedItems
+            && targetLocation == par_PlayerItems)
+        {
+            AnnouncementScript.CreateAnnouncement("Picked up " + selectedCount + " " + item.name + "(s).");
+        }
 
         //if the player isnt moving all of the items
         if (selectedCount < itemScript.itemCount)
@@ -732,9 +747,16 @@ public class UI_Inventory : MonoBehaviour
             PlayerStatsScript.invSpace += totalCount;
         }
 
-        PauseMenuScript.UnpauseGame();
-        RemoveDuplicates();
-        PauseMenuScript.PauseWithoutUI();
+        if (PauseMenuScript.isPaused)
+        {
+            PauseMenuScript.UnpauseGame();
+            RemoveDuplicates();
+            PauseMenuScript.PauseWithoutUI();
+        }
+        else
+        {
+            RemoveDuplicates();
+        }
 
         Debug.Log("Successfully moved " + selectedCount + " " + targetItem.name + "(s) from " + originalLocation.transform.parent.name + " to " + targetLocation.transform.parent.name + "!");
     }

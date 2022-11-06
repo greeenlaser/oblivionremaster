@@ -16,10 +16,12 @@ public class Player_Camera : MonoBehaviour
     private float mouseX;
     private float mouseY;
     private float xRot;
+    private Player_Stats PlayerStatsScript;
     private Manager_Settings SettingsScript;
 
     private void Awake()
     {
+        PlayerStatsScript = transform.parent.GetComponent<Player_Stats>();
         SettingsScript = par_Managers.GetComponent<Manager_Settings>();
 
         StartCoroutine(Wait());
@@ -27,7 +29,8 @@ public class Player_Camera : MonoBehaviour
 
     private void Update()
     {
-        if (isCamEnabled)
+        if (isCamEnabled
+            && PlayerStatsScript.currentHealth > 0)
         {
             mouseX = Input.GetAxis("Mouse X") * sensX * 6 * Time.deltaTime;
             mouseY = Input.GetAxis("Mouse Y") * sensY * 6 * Time.deltaTime;

@@ -33,23 +33,23 @@ public class UI_PauseMenu : MonoBehaviour
     [HideInInspector] public bool isKeyAssignUIOpen;
 
     //private variables
+    private Player_Movement PlayerMovementScript;
+    private Player_Camera PlayerCameraScript;
     private Manager_GameSaving SavingScript;
     private UI_Confirmation ConfirmationScript;
     private Manager_KeyBindings KeyBindingsScript;
     private Manager_Settings SettingsScript;
     private Manager_UIReuse UIReuseScript;
-    private Player_Movement PlayerMovementScript;
-    private Player_Camera PlayerCameraScript;
 
     private void Awake()
     {
+        PlayerMovementScript = thePlayer.GetComponent<Player_Movement>();
+        PlayerCameraScript = thePlayer.GetComponentInChildren<Player_Camera>();
         SavingScript = GetComponent<Manager_GameSaving>();
         ConfirmationScript = GetComponent<UI_Confirmation>();
         KeyBindingsScript = GetComponent<Manager_KeyBindings>();
         SettingsScript = GetComponent<Manager_Settings>();
         UIReuseScript = GetComponent<Manager_UIReuse>();
-        PlayerMovementScript = thePlayer.GetComponent<Player_Movement>();
-        PlayerCameraScript = thePlayer.GetComponentInChildren<Player_Camera>();
 
         btn_ReturnToPM.onClick.AddListener(ShowPMContent);
         btn_ReturnToGame.onClick.AddListener(UnpauseGame);

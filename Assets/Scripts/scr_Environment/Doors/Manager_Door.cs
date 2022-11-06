@@ -45,6 +45,7 @@ public class Manager_Door : MonoBehaviour
     private UI_Inventory PlayerInventoryScript;
     private UI_Lockpicking LockpickingScript;
     private UI_PauseMenu PauseMenuScript;
+    private Manager_Announcements AnnouncementScript;
 
     private void Awake()
     {
@@ -52,6 +53,7 @@ public class Manager_Door : MonoBehaviour
         PlayerInventoryScript = thePlayer.GetComponent<UI_Inventory>();
         LockpickingScript = par_Managers.GetComponent<UI_Lockpicking>();
         PauseMenuScript = par_Managers.GetComponent<UI_PauseMenu>();
+        AnnouncementScript = par_Managers.GetComponent<Manager_Announcements>();
 
         if (par_RotationCenter != null)
         {
@@ -158,14 +160,14 @@ public class Manager_Door : MonoBehaviour
                             hasLockpicks = true;
 
                             LockpickingScript.targetLock = gameObject;
-                            LockpickingScript.OpenLockpickUI(doorType.ToString(),
+                            LockpickingScript.OpenLockpickUI(gameObject,
                                                              LockStatusScript.lockDifficulty.ToString());
                             break;
                         }
                     }
                     if (!hasLockpicks)
                     {
-                        Debug.Log("Player tried to pick " + doorName.Replace("_", " ") + " lock with no lockpicks.");
+                        AnnouncementScript.CreateAnnouncement("Did not find lockpicks to unlock " + doorName.Replace("_", " ") + "!");
                     }
                 }
                 else
@@ -182,7 +184,7 @@ public class Manager_Door : MonoBehaviour
 
                     if (!foundKey)
                     {
-                        Debug.Log("Player tried to unlock " + doorName.Replace("_", " ") + " lock without proper key.");
+                        AnnouncementScript.CreateAnnouncement("Did not find right key to unlock " + doorName.Replace("_", " ") + "!");
                     }
                     else
                     {

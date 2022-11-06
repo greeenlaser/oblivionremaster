@@ -5,9 +5,6 @@ using UnityEngine;
 public class Env_LootTable : MonoBehaviour
 {
     [Header("General")]
-    [Range(1, 10)]
-    [SerializeField] private int lootQuality = 2;
-    [SerializeField] private GameObject par_RealSpawnableItems;
     [SerializeField] private List<GameObject> spawnableItems;
 
     [Header("Scripts")]
@@ -22,13 +19,14 @@ public class Env_LootTable : MonoBehaviour
     private void Awake()
     {
         PlayerStatsScript = thePlayer.GetComponent<Player_Stats>();
-        TargetInventory = GetComponent<UI_Inventory>();
         PlayerMenuScript = par_Managers.GetComponent<UI_PlayerMenu>();
     }
 
     //used for restocking stores and refilling refillable containers
-    public void RespawnContainer()
+    public void ResetContainer(GameObject targetContainer)
     {
+        TargetInventory = targetContainer.GetComponent<UI_Inventory>();
+
         if (TargetInventory.containerItems.Count > 0)
         {
             ClearTargetInventory();
@@ -77,14 +75,14 @@ public class Env_LootTable : MonoBehaviour
                         luckChance = 3;
                     }
 
-                    int chanceToSpawn = lootQuality * randomChance * luckChance;
+                    int chanceToSpawn = randomChance * luckChance;
 
                     if (chanceToSpawn >= 50)
                     {
                         GameObject realItem = Instantiate(templateItem.gameObject,
-                                                          par_RealSpawnableItems.transform.position,
+                                                          TargetInventory.par_ContainerItems.transform.position,
                                                           Quaternion.identity,
-                                                          par_RealSpawnableItems.transform);
+                                                          TargetInventory.par_ContainerItems.transform);
 
                         Env_Item realItemScript = realItem.GetComponent<Env_Item>();
                         realItem.name = realItemScript.itemName;
@@ -100,7 +98,11 @@ public class Env_LootTable : MonoBehaviour
                                 || realItemScript.itemType == Env_Item.ItemType.ammo
                                 || realItemScript.itemType == Env_Item.ItemType.misc)
                             {
-                                count *= lootQuality;
+                                count *= luckChance;
+                                if (count > 50)
+                                {
+                                    count = 50;
+                                }
                             }
 
                             realItemScript.itemCount = count;
@@ -115,7 +117,7 @@ public class Env_LootTable : MonoBehaviour
     //clears target inventory of any remaining items
     private void ClearTargetInventory()
     {
-        foreach (Transform item in par_RealSpawnableItems.transform)
+        foreach (Transform item in TargetInventory.par_ContainerItems.transform)
         {
             Destroy(item.gameObject);
         }

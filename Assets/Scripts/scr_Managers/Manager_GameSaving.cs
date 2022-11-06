@@ -232,87 +232,94 @@ public class Manager_GameSaving : MonoBehaviour
     //set up game save file creation
     public void CreateSaveFile(string saveName)
     {
-        //creating a regular save file
-        if (saveName == "")
+        if (PlayerStatsScript.currentHealth == 0)
         {
-            //get all game saves
-            string[] saves = Directory.GetFiles(GameManagerScript.savePath);
-            //if we have any save files
-            if (saves.Length > 0)
-            {
-                int highestIndex = 1;
-                foreach (string file in saves)
-                {
-                    string fileName = Path.GetFileName(file);
-                    string[] splitParts = fileName.Split('.');
-                    fileName = splitParts[0];
-
-                    //look for only save files with the correct name
-                    if (fileName.Contains("Save_")
-                        && fileName.Length > 4
-                        && Char.IsDigit(fileName[5]))
-                    {
-                        //split the file name again with _
-                        string[] fileNameSplit = fileName.Split('_');
-                        //get the number from the split file name
-                        int num = int.Parse(fileNameSplit[1]);
-
-                        //update the highest index to this
-                        //if it is higher than the last highest index
-                        if (num > highestIndex)
-                        {
-                            highestIndex = num;
-                        }
-                    }
-                }
-                //increase highest index by 1
-                highestIndex++;
-                //create new file name with new highest index
-                SaveName = "Save_" + highestIndex;
-                //set save path
-                SaveFilePath = GameManagerScript.savePath + @"\" + SaveName + ".txt";
-                //create a new save file and fill it with data
-                SaveGame();
-            }
-            //if we dont have any save files
-            else
-            {
-                SaveName = "Save_1";
-                //set save path
-                SaveFilePath = GameManagerScript.savePath + @"\" + SaveName + ".txt";
-                //create a new save file and fill it with data
-                SaveGame();
-            }
+            Debug.LogWarning("Error: Cannot save while player is dead!");
         }
-        //creating a save file with a custom name
         else
         {
-            bool foundBadSymbol = false;
-
-            //loop through all characters in saveName
-            foreach (char c in saveName)
+            //creating a regular save file
+            if (saveName == "")
             {
-                //if character is illegal
-                if (!Char.IsLetterOrDigit(c))
+                //get all game saves
+                string[] saves = Directory.GetFiles(GameManagerScript.savePath);
+                //if we have any save files
+                if (saves.Length > 0)
                 {
-                    foundBadSymbol = true;
-                    break;
+                    int highestIndex = 1;
+                    foreach (string file in saves)
+                    {
+                        string fileName = Path.GetFileName(file);
+                        string[] splitParts = fileName.Split('.');
+                        fileName = splitParts[0];
+
+                        //look for only save files with the correct name
+                        if (fileName.Contains("Save_")
+                            && fileName.Length > 4
+                            && Char.IsDigit(fileName[5]))
+                        {
+                            //split the file name again with _
+                            string[] fileNameSplit = fileName.Split('_');
+                            //get the number from the split file name
+                            int num = int.Parse(fileNameSplit[1]);
+
+                            //update the highest index to this
+                            //if it is higher than the last highest index
+                            if (num > highestIndex)
+                            {
+                                highestIndex = num;
+                            }
+                        }
+                    }
+                    //increase highest index by 1
+                    highestIndex++;
+                    //create new file name with new highest index
+                    SaveName = "Save_" + highestIndex;
+                    //set save path
+                    SaveFilePath = GameManagerScript.savePath + @"\" + SaveName + ".txt";
+                    //create a new save file and fill it with data
+                    SaveGame();
+                }
+                //if we dont have any save files
+                else
+                {
+                    SaveName = "Save_1";
+                    //set save path
+                    SaveFilePath = GameManagerScript.savePath + @"\" + SaveName + ".txt";
+                    //create a new save file and fill it with data
+                    SaveGame();
                 }
             }
-
-            if (foundBadSymbol
-                || saveName == "reset")
-            {
-                Debug.LogError("Error: Invalid name " + saveName + " for game save. Save name is not allowed!");
-            }
+            //creating a save file with a custom name
             else
             {
-                SaveName = saveName;
+                bool foundBadSymbol = false;
 
-                //set save path
-                SaveFilePath = GameManagerScript.savePath + @"\" + SaveName + ".txt";
-                //create a new save file and fill it with data
-                SaveGame();
+                //loop through all characters in saveName
+                foreach (char c in saveName)
+                {
+                    //if character is illegal
+                    if (!Char.IsLetterOrDigit(c))
+                    {
+                        foundBadSymbol = true;
+                        break;
+                    }
+                }
+
+                if (foundBadSymbol
+                    || saveName == "reset")
+                {
+                    Debug.LogError("Error: Invalid name " + saveName + " for game save. Save name is not allowed!");
+                }
+                else
+                {
+                    SaveName = saveName;
+
+                    //set save path
+                    SaveFilePath = GameManagerScript.savePath + @"\" + SaveName + ".txt";
+                    //create a new save file and fill it with data
+                    SaveGame();
+                }
             }
         }
     }

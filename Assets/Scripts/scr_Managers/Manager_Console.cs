@@ -1954,7 +1954,7 @@ public class Manager_Console : MonoBehaviour
                     Env_Item ItemScript = targetTemplateItem.GetComponent<Env_Item>();
                     int maxInventorySpace = PlayerStatsScript.maxInvSpace;
                     int currentInventorySpace = PlayerStatsScript.invSpace;
-                    int totalTakenSpace = currentInventorySpace + (ItemScript.itemWeight * itemCount);
+                    int totalTakenSpace = ItemScript.itemWeight * itemCount;
 
                     if ((!ItemScript.isStackable
                         && itemCount == 1)

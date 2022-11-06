@@ -7,6 +7,9 @@ using UnityEngine.SceneManagement;
 
 public class Manager_UIReuse : MonoBehaviour
 {
+    [Header("Death UI")]
+    public GameObject par_DeathUI;
+
     [Header("Inventory UI")]
     public GameObject par_Inventory;
     public GameObject inventoryContent;
@@ -101,6 +104,8 @@ public class Manager_UIReuse : MonoBehaviour
             btn_ShowGeneralSettings.onClick.AddListener(delegate { SettingsScript.RebuildSettingsList("general"); });
             btn_ShowGraphicsSettings.onClick.AddListener(delegate { SettingsScript.RebuildSettingsList("graphics"); });
             btn_ShowAudioSettings.onClick.AddListener(delegate { SettingsScript.RebuildSettingsList("audio"); });
+
+            par_DeathUI.SetActive(false);
         }
     }
 

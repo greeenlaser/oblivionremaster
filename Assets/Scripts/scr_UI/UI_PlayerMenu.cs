@@ -34,12 +34,14 @@ public class UI_PlayerMenu : MonoBehaviour
     [HideInInspector] public UI_Inventory PlayerInventoryScript;
 
     //private variables
+    private Player_Stats PlayerStatsScript;
     private Manager_KeyBindings KeyBindingsScript;
     private UI_PauseMenu PauseMenuScript;
     private Manager_UIReuse UIReuseScript;
 
     private void Awake()
     {
+        PlayerStatsScript = thePlayer.GetComponent<Player_Stats>();
         KeyBindingsScript = GetComponent<Manager_KeyBindings>();
         PauseMenuScript = GetComponent<UI_PauseMenu>();
         UIReuseScript = GetComponent<Manager_UIReuse>();
@@ -55,7 +57,8 @@ public class UI_PlayerMenu : MonoBehaviour
             && !PauseMenuScript.isPaused
             && !PauseMenuScript.isConsoleOpen
             && !PauseMenuScript.isConfirmationUIOpen
-            && !PauseMenuScript.isKeyAssignUIOpen)
+            && !PauseMenuScript.isKeyAssignUIOpen
+            && PlayerStatsScript.currentHealth > 0)
         {
             PauseMenuScript.isPlayerMenuOpen = !PauseMenuScript.isPlayerMenuOpen;
         }

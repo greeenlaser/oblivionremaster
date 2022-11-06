@@ -34,11 +34,13 @@ public class Trigger_Location : MonoBehaviour
     private Vector3 discoveredStartScale;
     private Manager_Locations LocationManagerScript;
     private UI_Lockpicking LockPickingScript;
+    private Manager_Announcements AnnouncementScript;
 
     private void Awake()
     {
         LocationManagerScript = par_Managers.GetComponentInChildren<Manager_Locations>();
         LockPickingScript = par_Managers.GetComponent<UI_Lockpicking>();
+        AnnouncementScript = par_Managers.GetComponent<Manager_Announcements>();
 
         undiscoveredStartScale = location.transform.localScale;
         discoveredStartScale = location_discovered.transform.localScale;
@@ -91,9 +93,7 @@ public class Trigger_Location : MonoBehaviour
 
             if (!wasDiscovered)
             {
-                ResetCell();
-                Debug.Log("Discovered " + cellName + "!");
-
+                AnnouncementScript.CreateAnnouncement("Discovered " + cellName + "!");
                 wasDiscovered = true;
             }
         }
@@ -143,12 +143,17 @@ public class Trigger_Location : MonoBehaviour
             }
 
             UI_Inventory inventory = container.GetComponent<UI_Inventory>();
-            Env_LootTable lootTable = container.GetComponent<Env_LootTable>();
-
             if (inventory.containerType == UI_Inventory.ContainerType.respawnable
                 || inventory.containerType == UI_Inventory.ContainerType.store)
             {
-                lootTable.RespawnContainer();
+                foreach (GameObject lootTable in LocationManagerScript.lootTables)
+                {
+                    if (lootTable.name == "ContainerLootTable")
+                    {
+                        lootTable.GetComponent<Env_LootTable>().ResetContainer(container);
+                        break;
+                    }
+                }
             }
         }
         foreach (GameObject door in doors)

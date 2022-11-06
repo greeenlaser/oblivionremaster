@@ -74,7 +74,7 @@ public class Player_Raycast : MonoBehaviour
                 if (Physics.Raycast(transform.position,
                                     transform.TransformDirection(Vector3.forward),
                                     out RaycastHit hitTarget,
-                                    3,
+                                    2,
                                     IgnoredLayermask,
                                     QueryTriggerInteraction.Ignore))
                 {
