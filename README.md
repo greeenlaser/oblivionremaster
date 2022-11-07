@@ -1,5 +1,5 @@
 # REQUIRED MAIN BRANCH UNITY VERSION
-2021.3.11f1 LTS
+2021.3.10f1 LTS
 
 # ART AND AUDIO FOLDER DOWNLOADS
 IMPORTANT: You must delete and re-download the art and audio folders zip pack every time you download a new version of the main branch to avoid potential file location and missing file conflicts. Only latest main branch art and audio files are zipped, old versions are always deleted.
