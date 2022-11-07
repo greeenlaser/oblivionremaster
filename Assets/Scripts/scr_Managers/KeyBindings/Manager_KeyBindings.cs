@@ -378,12 +378,8 @@ public class Manager_KeyBindings : MonoBehaviour
         }
     }
 
-    /*
-    this method checks for all keypresses in the game 
-    and does the actions that were requested 
-    if the pressed key is assigned
-    */
-    public bool GetButtonDown(string buttonName)
+    //checks if key was pressed once
+    public bool GetKeyDown(string buttonName)
     {
         if (!KeyBindings.ContainsKey(buttonName))
         {
@@ -391,14 +387,19 @@ public class Manager_KeyBindings : MonoBehaviour
         }
         else
         {
-            if (buttonName == "Sprint")
-            {
-                return Input.GetKey(KeyBindings[buttonName]);
-            }
-            else
-            {
-                return Input.GetKeyDown(KeyBindings[buttonName]);
-            }
+            return Input.GetKeyDown(KeyBindings[buttonName]);
+        }
+    }
+    //checks if key was held down
+    public bool GetKey(string buttonName)
+    {
+        if (!KeyBindings.ContainsKey(buttonName))
+        {
+            return false;
+        }
+        else
+        {
+            return Input.GetKey(KeyBindings[buttonName]);
         }
     }
 }

@@ -59,12 +59,12 @@ public class Manager_GameSaving : MonoBehaviour
         if (currentScene == 1)
         {
             //save the game
-            if (KeyBindingsScript.GetButtonDown("Save"))
+            if (KeyBindingsScript.GetKeyDown("Save"))
             {
                 CreateSaveFile("");
             }
             //load the latest save
-            if (KeyBindingsScript.GetButtonDown("Load"))
+            if (KeyBindingsScript.GetKeyDown("Load"))
             {
                 CreateLoadFile("");
             }

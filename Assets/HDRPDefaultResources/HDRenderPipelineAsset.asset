@@ -91,20 +91,20 @@ MonoBehaviour:
       cachedPunctualLightShadowAtlas: 2048
       cachedAreaLightShadowAtlas: 1024
       shadowResolutionDirectional:
-        m_Values: 00010000000400000008000000100000
+        m_Values: 00040000000800000010000000200000
         m_SchemaId:
           m_Id: With4Levels
       shadowResolutionPunctual:
-        m_Values: 00010000000400000008000000100000
+        m_Values: 00040000000800000010000000200000
         m_SchemaId:
           m_Id: With4Levels
       shadowResolutionArea:
-        m_Values: 00010000000400000008000000100000
+        m_Values: 00040000000800000010000000200000
         m_SchemaId:
           m_Id: With4Levels
-      maxDirectionalShadowMapResolution: 4096
-      maxPunctualShadowMapResolution: 4096
-      maxAreaShadowMapResolution: 4096
+      maxDirectionalShadowMapResolution: 8192
+      maxPunctualShadowMapResolution: 8192
+      maxAreaShadowMapResolution: 8192
       supportScreenSpaceShadows: 1
       maxScreenSpaceShadowSlots: 4
       screenSpaceShadowBufferFormat: 48

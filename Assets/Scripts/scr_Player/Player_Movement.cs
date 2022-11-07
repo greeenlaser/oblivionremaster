@@ -11,6 +11,7 @@ public class Player_Movement : MonoBehaviour
     [SerializeField] private GameObject par_Managers;
 
     //public but hidden variables
+    [HideInInspector] public bool isNoclipping;
     [HideInInspector] public bool canMove;
     [HideInInspector] public bool canSprint;
     [HideInInspector] public bool isSprinting;
@@ -22,6 +23,7 @@ public class Player_Movement : MonoBehaviour
     [HideInInspector] public Vector3 velocity;
 
     //private variables
+    private float noclipMoveSpeed = 5;
     private readonly float gravity = -9.81f;
     private float originalHeight;
     private float currentSpeed;
@@ -87,7 +89,14 @@ public class Player_Movement : MonoBehaviour
 
             if (PlayerStatsScript.currentHealth > 0)
             {
-                PlayerRegularMovement();
+                if (!isNoclipping)
+                {
+                    PlayerRegularMovement();
+                }
+                else
+                {
+                    PlayerNoclipMovement();
+                }
             }
         }
     }
@@ -138,7 +147,7 @@ public class Player_Movement : MonoBehaviour
         Vector3 horizontalVelocity = transform.right * x + transform.forward * z;
 
         //enable/disable sprinting
-        if (KeyBindingsScript.GetButtonDown("Sprint")
+        if (KeyBindingsScript.GetKey("Sprint")
             && PlayerStatsScript.currentStamina >= Time.deltaTime * 10)
         {
             isSprinting = true;
@@ -190,7 +199,7 @@ public class Player_Movement : MonoBehaviour
         }
 
         //enable/disable jumping
-        if (KeyBindingsScript.GetButtonDown("Jump")
+        if (KeyBindingsScript.GetKeyDown("Jump")
             && isGrounded
             && !isJumping
             && canJump
@@ -212,7 +221,7 @@ public class Player_Movement : MonoBehaviour
         }
 
         //enable/disable crouching
-        if (KeyBindingsScript.GetButtonDown("Crouch"))
+        if (KeyBindingsScript.GetKeyDown("Crouch"))
         {
             if (isGrounded
                 && canCrouch)
@@ -241,6 +250,37 @@ public class Player_Movement : MonoBehaviour
                     PlayerCamera.transform.localPosition = PlayerStatsScript.cameraWalkHeight;
                 }
             }
+        }
+    }
+    private void PlayerNoclipMovement()
+    {
+        //noclip movement
+        float x = Input.GetAxis("Horizontal");
+        float z = Input.GetAxis("Vertical");
+
+        Vector3 move = transform.right * x + PlayerCamera.gameObject.transform.forward * z;
+        move = Vector3.ClampMagnitude(move, 1);
+
+        transform.position += noclipMoveSpeed * Time.deltaTime * move;
+
+        if (KeyBindingsScript.GetKey("Sprint"))
+        {
+            noclipMoveSpeed = PlayerStatsScript.walkSpeed * 10;
+        }
+        else
+        {
+            noclipMoveSpeed = PlayerStatsScript.walkSpeed * 2.5f;
+        }
+
+        //move down
+        if (KeyBindingsScript.GetKey("Crouch"))
+        {
+            transform.position += noclipMoveSpeed * Time.deltaTime * new Vector3(0, -1, 0);
+        }
+        //move up
+        else if (KeyBindingsScript.GetKey("Jump"))
+        {
+            transform.position += noclipMoveSpeed * Time.deltaTime * new Vector3(0, 1, 0);
         }
     }
 

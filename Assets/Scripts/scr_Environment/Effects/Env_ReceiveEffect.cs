@@ -110,7 +110,8 @@ public class Env_ReceiveEffect : MonoBehaviour
         switch (effectType)
         {
             case EffectType.drainHealth:
-                if (target.name == "Player")
+                if (target.name == "Player"
+                    && !PlayerStatsScript.isGodmodeEnabled)
                 {
                     PlayerStatsScript.currentHealth -= effectValue;
                     if (PlayerStatsScript.currentHealth <= 0)
@@ -122,7 +123,8 @@ public class Env_ReceiveEffect : MonoBehaviour
                 }
                 break;
             case EffectType.drainMagicka:
-                if (target.name == "Player")
+                if (target.name == "Player"
+                    && !PlayerStatsScript.isGodmodeEnabled)
                 {
                     PlayerStatsScript.currentMagicka -= effectValue;
                     if (PlayerStatsScript.currentMagicka < 0)
@@ -133,7 +135,8 @@ public class Env_ReceiveEffect : MonoBehaviour
                 }
                 break;
             case EffectType.drainFatigue:
-                if (target.name == "Player")
+                if (target.name == "Player"
+                    && !PlayerStatsScript.isGodmodeEnabled)
                 {
                     PlayerStatsScript.currentStamina -= effectValue;
                     if (PlayerStatsScript.currentStamina < 0)

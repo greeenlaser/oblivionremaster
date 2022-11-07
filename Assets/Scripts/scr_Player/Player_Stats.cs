@@ -18,6 +18,7 @@ public class Player_Stats : MonoBehaviour
     [HideInInspector] public Vector3 cameraCrouchHeight = new(0, 0.3f, 0);
 
     [Header("Combat main values")]
+    [HideInInspector] public bool isGodmodeEnabled;
     [SerializeField] private float defaultMaxHealth = 100;
     [HideInInspector] public float maxHealth;
     [HideInInspector] public float currentHealth;

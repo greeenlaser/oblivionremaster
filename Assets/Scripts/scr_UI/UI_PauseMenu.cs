@@ -74,7 +74,7 @@ public class UI_PauseMenu : MonoBehaviour
 
     private void Update()
     {
-        if (KeyBindingsScript.GetButtonDown("TogglePauseMenu"))
+        if (KeyBindingsScript.GetKeyDown("TogglePauseMenu"))
         {
             isPaused = !isPaused;
         }

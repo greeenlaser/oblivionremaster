@@ -137,7 +137,7 @@ public class Player_Raycast : MonoBehaviour
             }
 
             //interacting with an object
-            if (KeyBindingsScript.GetButtonDown("PickUpOrInteract"))
+            if (KeyBindingsScript.GetKeyDown("PickUpOrInteract"))
             {
                 //hit item
                 if (target.GetComponent<Env_Item>() != null)

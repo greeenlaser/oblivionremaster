@@ -125,15 +125,15 @@ public class UI_Lockpicking : MonoBehaviour
                 || !LockStatusScript.tumbler4Unlocked
                 || !LockStatusScript.tumbler5Unlocked))
             {
-                if (KeyBindingsScript.GetButtonDown("WalkLeft"))
+                if (KeyBindingsScript.GetKeyDown("WalkLeft"))
                 {
                     SetPickDirection("left");
                 }
-                else if (KeyBindingsScript.GetButtonDown("WalkRight"))
+                else if (KeyBindingsScript.GetKeyDown("WalkRight"))
                 {
                     SetPickDirection("right");
                 }
-                else if (KeyBindingsScript.GetButtonDown("WalkForwards"))
+                else if (KeyBindingsScript.GetKeyDown("WalkForwards"))
                 {
                     SetPickDirection("up");
                 }

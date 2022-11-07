@@ -53,7 +53,7 @@ public class UI_PlayerMenu : MonoBehaviour
 
     private void Update()
     {
-        if (KeyBindingsScript.GetButtonDown("TogglePlayerMenu")
+        if (KeyBindingsScript.GetKeyDown("TogglePlayerMenu")
             && !PauseMenuScript.isPaused
             && !PauseMenuScript.isConsoleOpen
             && !PauseMenuScript.isConfirmationUIOpen

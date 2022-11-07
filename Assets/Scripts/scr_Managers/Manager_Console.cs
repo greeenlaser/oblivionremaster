@@ -43,6 +43,7 @@ public class Manager_Console : MonoBehaviour
     private Vector3 consoleVisiblePosition = new(0, 0, 0);
 
     //scripts
+    private Player_Movement PlayerMovementScript;
     private UI_Inventory PlayerInventoryScript;
     private Player_Stats PlayerStatsScript;
     private UI_PlayerMenu PlayerMenuScript;
@@ -71,6 +72,7 @@ public class Manager_Console : MonoBehaviour
         }
         else if (currentScene == 1)
         {
+            PlayerMovementScript = thePlayer.GetComponent<Player_Movement>();
             PlayerInventoryScript = thePlayer.GetComponent<UI_Inventory>();
             PlayerStatsScript = thePlayer.GetComponent<Player_Stats>();
             PlayerMenuScript = GetComponent<UI_PlayerMenu>();
@@ -88,7 +90,7 @@ public class Manager_Console : MonoBehaviour
 
     private void Update()
     {
-        if (KeyBindingsScript.GetButtonDown("ToggleConsole")
+        if (KeyBindingsScript.GetKeyDown("ToggleConsole")
             && canToggleConsole)
         {
             if (currentScene == 0)
@@ -295,6 +297,20 @@ public class Manager_Console : MonoBehaviour
                          && separatedWords.Count == 1)
                 {
                     Command_ToggleDebugMenu();
+                }
+
+                //toggle godmode
+                else if (separatedWords[0] == "tgm"
+                         && separatedWords.Count == 1
+                         && PlayerStatsScript.currentHealth > 0)
+                {
+                    Command_ToggleGodMode();
+                }
+                //toggle noclip
+                else if (separatedWords[0] == "tnc"
+                         && separatedWords.Count == 1)
+                {
+                    Command_ToggleNoclip();
                 }
 
                 //show all saves
@@ -568,6 +584,9 @@ public class Manager_Console : MonoBehaviour
             CreateNewConsoleLine("clear - clear console log.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("tdm - toggle debug menu.", "CONSOLE_INFO_MESSAGE");
 
+            CreateNewConsoleLine("tgm - toggle godmode.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("tnc - toggle noclip", "CONSOLE_INFO_MESSAGE");
+
             CreateNewConsoleLine("shsa - show all game saves.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("desa - delete all game saves [WARNING: THIS CANNOT BE UNDONE]", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("save savename - save game with save name.", "CONSOLE_INFO_MESSAGE");
@@ -641,6 +660,33 @@ public class Manager_Console : MonoBehaviour
 
             CreateNewConsoleLine("Disabled debug menu.", "CONSOLE_INFO_MESSAGE");
             debugMenuEnabled = false;
+        }
+    }
+
+    //toggle godmode
+    private void Command_ToggleGodMode()
+    {
+        PlayerStatsScript.isGodmodeEnabled = !PlayerStatsScript.isGodmodeEnabled;
+        if (!PlayerStatsScript.isGodmodeEnabled)
+        {
+            CreateNewConsoleLine("Disabled god mode.", "CONSOLE_INFO_MESSAGE");
+        }
+        else
+        {
+            CreateNewConsoleLine("Enabled god mode.", "CONSOLE_INFO_MESSAGE");
+        }
+    }
+    //toggle noclip
+    private void Command_ToggleNoclip()
+    {
+        PlayerMovementScript.isNoclipping = !PlayerMovementScript.isNoclipping;
+        if (!PlayerMovementScript.isNoclipping)
+        {
+            CreateNewConsoleLine("Disabled noclipping.", "CONSOLE_INFO_MESSAGE");
+        }
+        else
+        {
+            CreateNewConsoleLine("Enabled noclipping.", "CONSOLE_INFO_MESSAGE");
         }
     }
 
