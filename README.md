@@ -3,7 +3,7 @@ It is not recommended to use the indev version because it may contain buggy code
 Indev versions also always update to the latest LTS version so that means you may need multiple unity versions if you plan on using both main and indev branches.
 
 # REQUIRED INDEV BRANCH UNITY VERSION
-2021.3.12f1 LTS
+2021.3.13f1 LTS
 
 # ART AND AUDIO FOLDER DOWNLOADS
 Art and audio files are not updated in the indev branch. If you want to download and try out the indev version and you are missing any files then DM me on discord greenlaser#1234
