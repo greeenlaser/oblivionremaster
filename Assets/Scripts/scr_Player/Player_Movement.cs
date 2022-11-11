@@ -147,12 +147,9 @@ public class Player_Movement : MonoBehaviour
         Vector3 horizontalVelocity = transform.right * x + transform.forward * z;
 
         //enable/disable sprinting
-        if (KeyBindingsScript.GetKey("Sprint")
-            && PlayerStatsScript.currentStamina >= Time.deltaTime * 10)
-        {
-            isSprinting = true;
-        }
+        isSprinting = KeyBindingsScript.GetKey("Sprint");
         if (isSprinting
+            && PlayerStatsScript.currentStamina >= Time.deltaTime * 10
             && horizontalVelocity.magnitude > 0.3f)
         {
             //Debug.Log("Player is sprinting!");

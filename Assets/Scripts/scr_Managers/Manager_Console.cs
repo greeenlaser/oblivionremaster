@@ -268,7 +268,7 @@ public class Manager_Console : MonoBehaviour
 
         insertedCommands.Add(input);
         currentSelectedInsertedCommand = insertedCommands.Count - 1;
-        CreateNewConsoleLine("--" + input + "--", "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("--" + input + "--", "CONSOLE_COMMAND");
 
         //if inserted text was not empty and player pressed enter
         if (separatedWords.Count >= 1)
