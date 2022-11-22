@@ -86,6 +86,8 @@ public class UI_Lockpicking : MonoBehaviour
     {
         if (PauseMenuScript.isLockpickUIOpen)
         {
+            Debug.Log("current lockpick slot is " + currentTumblerSlot);
+
             if (!isMovingPick)
             {
                 if (KeyBindingsScript.GetKeyDown("WalkForwards"))
@@ -165,7 +167,7 @@ public class UI_Lockpicking : MonoBehaviour
             isPickGoingUp = false;
         }
         else if (direction == "left"
-                 && currentTumblerSlot >= 0)
+                 && currentTumblerSlot >= 1)
         {
             MovePickSideways(currentTumblerSlot - 1);
         }
@@ -173,6 +175,10 @@ public class UI_Lockpicking : MonoBehaviour
                  && currentTumblerSlot <= 3)
         {
             MovePickSideways(currentTumblerSlot + 1);
+        }
+        else
+        {
+            isMovingPick = false;
         }
     }
     //moves tumbler up and down independently from the lockpick speed
@@ -184,8 +190,6 @@ public class UI_Lockpicking : MonoBehaviour
     private void MovePickSideways(int targetSlot)
     {
         currentTumblerSlot = targetSlot;
-
-        Debug.Log("moving pick to " + slotPositions[currentTumblerSlot] + "...");
 
         lockpick.transform.localPosition = new Vector3(slotPositions[currentTumblerSlot],
                                                        lockpick.transform.localPosition.y,
@@ -310,6 +314,7 @@ public class UI_Lockpicking : MonoBehaviour
         StopMovement();
 
         lockpick.transform.localPosition = lockpickStartPosition;
+        currentTumblerSlot = 0;
 
         if (LockStatusScript.tumbler1Unlocked)
         {
