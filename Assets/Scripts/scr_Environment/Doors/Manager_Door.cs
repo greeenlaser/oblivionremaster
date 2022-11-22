@@ -156,12 +156,11 @@ public class Manager_Door : MonoBehaviour
                     {
                         if (item.name == "Lockpick")
                         {
-                            PauseMenuScript.isPlayerMenuOpen = true;
                             hasLockpicks = true;
 
-                            LockpickingScript.targetLock = gameObject;
-                            LockpickingScript.OpenLockpickUI(gameObject,
-                                                             LockStatusScript.lockDifficulty.ToString());
+                            LockpickingScript.LockStatusScript = LockStatusScript;
+                            LockpickingScript.OpenlockpickUI();
+
                             break;
                         }
                     }

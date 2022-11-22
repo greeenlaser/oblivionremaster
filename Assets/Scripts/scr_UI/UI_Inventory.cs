@@ -90,14 +90,15 @@ public class UI_Inventory : MonoBehaviour
                         PauseMenuScript.isPlayerMenuOpen = true;
                         hasLockpicks = true;
 
-                        LockpickingScript.targetLock = gameObject;
-                        LockpickingScript.OpenLockpickUI(gameObject,
-                                                         LockStatusScript.lockDifficulty.ToString());
+                        LockpickingScript.LockStatusScript = LockStatusScript;
+                        LockpickingScript.OpenlockpickUI();
+
                         break;
                     }
                 }
                 if (!hasLockpicks)
                 {
+                    Debug.Log("Did not find lockpicks to unlock " + containerName + "!");
                     AnnouncementScript.CreateAnnouncement("Did not find lockpicks to unlock " + containerName + "!");
                 }
             }
@@ -115,6 +116,7 @@ public class UI_Inventory : MonoBehaviour
 
                 if (!foundKey)
                 {
+                    Debug.Log("Did not find right key to unlock " + containerName + "!");
                     AnnouncementScript.CreateAnnouncement("Did not find right key to unlock " + containerName + "!");
                 }
                 else
@@ -570,6 +572,7 @@ public class UI_Inventory : MonoBehaviour
             }
             else
             {
+                Debug.Log("Not enough space to take " + targetItem.name + "(s)!");
                 AnnouncementScript.CreateAnnouncement("Not enough space to take " + targetItem.name + "(s)!");
             }
         }
@@ -578,16 +581,14 @@ public class UI_Inventory : MonoBehaviour
         {
             if (originalContainer == par_ContainerItems)
             {
-                if (targetItem.GetComponent<Env_Item>().itemCount == 1
-                    && totalTakenSpace <= maxInventorySpace)
+                if (targetItem.GetComponent<Env_Item>().itemCount == 1)
                 {
                     SuccessfulItemMove(1,
                                        par_ContainerItems,
                                        par_PlayerItems,
                                        targetItem);
                 }
-                else if (targetItem.GetComponent<Env_Item>().itemCount > 1
-                         && singleItemTakenSpace <= maxInventorySpace)
+                else if (targetItem.GetComponent<Env_Item>().itemCount > 1)
                 {
                     PauseMenuScript.PauseWithoutUI();
                     ConfirmationScript.MoveItem(gameObject,
@@ -595,10 +596,6 @@ public class UI_Inventory : MonoBehaviour
                                                 par_ContainerItems,
                                                 par_PlayerItems,
                                                 targetItem);
-                }
-                else
-                {
-                    AnnouncementScript.CreateAnnouncement("Not enough space to take " + targetItem.name + "(s)!");
                 }
             }
             else if (originalContainer == par_PlayerItems)
@@ -668,6 +665,7 @@ public class UI_Inventory : MonoBehaviour
         if (originalLocation == PlayerMenuScript.par_DroppedItems
             && targetLocation == par_PlayerItems)
         {
+            Debug.Log("Picked up " + selectedCount + " " + item.name + "(s).");
             AnnouncementScript.CreateAnnouncement("Picked up " + selectedCount + " " + item.name + "(s).");
         }
 
@@ -758,7 +756,7 @@ public class UI_Inventory : MonoBehaviour
             RemoveDuplicates();
         }
 
-        Debug.Log("Successfully moved " + selectedCount + " " + targetItem.name + "(s) from " + originalLocation.transform.parent.name + " to " + targetLocation.transform.parent.name + "!");
+        //Debug.Log("Successfully moved " + selectedCount + " " + targetItem.name + "(s) from " + originalLocation.transform.parent.name + " to " + targetLocation.transform.parent.name + "!");
     }
 
     //remove all duplicate items from target inventory

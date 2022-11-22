@@ -14,7 +14,6 @@ public class Player_Raycast : MonoBehaviour
     //public but hidden variables
     [HideInInspector] public GameObject heldObject;
     [HideInInspector] public bool isColliding;
-    [HideInInspector] public List<GameObject> targets;
 
     //private variables
     private bool canInteract;
@@ -41,22 +40,6 @@ public class Player_Raycast : MonoBehaviour
         interactIcon.gameObject.SetActive(false);
     }
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (!targets.Contains(other.gameObject)
-            && other.GetComponent<Env_Item>() != null)
-        {
-            targets.Add(other.gameObject);
-        }
-    }
-    private void OnTriggerExit(Collider other)
-    {
-        if (targets.Contains(other.gameObject))
-        {
-            targets.Remove(other.gameObject);
-        }
-    }
-
     private void FixedUpdate()
     {
         if (heldObject == null)
@@ -66,6 +49,7 @@ public class Player_Raycast : MonoBehaviour
                 && !PauseMenuScript.isPlayerMenuOpen
                 && !PauseMenuScript.isConfirmationUIOpen
                 && !PauseMenuScript.isKeyAssignUIOpen
+                && !PauseMenuScript.isLockpickUIOpen
                 && PlayerStatsScript.currentHealth > 0)
             {
                 //all other layers except this one
@@ -116,6 +100,7 @@ public class Player_Raycast : MonoBehaviour
             && !PauseMenuScript.isConsoleOpen
             && !PauseMenuScript.isConfirmationUIOpen
             && !PauseMenuScript.isKeyAssignUIOpen
+            && !PauseMenuScript.isLockpickUIOpen
             && PlayerStatsScript.currentHealth > 0)
         {
             //timer is used to "restart" loop

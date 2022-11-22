@@ -8,12 +8,10 @@ public class Env_Item : MonoBehaviour
     public bool isStackable;
     public string itemName = "REPLACE_MY_NAME";
     public string itemDescription = "REPLACE_MY_DESCRIPTION";
-    [Range(0, 25000)]
     public int itemValue = 0;
     [Range(0, 100)]
     public int itemWeight = 0;
-    [Range(1, 1000000)]
-    public int itemCount = 1;
+    [Min(1)] public int itemCount;
     public ItemType itemType = ItemType.misc;
     public enum ItemType
     {

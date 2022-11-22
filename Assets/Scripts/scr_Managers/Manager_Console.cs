@@ -589,16 +589,16 @@ public class Manager_Console : MonoBehaviour
 
             CreateNewConsoleLine("shsa - show all game saves.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("desa - delete all game saves [WARNING: THIS CANNOT BE UNDONE]", "CONSOLE_INFO_MESSAGE");
-            CreateNewConsoleLine("save savename - save game with save name.", "CONSOLE_INFO_MESSAGE");
-            CreateNewConsoleLine("load loadname - load game with game save name.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("save string - save game with selected save name.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("load string - load game with selected save name.", "CONSOLE_INFO_MESSAGE");
 
             CreateNewConsoleLine("reke - reset all key bindings to default values.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("shke - list all key bindings and their current values.", "CONSOLE_INFO_MESSAGE");
-            CreateNewConsoleLine("seke keybindingname keybindingvalue - set keybindingname to keybindingvalue.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("seke string string - set selected key binding to value.", "CONSOLE_INFO_MESSAGE");
 
             CreateNewConsoleLine("rese - reset all settings to default values.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("shse - list all settings and their current values.", "CONSOLE_INFO_MESSAGE");
-            CreateNewConsoleLine("sese settingsname settingsvalue - set settingsname to settingsvalue.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("sese string string - set selected setting to value.", "CONSOLE_INFO_MESSAGE");
 
             CreateNewConsoleLine("restart - restart the game from the beginning.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("quit - quit game.", "CONSOLE_INFO_MESSAGE");
@@ -611,23 +611,23 @@ public class Manager_Console : MonoBehaviour
             if (separatedWords[1] == "player")
             {
                 CreateNewConsoleLine("---PLAYER COMMANDS---.", "CONSOLE_INFO_MESSAGE");
-                CreateNewConsoleLine("player tp valx valy valz - teleport player to xyz coordinates.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("player tp int int int - teleport player to xyz coordinates.", "CONSOLE_INFO_MESSAGE");
                 CreateNewConsoleLine("player shst - list all player stats.", "CONSOLE_INFO_MESSAGE");
                 CreateNewConsoleLine("player rest - reset all player stats.", "CONSOLE_INFO_MESSAGE");
-                CreateNewConsoleLine("player sest statName statValue - set player stat statName to statValue.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("player sest string string - set selected player stat to value.", "CONSOLE_INFO_MESSAGE");
                 CreateNewConsoleLine("player sait - list all spawnable item types.", "CONSOLE_INFO_MESSAGE");
-                CreateNewConsoleLine("player shwe/shar/shsh/shco/shai/shsp/sham/shmi a-z - list all items of the selected item type that start with the selected english alphabet letter.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("player shwe/shar/shsh/shco/shai/shsp/sham/shmi char - list all items of the selected item type that start with the selected english alphabet letter.", "CONSOLE_INFO_MESSAGE");
                 CreateNewConsoleLine("player sapi - list all player inventory items, their counts and protected state.", "CONSOLE_INFO_MESSAGE");
-                CreateNewConsoleLine("player additem itemname itemcount - add itemcount of itemname(s) to players inventory.", "CONSOLE_INFO_MESSAGE");
-                CreateNewConsoleLine("player removeitem itemname itemcount - remove itemcount of itemname(s) from players inventory.", "CONSOLE_INFO_MESSAGE");
-                CreateNewConsoleLine("player shis itemname itemposition - show all stats for itemname at itemposition in player inventory.", "CONSOLE_INFO_MESSAGE");
-                CreateNewConsoleLine("player sest itemname itemposition statname statvalue - set stat statname to statvalue for itemname at itemposition in player inventory.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("player additem string int - add selected count of items to player inventory.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("player removeitem string int - remove selected count of items from players inventory.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("player shis string int - list all selected item stats.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("player sest string int - set selected item stat to value.", "CONSOLE_INFO_MESSAGE");
             }
             else if (separatedWords[1] == "target")
             {
                 CreateNewConsoleLine("---TARGET COMMANDS---.", "CONSOLE_INFO_MESSAGE");
                 CreateNewConsoleLine("st - select target with left mouse button (key binding not editable).", "CONSOLE_INFO_MESSAGE");
-                CreateNewConsoleLine("target unlock - unlock selected target (doors and containers only).", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("target unlock - unlock selected target.", "CONSOLE_INFO_MESSAGE");
             }
         }
     }

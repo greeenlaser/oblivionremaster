@@ -58,6 +58,7 @@ public class UI_PlayerMenu : MonoBehaviour
             && !PauseMenuScript.isConsoleOpen
             && !PauseMenuScript.isConfirmationUIOpen
             && !PauseMenuScript.isKeyAssignUIOpen
+            && !PauseMenuScript.isLockpickUIOpen
             && PlayerStatsScript.currentHealth > 0)
         {
             PauseMenuScript.isPlayerMenuOpen = !PauseMenuScript.isPlayerMenuOpen;

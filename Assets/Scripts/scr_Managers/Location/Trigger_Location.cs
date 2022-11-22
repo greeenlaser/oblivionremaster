@@ -7,8 +7,6 @@ public class Trigger_Location : MonoBehaviour
 {
     [Header("General")]
     public string cellName;
-    public List<GameObject> containers;
-    public List<GameObject> doors;
     public LocationType locationType;
     public enum LocationType
     {
@@ -17,14 +15,16 @@ public class Trigger_Location : MonoBehaviour
         dungeon,
         battle
     }
-    [SerializeField] private GameObject thePlayer;
-    [SerializeField] private GameObject par_Managers;
-
-    [Header("Location variables")]
     [SerializeField] private float maxDistanceToEnable;
     [SerializeField] private float maxDistanceToDiscover;
     [SerializeField] private GameObject location;
     [SerializeField] private GameObject location_discovered;
+    public List<GameObject> containers;
+    public List<GameObject> doors;
+
+    [Header("Scripts")]
+    [SerializeField] private GameObject thePlayer;
+    [SerializeField] private GameObject par_Managers;
 
     //public but hidden variables
     [HideInInspector] public bool wasDiscovered;
@@ -33,13 +33,11 @@ public class Trigger_Location : MonoBehaviour
     private Vector3 undiscoveredStartScale;
     private Vector3 discoveredStartScale;
     private Manager_Locations LocationManagerScript;
-    private UI_Lockpicking LockPickingScript;
     private Manager_Announcements AnnouncementScript;
 
     private void Awake()
     {
         LocationManagerScript = par_Managers.GetComponentInChildren<Manager_Locations>();
-        LockPickingScript = par_Managers.GetComponent<UI_Lockpicking>();
         AnnouncementScript = par_Managers.GetComponent<Manager_Announcements>();
 
         undiscoveredStartScale = location.transform.localScale;
@@ -128,18 +126,12 @@ public class Trigger_Location : MonoBehaviour
     {
         foreach (GameObject container in containers)
         {
+            Env_LockStatus LockStatusScript = container.GetComponent<Env_LockStatus>();
             //all lockable containers are always locked again after a restart
-            if (container.GetComponent<Env_LockStatus>().lockedAtRestart)
+            if (LockStatusScript.lockedAtRestart)
             {
-                container.GetComponent<Env_LockStatus>().isUnlocked = false;
-                container.GetComponent<Env_LockStatus>().hasLoadedLock = false;
-
-                Env_LockStatus LockStatusScript = container.GetComponent<Env_LockStatus>();
-                LockPickingScript.SetTumblerPositions(LockStatusScript);
-            }
-            else
-            {
-                container.GetComponent<Env_LockStatus>().isUnlocked = true;
+                LockStatusScript.isUnlocked = false;
+                LockStatusScript.SetTumblerStatuses();
             }
 
             UI_Inventory inventory = container.GetComponent<UI_Inventory>();
@@ -158,20 +150,12 @@ public class Trigger_Location : MonoBehaviour
         }
         foreach (GameObject door in doors)
         {
-            Manager_Door DoorManagerScript = door.GetComponent<Manager_Door>();
-
+            Env_LockStatus LockStatusScript = door.GetComponent<Env_LockStatus>();
             //all lockable doors are always locked again after a restart
-            if (door.GetComponent<Env_LockStatus>().lockedAtRestart)
+            if (LockStatusScript.lockedAtRestart)
             {
-                DoorManagerScript.GetComponent<Env_LockStatus>().isUnlocked = false;
-                DoorManagerScript.GetComponent<Env_LockStatus>().hasLoadedLock = false;
-
-                Env_LockStatus LockStatusScript = DoorManagerScript.GetComponent<Env_LockStatus>();
-                LockPickingScript.SetTumblerPositions(LockStatusScript);
-            }
-            else
-            {
-                DoorManagerScript.GetComponent<Env_LockStatus>().isUnlocked = true;
+                LockStatusScript.isUnlocked = false;
+                LockStatusScript.SetTumblerStatuses();
             }
         }
     }

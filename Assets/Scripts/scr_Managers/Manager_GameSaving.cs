@@ -540,7 +540,6 @@ public class Manager_GameSaving : MonoBehaviour
             {
                 //get newest save file name
                 SaveName = files.Last().Name;
-                Debug.Log(SaveName);
             }
             else
             {
@@ -870,7 +869,6 @@ public class Manager_GameSaving : MonoBehaviour
                                         && container.GetComponent<Env_LockStatus>().lockedAtRestart)
                                     {
                                         Env_LockStatus LockStatusScript = container.GetComponent<Env_LockStatus>();
-                                        LockStatusScript.hasLoadedLock = true;
 
                                         if (type.Contains("_LockStatus"))
                                         {
@@ -922,8 +920,6 @@ public class Manager_GameSaving : MonoBehaviour
                                         if (type.Contains("_LockStatus")
                                             && DoorManagerScript.doorType != Manager_Door.DoorType.gate)
                                         {
-                                            LockStatusScript.hasLoadedLock = true;
-
                                             LockStatusScript.isUnlocked = bool.Parse(values[0]);
                                             LockStatusScript.tumbler1Unlocked = bool.Parse(values[1]);
                                             LockStatusScript.tumbler2Unlocked = bool.Parse(values[2]);

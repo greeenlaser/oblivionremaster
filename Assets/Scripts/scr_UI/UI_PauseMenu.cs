@@ -31,6 +31,7 @@ public class UI_PauseMenu : MonoBehaviour
     [HideInInspector] public bool isPlayerMenuOpen;
     [HideInInspector] public bool isConfirmationUIOpen;
     [HideInInspector] public bool isKeyAssignUIOpen;
+    [HideInInspector] public bool isLockpickUIOpen;
 
     //private variables
     private Player_Movement PlayerMovementScript;
@@ -95,12 +96,13 @@ public class UI_PauseMenu : MonoBehaviour
     //unpauses the game
     public void UnpauseGame()
     {
+        ClosePMContent();
+
         if (!isConsoleOpen
             && !isPlayerMenuOpen
-            && !isKeyAssignUIOpen)
+            && !isKeyAssignUIOpen
+            && !isLockpickUIOpen)
         {
-            ClosePMContent();
-
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
 
@@ -110,10 +112,6 @@ public class UI_PauseMenu : MonoBehaviour
             PlayerCameraScript.isCamEnabled = true;
 
             isPaused = false;
-        }
-        else
-        {
-            ClosePMContent();
         }
     }
     //pauses the game with UI
