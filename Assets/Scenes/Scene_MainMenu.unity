@@ -1796,6 +1796,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3762db0c22be230419e6823ce4258512, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  par_DeathUI: {fileID: 0}
   par_Inventory: {fileID: 0}
   inventoryContent: {fileID: 0}
   txt_InventoryCount: {fileID: 0}
@@ -1881,7 +1882,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d80c2ab430a9deb488d6b298e8c4310e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameVersion: OblivionUnity_0.1.1
+  gameVersion: OblivionUnity_0.1.2
   thePlayer: {fileID: 0}
   realGameVersion: 
   parentPath: 
