@@ -251,8 +251,8 @@ public class Manager_KeyBindings : MonoBehaviour
 
             //assigns default combat key bindings
             KeyBindings["CastSpell"] = KeyCode.C;
-            KeyBindings["UseWeaponOrShootBow"] = KeyCode.Mouse0;
-            KeyBindings["BlockOrAimBow"] = KeyCode.Mouse1;
+            KeyBindings["MainAttack"] = KeyCode.Mouse0;
+            KeyBindings["SideAttack"] = KeyCode.Mouse1;
             KeyBindings["DropEquippedWeapon"] = KeyCode.R;
 
             if (currentScene == 1)
@@ -313,8 +313,8 @@ public class Manager_KeyBindings : MonoBehaviour
 
         keyBindingsFile.WriteLine("---COMBAT KEYBINDS---");
         keyBindingsFile.WriteLine("CastSpell: " + KeyBindings["CastSpell"].ToString().Replace("KeyCode.", ""));
-        keyBindingsFile.WriteLine("UseWeaponOrShootBow: " + KeyBindings["UseWeaponOrShootBow"].ToString().Replace("KeyCode.", ""));
-        keyBindingsFile.WriteLine("BlockOrAimBow: " + KeyBindings["BlockOrAimBow"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("MainAttack: " + KeyBindings["MainAttack"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("SideAttack: " + KeyBindings["SideAttack"].ToString().Replace("KeyCode.", ""));
         keyBindingsFile.WriteLine("DropEquippedWeapon: " + KeyBindings["DropEquippedWeapon"].ToString().Replace("KeyCode.", ""));
 
         Debug.Log("Successfully saved " + KeyBindings.Count + " key bindings!");
@@ -361,8 +361,8 @@ public class Manager_KeyBindings : MonoBehaviour
                     }
                     //load combat key bindings
                     else if (type == "CastSpell"
-                             || type == "UseWeaponOrShootBow"
-                             || type == "BlockOrAimBow"
+                             || type == "MainAttack"
+                             || type == "SideAttack"
                              || type == "DropEquippedWeapon")
                     {
                         KeyBindings[type] = (KeyCode)Enum.Parse(typeof(KeyCode), value);

@@ -99,6 +99,11 @@ public class UI_Lockpicking : MonoBehaviour
             }
             else
             {
+                if (KeyBindingsScript.GetKeyDown("MainAttack"))
+                {
+                    Attempt();
+                }
+
                 lockpickStep = lockpickMoveSpeed * Time.unscaledDeltaTime;
                 tumblerStep = tumblerMoveSpeed * Time.unscaledDeltaTime;
                 if (isPickGoingUp)
@@ -311,6 +316,89 @@ public class UI_Lockpicking : MonoBehaviour
         SetAllPositions();
     }
 
+    //attempt to pick currently selected tumbler
+    public void Attempt()
+    {
+        float tumblerWeight = 0;
+        if (currentTumblerSlot == 0)
+        {
+            tumblerWeight = LockStatusScript.tumbler1Weight;
+        }
+        else if (currentTumblerSlot == 1)
+        {
+            tumblerWeight = LockStatusScript.tumbler2Weight;
+        }
+        else if (currentTumblerSlot == 2)
+        {
+            tumblerWeight = LockStatusScript.tumbler3Weight;
+        }
+        else if (currentTumblerSlot == 3)
+        {
+            tumblerWeight = LockStatusScript.tumbler4Weight;
+        }
+        else if (currentTumblerSlot == 4)
+        {
+            tumblerWeight = LockStatusScript.tumbler5Weight;
+        }
+
+        float determinator = 10000 * tumblerWeight;
+        float unlockChance = Random.Range(0, determinator / PlayerStatsScript.Skills["Security"] / PlayerStatsScript.Attributes["Luck"] * 10);
+        float requiredUnlockChance = determinator / PlayerStatsScript.Skills["Security"] / PlayerStatsScript.Attributes["Luck"] * 10 * 0.9f;
+
+        if (unlockChance >= requiredUnlockChance)
+        {
+            if (currentTumblerSlot == 0)
+            {
+                LockStatusScript.tumbler1Unlocked = true;
+            }
+            else if (currentTumblerSlot == 1)
+            {
+                LockStatusScript.tumbler2Unlocked = true;
+            }
+            else if (currentTumblerSlot == 2)
+            {
+                LockStatusScript.tumbler3Unlocked = true;
+            }
+            else if (currentTumblerSlot == 3)
+            {
+                LockStatusScript.tumbler4Unlocked = true;
+            }
+            else if (currentTumblerSlot == 4)
+            {
+                LockStatusScript.tumbler5Unlocked = true;
+            }
+
+            if (LockStatusScript.tumbler1Unlocked
+                && LockStatusScript.tumbler2Unlocked
+                && LockStatusScript.tumbler3Unlocked
+                && LockStatusScript.tumbler4Unlocked
+                && LockStatusScript.tumbler5Unlocked)
+            {
+                Unlock();
+            }
+            else
+            {
+                SetAllPositions();
+            }
+        }
+        //failed lockpick attempt or rushing lockpicking too fast
+        else if (unlockChance < requiredUnlockChance)
+        {
+            if (LockpickScript.itemCount - 1 == 0)
+            {
+                LockpickScript.itemCount = 0;
+                CloseLockpickUI();
+            }
+            else
+            {
+                LockpickScript.itemCount--;
+                txt_LockpickCount.text = "Lockpicks: " + LockpickScript.itemCount.ToString();
+            }
+
+            SetAllPositions();
+        }
+    }
+
     //try to pick the lock without manually moving any tumblers,
     //this has a much lower chance of successfully unlocking the door/container
     public void AutoAttempt()
@@ -335,7 +423,7 @@ public class UI_Lockpicking : MonoBehaviour
             else
             {
                 LockpickScript.itemCount--;
-                txt_LockpickCount.text = LockpickScript.itemCount.ToString();
+                txt_LockpickCount.text = "Lockpicks: " + LockpickScript.itemCount.ToString();
             }
         }
     }
@@ -352,11 +440,6 @@ public class UI_Lockpicking : MonoBehaviour
             Debug.Log("Successfully unlocked " + LockStatusScript.GetComponent<UI_Inventory>().containerName + "!");
         }
 
-        LockStatusScript.tumbler1Unlocked = true;
-        LockStatusScript.tumbler2Unlocked = true;
-        LockStatusScript.tumbler3Unlocked = true;
-        LockStatusScript.tumbler4Unlocked = true;
-        LockStatusScript.tumbler5Unlocked = true;
         LockStatusScript.isUnlocked = true;
 
         CloseLockpickUI();
