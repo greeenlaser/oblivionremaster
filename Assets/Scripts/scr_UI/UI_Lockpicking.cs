@@ -7,9 +7,6 @@ using TMPro;
 public class UI_Lockpicking : MonoBehaviour
 {
     [Header("Lock values")]
-    [SerializeField] private float lockpickMoveSpeed; 
-    [SerializeField] private float lockpickDownPosition;
-    [SerializeField] private float lockpickUpPosition;
     [SerializeField] private float tumblerUnlockedPosition;
     [SerializeField] private float tumblerLockedPosition;
     [SerializeField] private float springUnlockedScale;
@@ -47,7 +44,12 @@ public class UI_Lockpicking : MonoBehaviour
     private bool isPickGoingUp;
     private bool isPickGoingDown;
     private int currentTumblerSlot;
-    private float step;
+    private float lockpickStep;
+    private float tumblerStep;
+    private float lockpickMoveSpeed;
+    private float tumblerMoveSpeed;
+    private float lockpickTimer;
+    private float tumblerTimer;
     private float[] slotPositions =
     {
         -360,
@@ -57,8 +59,6 @@ public class UI_Lockpicking : MonoBehaviour
         -128
     };
     private Vector3 lockpickStartPosition;
-    private Vector3 lockpickCurrentPosition;
-    private Vector3 lockpickTargetPosition;
 
     //scripts
     private Env_Item LockpickScript;
@@ -86,9 +86,9 @@ public class UI_Lockpicking : MonoBehaviour
     {
         if (PauseMenuScript.isLockpickUIOpen)
         {
-            Debug.Log("current lockpick slot is " + currentTumblerSlot);
-
-            if (!isMovingPick)
+            if (!isMovingPick
+                && lockpickTimer <= 0
+                && tumblerTimer <= 0)
             {
                 if (KeyBindingsScript.GetKeyDown("WalkForwards"))
                 {
@@ -105,19 +105,66 @@ public class UI_Lockpicking : MonoBehaviour
             }
             else
             {
-                step = lockpickMoveSpeed * Time.unscaledDeltaTime;
-                lockpickCurrentPosition = lockpick.transform.localPosition;
-
+                lockpickStep = lockpickMoveSpeed * Time.unscaledDeltaTime;
+                tumblerStep = tumblerMoveSpeed * Time.unscaledDeltaTime;
                 if (isPickGoingUp)
                 {
-                    float distance = Vector3.Distance(lockpickTargetPosition, lockpickCurrentPosition);
-                    Debug.Log("distance to target is " + distance);
-
-                    if (distance > 0.001f)
+                    lockpickTimer -= Time.unscaledDeltaTime;
+                    if (lockpickTimer > 0)
                     {
-                        Debug.Log("going up");
-
-                        Vector3.MoveTowards(lockpickTargetPosition, lockpickCurrentPosition, step);
+                        lockpick.transform.localPosition = new Vector3(lockpick.transform.localPosition.x,
+                                                                       lockpick.transform.localPosition.y + 0.15f * lockpickStep,
+                                                                       lockpick.transform.localPosition.z);
+                        if (currentTumblerSlot == 0
+                            && !LockStatusScript.tumbler1Unlocked)
+                        {
+                            tumbler1.transform.localPosition = new Vector3(tumbler1.transform.localPosition.x,
+                                                                           tumbler1.transform.localPosition.y + 0.15f * tumblerStep,
+                                                                           tumbler1.transform.localPosition.z);
+                            spring1.transform.localScale = new Vector3(spring1.transform.localScale.x,
+                                                                       spring1.transform.localScale.y - 0.0025f * tumblerStep,
+                                                                       spring1.transform.localScale.z);
+                        }
+                        else if (currentTumblerSlot == 1
+                                 && !LockStatusScript.tumbler2Unlocked)
+                        {
+                            tumbler2.transform.localPosition = new Vector3(tumbler2.transform.localPosition.x,
+                                                                           tumbler2.transform.localPosition.y + 0.15f * tumblerStep,
+                                                                           tumbler2.transform.localPosition.z);
+                            spring2.transform.localScale = new Vector3(spring2.transform.localScale.x,
+                                                                       spring2.transform.localScale.y - 0.0025f * tumblerStep,
+                                                                       spring2.transform.localScale.z);
+                        }
+                        else if (currentTumblerSlot == 2
+                                 && !LockStatusScript.tumbler3Unlocked)
+                        {
+                            tumbler3.transform.localPosition = new Vector3(tumbler3.transform.localPosition.x,
+                                                                           tumbler3.transform.localPosition.y + 0.15f * tumblerStep,
+                                                                           tumbler3.transform.localPosition.z);
+                            spring3.transform.localScale = new Vector3(spring3.transform.localScale.x,
+                                                                       spring3.transform.localScale.y - 0.0025f * tumblerStep,
+                                                                       spring3.transform.localScale.z);
+                        }
+                        else if (currentTumblerSlot == 3
+                                 && !LockStatusScript.tumbler4Unlocked)
+                        {
+                            tumbler4.transform.localPosition = new Vector3(tumbler4.transform.localPosition.x,
+                                                                           tumbler4.transform.localPosition.y + 0.15f * tumblerStep,
+                                                                           tumbler4.transform.localPosition.z);
+                            spring4.transform.localScale = new Vector3(spring4.transform.localScale.x,
+                                                                       spring4.transform.localScale.y - 0.0025f * tumblerStep,
+                                                                       spring4.transform.localScale.z);
+                        }
+                        else if (currentTumblerSlot == 4 
+                                 && !LockStatusScript.tumbler5Unlocked)
+                        {
+                            tumbler5.transform.localPosition = new Vector3(tumbler5.transform.localPosition.x,
+                                                                           tumbler5.transform.localPosition.y + 0.15f * tumblerStep,
+                                                                           tumbler5.transform.localPosition.z);
+                            spring5.transform.localScale = new Vector3(spring5.transform.localScale.x,
+                                                                       spring5.transform.localScale.y - 0.0025f * tumblerStep,
+                                                                       spring5.transform.localScale.z);
+                        }
                     }
                     else
                     {
@@ -126,18 +173,71 @@ public class UI_Lockpicking : MonoBehaviour
                 }
                 else if (isPickGoingDown)
                 {
-                    float distance = Vector3.Distance(lockpickTargetPosition, lockpickCurrentPosition);
-                    Debug.Log("distance to target is " + distance);
-
-                    if (distance > 0.001f)
+                    lockpickTimer -= Time.unscaledDeltaTime;
+                    tumblerTimer -= Time.unscaledDeltaTime;
+                    if (lockpickTimer > 0)
                     {
-                        Debug.Log("going down");
-
-                        Vector3.MoveTowards(lockpickTargetPosition, lockpickCurrentPosition, step);
+                        lockpick.transform.localPosition = new Vector3(lockpick.transform.localPosition.x,
+                                                                       lockpick.transform.localPosition.y - 0.15f * lockpickStep,
+                                                                       lockpick.transform.localPosition.z);
                     }
-                    else
+                    if (tumblerTimer > 0)
                     {
-                        StopMovement();
+                        if (currentTumblerSlot == 0
+                            && !LockStatusScript.tumbler1Unlocked)
+                        {
+                            tumbler1.transform.localPosition = new Vector3(tumbler1.transform.localPosition.x,
+                                                                           tumbler1.transform.localPosition.y - 0.15f * tumblerStep,
+                                                                           tumbler1.transform.localPosition.z);
+                            spring1.transform.localScale = new Vector3(spring1.transform.localScale.x,
+                                                                       spring1.transform.localScale.y + 0.0025f * tumblerStep,
+                                                                       spring1.transform.localScale.z);
+                        }
+                        else if (currentTumblerSlot == 1
+                                 && !LockStatusScript.tumbler2Unlocked)
+                        {
+                            tumbler2.transform.localPosition = new Vector3(tumbler2.transform.localPosition.x,
+                                                                           tumbler2.transform.localPosition.y - 0.15f * tumblerStep,
+                                                                           tumbler2.transform.localPosition.z);
+                            spring2.transform.localScale = new Vector3(spring2.transform.localScale.x,
+                                                                       spring2.transform.localScale.y + 0.0025f * tumblerStep,
+                                                                       spring2.transform.localScale.z);
+                        }
+                        else if (currentTumblerSlot == 2
+                                 && !LockStatusScript.tumbler3Unlocked)
+                        {
+                            tumbler3.transform.localPosition = new Vector3(tumbler3.transform.localPosition.x,
+                                                                           tumbler3.transform.localPosition.y - 0.15f * tumblerStep,
+                                                                           tumbler3.transform.localPosition.z);
+                            spring3.transform.localScale = new Vector3(spring3.transform.localScale.x,
+                                                                       spring3.transform.localScale.y + 0.0025f * tumblerStep,
+                                                                       spring3.transform.localScale.z);
+                        }
+                        else if (currentTumblerSlot == 3
+                                 && !LockStatusScript.tumbler4Unlocked)
+                        {
+                            tumbler4.transform.localPosition = new Vector3(tumbler4.transform.localPosition.x,
+                                                                           tumbler4.transform.localPosition.y - 0.15f * tumblerStep,
+                                                                           tumbler4.transform.localPosition.z);
+                            spring4.transform.localScale = new Vector3(spring4.transform.localScale.x,
+                                                                       spring4.transform.localScale.y + 0.0025f * tumblerStep,
+                                                                       spring4.transform.localScale.z);
+                        }
+                        else if (currentTumblerSlot == 4
+                                 && !LockStatusScript.tumbler5Unlocked)
+                        {
+                            tumbler5.transform.localPosition = new Vector3(tumbler5.transform.localPosition.x,
+                                                                           tumbler5.transform.localPosition.y - 0.15f * tumblerStep,
+                                                                           tumbler5.transform.localPosition.z);
+                            spring5.transform.localScale = new Vector3(spring5.transform.localScale.x,
+                                                                       spring5.transform.localScale.y + 0.0025f * tumblerStep,
+                                                                       spring5.transform.localScale.z);
+                        }
+                    }
+                    else if (lockpickTimer <= 0
+                             && tumblerTimer <= 0)
+                    {
+                        SetAllPositions();
                     }
                 }
             }
@@ -147,24 +247,47 @@ public class UI_Lockpicking : MonoBehaviour
     //start pick movement after a key was pressed
     private void MovePick(string direction)
     {
+        float reducedAmount = 0;
+        if (currentTumblerSlot == 0)
+        {
+            reducedAmount = LockStatusScript.tumbler1Weight;
+        }
+        else if (currentTumblerSlot == 1)
+        {
+            reducedAmount = LockStatusScript.tumbler2Weight;
+        }
+        else if (currentTumblerSlot == 2)
+        {
+            reducedAmount = LockStatusScript.tumbler3Weight;
+        }
+        else if (currentTumblerSlot == 3)
+        {
+            reducedAmount = LockStatusScript.tumbler4Weight;
+        }
+        else if (currentTumblerSlot == 4)
+        {
+            reducedAmount = LockStatusScript.tumbler5Weight;
+        }
+
         isMovingPick = true;
+
+        lockpickMoveSpeed = 1000;
+        lockpickTimer = 0.25f;
 
         if (direction == "up")
         {
-            lockpickTargetPosition = new(lockpick.transform.localPosition.x,
-                                         lockpickUpPosition,
-                                         lockpick.transform.localPosition.z);
+            tumblerMoveSpeed = 1000;
+            tumblerTimer = 0.25f;
 
             isPickGoingUp = true;
         }
         else if (direction == "down")
         {
-            lockpickTargetPosition = new(lockpick.transform.localPosition.x,
-                                         lockpickDownPosition,
-                                         lockpick.transform.localPosition.z);
+            tumblerMoveSpeed = 1000 / reducedAmount; 
+            tumblerTimer = 0.25f * reducedAmount;
 
-            isPickGoingDown = true;
             isPickGoingUp = false;
+            isPickGoingDown = true;
         }
         else if (direction == "left"
                  && currentTumblerSlot >= 1)
@@ -191,18 +314,11 @@ public class UI_Lockpicking : MonoBehaviour
     {
         currentTumblerSlot = targetSlot;
 
-        lockpick.transform.localPosition = new Vector3(slotPositions[currentTumblerSlot],
-                                                       lockpick.transform.localPosition.y,
-                                                       lockpick.transform.localPosition.z);
+        lockpick.transform.localPosition = new(slotPositions[currentTumblerSlot],
+                                               lockpick.transform.localPosition.y,
+                                               lockpick.transform.localPosition.z);
 
-        StopMovement();
-    }
-    //stops all bools that trigger tumbler or pick movement
-    private void StopMovement()
-    {
-        isMovingPick = false;
-        isPickGoingUp = false;
-        isPickGoingDown = false;
+        SetAllPositions();
     }
 
     //try to pick the lock without manually moving any tumblers,
@@ -293,11 +409,12 @@ public class UI_Lockpicking : MonoBehaviour
         }
         txt_LockpickCount.text = "Lockpicks: " + LockpickScript.itemCount.ToString();
 
-        SetTumblerPositions();
+        SetAllPositions();
+        currentTumblerSlot = 0;
     }
     public void CloseLockpickUI()
     {
-        SetTumblerPositions();
+        SetAllPositions();
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -309,14 +426,20 @@ public class UI_Lockpicking : MonoBehaviour
     }
 
     //sets tumbler positions and spring scales
-    private void SetTumblerPositions()
+    private void SetAllPositions()
     {
-        StopMovement();
+        isMovingPick = false;
+        isPickGoingUp = false;
+        isPickGoingDown = false;
 
-        lockpick.transform.localPosition = lockpickStartPosition;
-        currentTumblerSlot = 0;
+        lockpickTimer = 0;
+        tumblerTimer = 0;
 
-        if (LockStatusScript.tumbler1Unlocked)
+        lockpick.transform.localPosition = new(slotPositions[currentTumblerSlot],
+                                               lockpickStartPosition.y,
+                                               lockpickStartPosition.z);
+
+        if (!LockStatusScript.tumbler1Unlocked)
         {
             tumbler1.transform.localPosition = new Vector3(tumbler1.transform.localPosition.x,
                                                            tumblerUnlockedPosition,
@@ -335,7 +458,7 @@ public class UI_Lockpicking : MonoBehaviour
                                                        spring1.transform.localScale.z);
         }
 
-        if (LockStatusScript.tumbler2Unlocked)
+        if (!LockStatusScript.tumbler2Unlocked)
         {
             tumbler2.transform.localPosition = new Vector3(tumbler2.transform.localPosition.x,
                                                            tumblerUnlockedPosition,
@@ -354,7 +477,7 @@ public class UI_Lockpicking : MonoBehaviour
                                                        spring2.transform.localScale.z);
         }
 
-        if (LockStatusScript.tumbler3Unlocked)
+        if (!LockStatusScript.tumbler3Unlocked)
         {
             tumbler3.transform.localPosition = new Vector3(tumbler3.transform.localPosition.x,
                                                            tumblerUnlockedPosition,
@@ -373,7 +496,7 @@ public class UI_Lockpicking : MonoBehaviour
                                                        spring3.transform.localScale.z);
         }
 
-        if (LockStatusScript.tumbler4Unlocked)
+        if (!LockStatusScript.tumbler4Unlocked)
         {
             tumbler4.transform.localPosition = new Vector3(tumbler4.transform.localPosition.x,
                                                            tumblerUnlockedPosition,
@@ -392,7 +515,7 @@ public class UI_Lockpicking : MonoBehaviour
                                                        spring4.transform.localScale.z);
         }
 
-        if (LockStatusScript.tumbler5Unlocked)
+        if (!LockStatusScript.tumbler5Unlocked)
         {
             tumbler5.transform.localPosition = new Vector3(tumbler5.transform.localPosition.x,
                                                            tumblerUnlockedPosition,
