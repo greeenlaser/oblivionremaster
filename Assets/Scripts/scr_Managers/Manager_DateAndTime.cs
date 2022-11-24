@@ -66,7 +66,7 @@ public class Manager_DateAndTime : MonoBehaviour
             }
         }
 
-        clockTimer -= Time.deltaTime * 1;
+        clockTimer -= Time.deltaTime;
         if (clockTimer <= 0)
         {
             minute++;
@@ -144,6 +144,8 @@ public class Manager_DateAndTime : MonoBehaviour
 
             StartCoroutine(SetSunRotationAtStart(x));
         }
+
+        fullTime = minute + ":" + hour + ", " + dayName + " of " + monthName + " in the 3rd era 433";
     }
 
     //updates day name, day number and month
