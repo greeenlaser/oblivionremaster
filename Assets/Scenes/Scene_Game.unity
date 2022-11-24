@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 448.68054, g: 307.37183, b: 255.479, a: 1}
+  m_IndirectSpecularColor: {r: 462.08252, g: 317.8866, b: 270.70996, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -14612,7 +14612,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d80c2ab430a9deb488d6b298e8c4310e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameVersion: OblivionUnity_0.1.1
+  gameVersion: OblivionUnity_0.1.2
   thePlayer: {fileID: 43975270}
   realGameVersion: 
   parentPath: 
@@ -14859,11 +14859,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a82943ec8531d704c9a44f1c7e2ec3cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lockpickMoveSpeed: 150
-  tumblerUnlockedPosition: 0
-  tumblerLockedPosition: 35
-  springUnlockedScale: 1
-  springLockedScale: 0.5
   par_LockpickUI: {fileID: 696599274}
   lockpick: {fileID: 915898471}
   txt_LockName: {fileID: 348332484}
