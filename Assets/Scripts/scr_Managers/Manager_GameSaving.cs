@@ -539,7 +539,7 @@ public class Manager_GameSaving : MonoBehaviour
             if (files.Length > 0)
             {
                 //get newest save file name
-                SaveName = files.Last().Name;
+                SaveName = files.Last().Name.Replace("png", "txt");
             }
             else
             {
