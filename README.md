@@ -1,1 +1,1 @@
-This is the in development branch of this project and is not recommended for most users because there is a high chance there may be game-breaking bugs and other issues.  Follow the wiki for project details.
+This is the in main branch of this project and it is the safe version meant for all users. Check the wiki for project details.
