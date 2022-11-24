@@ -6,12 +6,6 @@ using TMPro;
 
 public class UI_Lockpicking : MonoBehaviour
 {
-    [Header("Lock values")]
-    [SerializeField] private float tumblerUnlockedPosition;
-    [SerializeField] private float tumblerLockedPosition;
-    [SerializeField] private float springUnlockedScale;
-    [SerializeField] private float springLockedScale;
-
     [Header("Main UI")]
     [SerializeField] private GameObject par_LockpickUI;
     [SerializeField] private RawImage lockpick;
@@ -304,11 +298,7 @@ public class UI_Lockpicking : MonoBehaviour
             isMovingPick = false;
         }
     }
-    //moves tumbler up and down independently from the lockpick speed
-    private void MoveTumbler(string direction, int slot)
-    {
 
-    }
     //move the pick left or right towards direction, to position targetSlot
     private void MovePickSideways(int targetSlot)
     {
@@ -442,95 +432,95 @@ public class UI_Lockpicking : MonoBehaviour
         if (!LockStatusScript.tumbler1Unlocked)
         {
             tumbler1.transform.localPosition = new Vector3(tumbler1.transform.localPosition.x,
-                                                           tumblerUnlockedPosition,
+                                                           0,
                                                            tumbler1.transform.localPosition.z);
             spring1.transform.localScale = new Vector3(spring1.transform.localScale.x,
-                                                       springUnlockedScale,
+                                                       1,
                                                        spring1.transform.localScale.z);
         }
         else
         {
             tumbler1.transform.localPosition = new Vector3(tumbler1.transform.localPosition.x,
-                                                           tumblerLockedPosition,
+                                                           35,
                                                            tumbler1.transform.localPosition.z);
             spring1.transform.localScale = new Vector3(spring1.transform.localScale.x,
-                                                       springLockedScale,
+                                                       0.5f,
                                                        spring1.transform.localScale.z);
         }
 
         if (!LockStatusScript.tumbler2Unlocked)
         {
             tumbler2.transform.localPosition = new Vector3(tumbler2.transform.localPosition.x,
-                                                           tumblerUnlockedPosition,
+                                                           0,
                                                            tumbler2.transform.localPosition.z);
             spring2.transform.localScale = new Vector3(spring2.transform.localScale.x,
-                                                       springUnlockedScale,
+                                                       1,
                                                        spring2.transform.localScale.z);
         }
         else
         {
             tumbler2.transform.localPosition = new Vector3(tumbler2.transform.localPosition.x,
-                                                           tumblerLockedPosition,
+                                                           35,
                                                            tumbler2.transform.localPosition.z);
             spring2.transform.localScale = new Vector3(spring2.transform.localScale.x,
-                                                       springLockedScale,
+                                                       0.5f,
                                                        spring2.transform.localScale.z);
         }
 
         if (!LockStatusScript.tumbler3Unlocked)
         {
             tumbler3.transform.localPosition = new Vector3(tumbler3.transform.localPosition.x,
-                                                           tumblerUnlockedPosition,
+                                                           0,
                                                            tumbler3.transform.localPosition.z);
             spring3.transform.localScale = new Vector3(spring3.transform.localScale.x,
-                                                       springUnlockedScale,
+                                                       1,
                                                        spring3.transform.localScale.z);
         }
         else
         {
             tumbler3.transform.localPosition = new Vector3(tumbler3.transform.localPosition.x,
-                                                           tumblerLockedPosition,
+                                                           35,
                                                            tumbler3.transform.localPosition.z);
             spring3.transform.localScale = new Vector3(spring3.transform.localScale.x,
-                                                       springLockedScale,
+                                                       0.5f,
                                                        spring3.transform.localScale.z);
         }
 
         if (!LockStatusScript.tumbler4Unlocked)
         {
             tumbler4.transform.localPosition = new Vector3(tumbler4.transform.localPosition.x,
-                                                           tumblerUnlockedPosition,
+                                                           0,
                                                            tumbler4.transform.localPosition.z);
             spring4.transform.localScale = new Vector3(spring4.transform.localScale.x,
-                                                       springUnlockedScale,
+                                                       1,
                                                        spring4.transform.localScale.z);
         }
         else
         {
             tumbler4.transform.localPosition = new Vector3(tumbler4.transform.localPosition.x,
-                                                           tumblerLockedPosition,
+                                                           35,
                                                            tumbler4.transform.localPosition.z);
             spring4.transform.localScale = new Vector3(spring4.transform.localScale.x,
-                                                       springLockedScale,
+                                                       0.5f,
                                                        spring4.transform.localScale.z);
         }
 
         if (!LockStatusScript.tumbler5Unlocked)
         {
             tumbler5.transform.localPosition = new Vector3(tumbler5.transform.localPosition.x,
-                                                           tumblerUnlockedPosition,
+                                                           0,
                                                            tumbler5.transform.localPosition.z);
             spring5.transform.localScale = new Vector3(spring5.transform.localScale.x,
-                                                       springUnlockedScale,
+                                                       1,
                                                        spring5.transform.localScale.z);
         }
         else
         {
             tumbler5.transform.localPosition = new Vector3(tumbler5.transform.localPosition.x,
-                                                      tumblerLockedPosition,
+                                                      35,
                                                       tumbler5.transform.localPosition.z);
             spring5.transform.localScale = new Vector3(spring5.transform.localScale.x,
-                                                       springLockedScale,
+                                                       0.5f,
                                                        spring5.transform.localScale.z);
         }
     }
