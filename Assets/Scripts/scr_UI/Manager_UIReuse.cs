@@ -7,6 +7,28 @@ using UnityEngine.SceneManagement;
 
 public class Manager_UIReuse : MonoBehaviour
 {
+    [Header("Death UI")]
+    public GameObject par_DeathUI;
+
+    [Header("Inventory UI")]
+    public GameObject par_Inventory;
+    public GameObject inventoryContent;
+    public TMP_Text txt_InventoryCount;
+    public Button btn_ItemTemplateButton;
+    [HideInInspector] public List<Button> inventoryButtons = new();
+
+    [Header("Selected item stats UI")]
+    public GameObject par_ItemStats;
+    public Button btn_Interact;
+    public Button btn_Drop;
+    public Button btn_CloseSelectedItemInfo;
+    public TMP_Text txt_ItemName;
+    public TMP_Text txt_ItemDescription;
+    public TMP_Text txt_ItemType;
+    public TMP_Text txt_ItemValue;
+    public TMP_Text txt_ItemWeight;
+    public TMP_Text txt_ItemCount;
+
     [Header("Key assign UI")]
     public GameObject par_KeyAssign;
     public TMP_Text txt_AssignKey;
@@ -46,6 +68,8 @@ public class Manager_UIReuse : MonoBehaviour
     [Header("Confirmation UI")]
     public GameObject par_Confirmation;
     public TMP_Text txt_Confirmation;
+    public TMP_Text txt_ConfirmationSliderValue;
+    public Slider confirmationSlider;
     public Button btn_Confirm1;
     public Button btn_Confirm2;
     public Button btn_Cancel;
@@ -58,6 +82,7 @@ public class Manager_UIReuse : MonoBehaviour
     //private variables
     private int currentScene;
     private Manager_Settings SettingsScript;
+    private UI_PauseMenu PauseMenuScript;
 
     private void Awake()
     {
@@ -66,22 +91,55 @@ public class Manager_UIReuse : MonoBehaviour
         if (currentScene == 1)
         {
             SettingsScript = GetComponent<Manager_Settings>();
+            PauseMenuScript = GetComponent<UI_PauseMenu>();
 
             par_MainGeneralSettingsParent = par_GeneralSettingsParent.transform.parent.parent.parent.gameObject;
             par_MainGraphicsSettingsParent = par_GraphicsSettingsParent.transform.parent.parent.parent.gameObject;
             par_MainAudioSettingsParent = par_AudioSettingsParent.transform.parent.parent.parent.gameObject;
+
+            btn_CloseSelectedItemInfo.onClick.AddListener(CloseSelectedItemInfo);
 
             btn_SaveSettings.onClick.AddListener(SettingsScript.SaveSettings);
             btn_ResetSettings.onClick.AddListener(delegate { SettingsScript.ResetSettings(false); });
             btn_ShowGeneralSettings.onClick.AddListener(delegate { SettingsScript.RebuildSettingsList("general"); });
             btn_ShowGraphicsSettings.onClick.AddListener(delegate { SettingsScript.RebuildSettingsList("graphics"); });
             btn_ShowAudioSettings.onClick.AddListener(delegate { SettingsScript.RebuildSettingsList("audio"); });
+
+            par_DeathUI.SetActive(false);
         }
+    }
+
+    //clears the inventory if there is anything to clear
+    public void ClearInventory()
+    {
+        if (inventoryButtons.Count > 0)
+        {
+            foreach (Button btn in inventoryButtons)
+            {
+                Destroy(btn.gameObject);
+            }
+            inventoryButtons.Clear();
+        }
+    }
+
+    //clears and closes the selected item info in inventory
+    public void CloseSelectedItemInfo()
+    {
+        btn_Interact.onClick.RemoveAllListeners();
+        btn_Interact.gameObject.SetActive(false);
+        btn_Drop.onClick.RemoveAllListeners();
+        btn_Drop.gameObject.SetActive(false);
+        par_ItemStats.SetActive(false);
     }
 
     //reset all confirmation UI elements
     public void ClearConfirmationUI()
     {
+        txt_Confirmation.text = "";
+
+        txt_ConfirmationSliderValue.text = "";
+        confirmationSlider.gameObject.SetActive(false);
+
         btn_Confirm1.onClick.RemoveAllListeners();
         btn_Confirm1.gameObject.SetActive(false);
 
@@ -89,6 +147,8 @@ public class Manager_UIReuse : MonoBehaviour
         btn_Confirm2.gameObject.SetActive(false);
 
         par_Confirmation.SetActive(false);
+
+        PauseMenuScript.isConfirmationUIOpen = false;
     }
 
     //clears selected save UI

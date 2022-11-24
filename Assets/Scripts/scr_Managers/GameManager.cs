@@ -8,12 +8,13 @@ using System.Collections;
 public class GameManager : MonoBehaviour
 {
     [Header("General")]
-    [SerializeField] private string str_GameVersion;
+    [SerializeField] private string gameVersion;
 
     [Header("Scripts")]
     public GameObject thePlayer;
 
     //public but hidden variables
+    [HideInInspector] public string realGameVersion;
     [HideInInspector] public string parentPath;
     [HideInInspector] public string gamePath;
     [HideInInspector] public string savePath;
@@ -33,10 +34,13 @@ public class GameManager : MonoBehaviour
     private Manager_KeyBindings KeyBindingsScript;
     private UI_LoadingScreen LoadingScreenScript;
     private Player_Stats PlayerStatsScript;
+    private Manager_UIReuse UIReuseScript;
 
     private void Awake()
     {
         currentScene = SceneManager.GetActiveScene().buildIndex;
+
+        UIReuseScript = GetComponent<Manager_UIReuse>();
 
         if (currentScene == 1)
         {
@@ -68,7 +72,11 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if (currentScene == 0)
+        //always recreates the debug log in main menu scene,
+        //only recreates the debug log in game scene if user is in engine
+        if (currentScene == 0
+            || (currentScene == 1
+            && Application.isEditor))
         {
             //create debug file
             CreateDebugFile();
@@ -158,7 +166,7 @@ public class GameManager : MonoBehaviour
             string[] splitYear = year.Split('0');
             string date = day + month + splitYear[1];
 
-            GetComponent<Manager_UIReuse>().txt_GameVersion.text = str_GameVersion + "_" + date;
+            UIReuseScript.txt_GameVersion.text = gameVersion + "_" + date;
         }
         //otherwise gets the game doc folder last update date
         else
@@ -199,7 +207,7 @@ public class GameManager : MonoBehaviour
                 string date = day + month + splitYear[1];
 
                 dateFile.WriteLine("creationDate: " + date);
-                GetComponent<Manager_UIReuse>().txt_GameVersion.text = str_GameVersion + "_" + date;
+                UIReuseScript.txt_GameVersion.text = gameVersion + "_" + date;
                 File.SetAttributes(datefilepath, FileAttributes.Hidden);
             }
             else
@@ -210,7 +218,7 @@ public class GameManager : MonoBehaviour
                     {
                         string[] splitText = line.Split(' ');
                         string creationDate = splitText[1];
-                        GetComponent<Manager_UIReuse>().txt_GameVersion.text = str_GameVersion + "_" + creationDate;
+                        UIReuseScript.txt_GameVersion.text = gameVersion + "_" + creationDate;
                     }
                 }
             }
@@ -221,16 +229,13 @@ public class GameManager : MonoBehaviour
     public void CreateDebugFile()
     {
         //delete old debug file if player switched to main menu scene
-        if (currentScene == 0)
+        string[] files = Directory.GetFiles(gamePath);
+        foreach (string file in files)
         {
-            string[] files = Directory.GetFiles(gamePath);
-            foreach (string file in files)
+            if (file.Contains("DebugFile_"))
             {
-                if (file.Contains("DebugFile_"))
-                {
-                    File.Delete(file);
-                    break;
-                }
+                File.Delete(file);
+                break;
             }
         }
 
@@ -243,7 +248,7 @@ public class GameManager : MonoBehaviour
         //using a text editor to write new text to new debug file in the debug file path
         using StreamWriter debugFile = File.CreateText(debugFilePath);
 
-        debugFile.WriteLine("Debug information file for " + str_GameVersion);
+        debugFile.WriteLine("Debug information file for " + gameVersion);
         debugFile.WriteLine("");
 
         //add user cpu

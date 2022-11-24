@@ -11,6 +11,7 @@ public class Player_Movement : MonoBehaviour
     [SerializeField] private GameObject par_Managers;
 
     //public but hidden variables
+    [HideInInspector] public bool isNoclipping;
     [HideInInspector] public bool canMove;
     [HideInInspector] public bool canSprint;
     [HideInInspector] public bool isSprinting;
@@ -22,22 +23,25 @@ public class Player_Movement : MonoBehaviour
     [HideInInspector] public Vector3 velocity;
 
     //private variables
+    private float noclipMoveSpeed = 5;
     private readonly float gravity = -9.81f;
     private float originalHeight;
     private float currentSpeed;
     private Camera PlayerCamera;
     private CharacterController CharacterController;
     private GameObject checkSphere;
-    //private float minVelocity;
+    private float minVelocity;
 
     //scripts
     private Player_Stats PlayerStatsScript;
     private Manager_KeyBindings KeyBindingsScript;
+    private Manager_DealEffect EffectManagerScript;
 
     private void Awake()
     {
         PlayerStatsScript = GetComponent<Player_Stats>();
         KeyBindingsScript = par_Managers.GetComponent<Manager_KeyBindings>();
+        EffectManagerScript = par_Managers.GetComponent<Manager_DealEffect>();
 
         PlayerCamera = GetComponentInChildren<Camera>();
         CharacterController = GetComponent<CharacterController>();
@@ -83,13 +87,22 @@ public class Player_Movement : MonoBehaviour
                 isGrounded = false;
             }
 
-            PlayerRegularMovement();
+            if (PlayerStatsScript.currentHealth > 0)
+            {
+                if (!isNoclipping)
+                {
+                    PlayerRegularMovement();
+                }
+                else
+                {
+                    PlayerNoclipMovement();
+                }
+            }
         }
     }
 
     private void PlayerRegularMovement()
     {
-        /*
         //gravity if player is grounded
         if (velocity.y < 0
             && isGrounded)
@@ -101,8 +114,8 @@ public class Player_Movement : MonoBehaviour
             }
 
             //check if smallest velocity is less than or equal to -25f
-            if (minVelocity <= -25f
-                && PlayerHealthScript.canTakeDamage)
+            if (minVelocity <= -25f)
+                //&& PlayerHealthScript.canTakeDamage)
             {
                 ApplyFallDamage();
                 minVelocity = -2f;
@@ -110,7 +123,6 @@ public class Player_Movement : MonoBehaviour
 
             velocity.y = -2f;
         }
-        */
 
         //gravity if player isnt grounded
         if (!isGrounded)
@@ -135,12 +147,9 @@ public class Player_Movement : MonoBehaviour
         Vector3 horizontalVelocity = transform.right * x + transform.forward * z;
 
         //enable/disable sprinting
-        if (KeyBindingsScript.GetButtonDown("Sprint")
-            && PlayerStatsScript.currentStamina >= Time.deltaTime * 10)
-        {
-            isSprinting = true;
-        }
+        isSprinting = KeyBindingsScript.GetKey("Sprint");
         if (isSprinting
+            && PlayerStatsScript.currentStamina >= Time.deltaTime * 10
             && horizontalVelocity.magnitude > 0.3f)
         {
             //Debug.Log("Player is sprinting!");
@@ -187,7 +196,7 @@ public class Player_Movement : MonoBehaviour
         }
 
         //enable/disable jumping
-        if (KeyBindingsScript.GetButtonDown("Jump")
+        if (KeyBindingsScript.GetKeyDown("Jump")
             && isGrounded
             && !isJumping
             && canJump
@@ -209,7 +218,7 @@ public class Player_Movement : MonoBehaviour
         }
 
         //enable/disable crouching
-        if (KeyBindingsScript.GetButtonDown("Crouch"))
+        if (KeyBindingsScript.GetKeyDown("Crouch"))
         {
             if (isGrounded
                 && canCrouch)
@@ -223,8 +232,6 @@ public class Player_Movement : MonoBehaviour
 
                 if (isCrouching)
                 {
-                    //Debug.Log("Player is crouching!");
-
                     currentSpeed = PlayerStatsScript.crouchSpeed;
 
                     CharacterController.height = originalHeight / 2;
@@ -233,8 +240,6 @@ public class Player_Movement : MonoBehaviour
                 }
                 else if (!isCrouching)
                 {
-                    //Debug.Log("Player is no longer crouching...");
-
                     currentSpeed = PlayerStatsScript.walkSpeed;
 
                     CharacterController.height = originalHeight;
@@ -244,14 +249,47 @@ public class Player_Movement : MonoBehaviour
             }
         }
     }
+    private void PlayerNoclipMovement()
+    {
+        //noclip movement
+        float x = Input.GetAxis("Horizontal");
+        float z = Input.GetAxis("Vertical");
 
-    /*
+        Vector3 move = transform.right * x + PlayerCamera.gameObject.transform.forward * z;
+        move = Vector3.ClampMagnitude(move, 1);
+
+        transform.position += noclipMoveSpeed * Time.deltaTime * move;
+
+        if (KeyBindingsScript.GetKey("Sprint"))
+        {
+            noclipMoveSpeed = PlayerStatsScript.walkSpeed * 10;
+        }
+        else
+        {
+            noclipMoveSpeed = PlayerStatsScript.walkSpeed * 2.5f;
+        }
+
+        //move down
+        if (KeyBindingsScript.GetKey("Crouch"))
+        {
+            transform.position += noclipMoveSpeed * Time.deltaTime * new Vector3(0, -1, 0);
+        }
+        //move up
+        else if (KeyBindingsScript.GetKey("Jump"))
+        {
+            transform.position += noclipMoveSpeed * Time.deltaTime * new Vector3(0, 1, 0);
+        }
+    }
+
     //deal damage based off of velocity when hitting ground
     private void ApplyFallDamage()
     {
         float damageDealt = Mathf.Round(Mathf.Abs(velocity.y * 1.2f) * 10) / 10;
 
-        PlayerHealthScript.DealDamage("Ground", "gravity", damageDealt);
+        EffectManagerScript.DealEffect(null,
+                                       gameObject,
+                                       "drainHealth",
+                                       damageDealt,
+                                       0);
     }
-    */
 }

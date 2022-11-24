@@ -25,28 +25,32 @@ public class UI_PauseMenu : MonoBehaviour
     [SerializeField] private GameObject thePlayer;
 
     //public but hidden variables
-    [HideInInspector] public bool canUnpause;
     [HideInInspector] public bool canTogglePMUI;
     [HideInInspector] public bool isPaused;
+    [HideInInspector] public bool isConsoleOpen;
+    [HideInInspector] public bool isPlayerMenuOpen;
+    [HideInInspector] public bool isConfirmationUIOpen;
+    [HideInInspector] public bool isKeyAssignUIOpen;
+    [HideInInspector] public bool isLockpickUIOpen;
 
     //private variables
+    private Player_Movement PlayerMovementScript;
+    private Player_Camera PlayerCameraScript;
     private Manager_GameSaving SavingScript;
     private UI_Confirmation ConfirmationScript;
     private Manager_KeyBindings KeyBindingsScript;
     private Manager_Settings SettingsScript;
     private Manager_UIReuse UIReuseScript;
-    private Player_Movement PlayerMovementScript;
-    private Player_Camera PlayerCameraScript;
 
     private void Awake()
     {
+        PlayerMovementScript = thePlayer.GetComponent<Player_Movement>();
+        PlayerCameraScript = thePlayer.GetComponentInChildren<Player_Camera>();
         SavingScript = GetComponent<Manager_GameSaving>();
         ConfirmationScript = GetComponent<UI_Confirmation>();
         KeyBindingsScript = GetComponent<Manager_KeyBindings>();
         SettingsScript = GetComponent<Manager_Settings>();
         UIReuseScript = GetComponent<Manager_UIReuse>();
-        PlayerMovementScript = thePlayer.GetComponent<Player_Movement>();
-        PlayerCameraScript = thePlayer.GetComponentInChildren<Player_Camera>();
 
         btn_ReturnToPM.onClick.AddListener(ShowPMContent);
         btn_ReturnToGame.onClick.AddListener(UnpauseGame);
@@ -60,18 +64,24 @@ public class UI_PauseMenu : MonoBehaviour
 
     private void Start()
     {
+        //odd way to fix settings not fully loading
+        PauseWithUI();
+        ShowSettingsContent();
+        UnpauseGame();
+
+        //game is always paused at first when game scene is loaded
         PauseWithoutUI();
     }
 
     private void Update()
     {
-        if (KeyBindingsScript.GetButtonDown("TogglePauseMenu"))
+        if (KeyBindingsScript.GetKeyDown("TogglePauseMenu"))
         {
             isPaused = !isPaused;
         }
 
-        if (isPaused
-            && canTogglePMUI
+        if (canTogglePMUI
+            && isPaused 
             && !par_PauseMenu.activeInHierarchy)
         {
             PauseWithUI();
@@ -79,14 +89,7 @@ public class UI_PauseMenu : MonoBehaviour
         else if (!isPaused
                  && par_PauseMenu.activeInHierarchy)
         {
-            if (canUnpause)
-            {
-                UnpauseGame();
-            }
-            else
-            {
-                ClosePMContent();
-            }
+            UnpauseGame();
         }
     }
 
@@ -95,15 +98,21 @@ public class UI_PauseMenu : MonoBehaviour
     {
         ClosePMContent();
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        if (!isConsoleOpen
+            && !isPlayerMenuOpen
+            && !isKeyAssignUIOpen
+            && !isLockpickUIOpen)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
 
-        Time.timeScale = 1;
+            Time.timeScale = 1;
 
-        PlayerMovementScript.canMove = true;
-        PlayerCameraScript.isCamEnabled = true;
+            PlayerMovementScript.canMove = true;
+            PlayerCameraScript.isCamEnabled = true;
 
-        isPaused = false;
+            isPaused = false;
+        }
     }
     //pauses the game with UI
     public void PauseWithUI()

@@ -1,13 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Trigger_Location : MonoBehaviour
 {
     [Header("General")]
-    [SerializeField] private GameObject par_Managers;
+    public string cellName;
     public LocationType locationType;
     public enum LocationType
     {
@@ -16,13 +15,16 @@ public class Trigger_Location : MonoBehaviour
         dungeon,
         battle
     }
-
-    [Header("Location variables")]
     [SerializeField] private float maxDistanceToEnable;
     [SerializeField] private float maxDistanceToDiscover;
-    [SerializeField] private Transform thePlayer;
     [SerializeField] private GameObject location;
     [SerializeField] private GameObject location_discovered;
+    public List<GameObject> containers;
+    public List<GameObject> doors;
+
+    [Header("Scripts")]
+    [SerializeField] private GameObject thePlayer;
+    [SerializeField] private GameObject par_Managers;
 
     //public but hidden variables
     [HideInInspector] public bool wasDiscovered;
@@ -31,10 +33,12 @@ public class Trigger_Location : MonoBehaviour
     private Vector3 undiscoveredStartScale;
     private Vector3 discoveredStartScale;
     private Manager_Locations LocationManagerScript;
+    private Manager_Announcements AnnouncementScript;
 
     private void Awake()
     {
         LocationManagerScript = par_Managers.GetComponentInChildren<Manager_Locations>();
+        AnnouncementScript = par_Managers.GetComponent<Manager_Announcements>();
 
         undiscoveredStartScale = location.transform.localScale;
         discoveredStartScale = location_discovered.transform.localScale;
@@ -55,7 +59,7 @@ public class Trigger_Location : MonoBehaviour
                 }
 
                 location.SetActive(true);
-                location.transform.LookAt(2 * location.transform.position - thePlayer.position);
+                location.transform.LookAt(2 * location.transform.position - thePlayer.transform.position);
 
                 float distance = Vector3.Distance(thePlayer.transform.position, location.transform.position);
                 location.transform.localScale = undiscoveredStartScale * distance / 3;
@@ -68,7 +72,7 @@ public class Trigger_Location : MonoBehaviour
                 }
 
                 location_discovered.SetActive(true);
-                location_discovered.transform.LookAt(2 * location_discovered.transform.position - thePlayer.position);
+                location_discovered.transform.LookAt(2 * location_discovered.transform.position - thePlayer.transform.position);
 
                 float distance = Vector3.Distance(thePlayer.transform.position, location_discovered.transform.position);
                 location_discovered.transform.localScale = discoveredStartScale * distance / 3;
@@ -87,6 +91,7 @@ public class Trigger_Location : MonoBehaviour
 
             if (!wasDiscovered)
             {
+                AnnouncementScript.CreateAnnouncement("Discovered " + cellName + "!");
                 wasDiscovered = true;
             }
         }
@@ -112,6 +117,45 @@ public class Trigger_Location : MonoBehaviour
             if (theLocationType != currentLocationType)
             {
                 LocationManagerScript.UpdateCurrentLocation(theLocationType);
+            }
+        }
+    }
+
+    //reset all containers and doors
+    public void ResetCell()
+    {
+        foreach (GameObject container in containers)
+        {
+            Env_LockStatus LockStatusScript = container.GetComponent<Env_LockStatus>();
+            //all lockable containers are always locked again after a restart
+            if (LockStatusScript.lockedAtRestart)
+            {
+                LockStatusScript.isUnlocked = false;
+                LockStatusScript.SetTumblerStatuses();
+            }
+
+            UI_Inventory inventory = container.GetComponent<UI_Inventory>();
+            if (inventory.containerType == UI_Inventory.ContainerType.respawnable
+                || inventory.containerType == UI_Inventory.ContainerType.store)
+            {
+                foreach (GameObject lootTable in LocationManagerScript.lootTables)
+                {
+                    if (lootTable.name == "ContainerLootTable")
+                    {
+                        lootTable.GetComponent<Env_LootTable>().ResetContainer(container);
+                        break;
+                    }
+                }
+            }
+        }
+        foreach (GameObject door in doors)
+        {
+            Env_LockStatus LockStatusScript = door.GetComponent<Env_LockStatus>();
+            //all lockable doors are always locked again after a restart
+            if (LockStatusScript.lockedAtRestart)
+            {
+                LockStatusScript.isUnlocked = false;
+                LockStatusScript.SetTumblerStatuses();
             }
         }
     }

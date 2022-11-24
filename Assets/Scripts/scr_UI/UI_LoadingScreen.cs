@@ -1,5 +1,3 @@
-using System;
-using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -32,12 +30,13 @@ public class UI_LoadingScreen : MonoBehaviour
 
     private void Awake()
     {
+        ConsoleScript = GetComponent<Manager_Console>();
+
         currentScene = SceneManager.GetActiveScene().buildIndex;
 
         if (currentScene == 1)
         {
             PauseMenuScript = GetComponent<UI_PauseMenu>();
-            ConsoleScript = GetComponent<Manager_Console>();
             PlayerMovementScript = thePlayer.GetComponent<Player_Movement>();
             PlayerCameraScript = thePlayer.GetComponentInChildren<Player_Camera>();
 
@@ -51,8 +50,8 @@ public class UI_LoadingScreen : MonoBehaviour
     }
     public void OpenLoadingScreen()
     {
-        loadingImage.texture = loadingImages[UnityEngine.Random.Range(0, loadingImages.Count)];
-        txt_Tip.text = tips[UnityEngine.Random.Range(0, tips.Count)];
+        loadingImage.texture = loadingImages[Random.Range(0, loadingImages.Count)];
+        txt_Tip.text = tips[Random.Range(0, tips.Count)];
 
         par_LoadingUI.SetActive(true);
         btn_Continue.gameObject.SetActive(false);
@@ -62,7 +61,6 @@ public class UI_LoadingScreen : MonoBehaviour
         par_LoadingUI.SetActive(false);
 
         PauseMenuScript.canTogglePMUI = true;
-        PauseMenuScript.canUnpause = true;
         PauseMenuScript.UnpauseGame();
 
         ConsoleScript.canToggleConsole = true;

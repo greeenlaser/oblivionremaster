@@ -7,18 +7,21 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using static Manager_Settings;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
+using System.Reflection;
 
 public class Manager_Console : MonoBehaviour
 {
     [Header("Scripts")]
-    [SerializeField] private GameObject par_Managers;
     [SerializeField] private GameObject thePlayer;
+    [SerializeField] private GameObject par_Managers;
 
     //public but hidden variables
     [HideInInspector] public bool canToggleConsole;
-    [HideInInspector] public bool isConsoleOpen;
 
     //private variables
+    private bool isConsoleOpen;
+    private bool debugMenuEnabled;
     private bool startedConsoleSetupWait;
     private string input;
     private string output;
@@ -28,16 +31,27 @@ public class Manager_Console : MonoBehaviour
     private readonly List<string> separatedWords = new();
     private readonly List<GameObject> createdTexts = new();
     private readonly List<string> insertedCommands = new();
+    private readonly char[] letters = new char[]
+    {
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k' , 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
+    };
 
-    //command variables
-    private bool debugMenuEnabled;
-    private Player_Stats PlayerStatsScript;
+    //target selection
+    private bool isSelectingTarget;
+    private GameObject target;
+    private Vector3 consoleHiddenPosition = new(0, -1460, 0);
+    private Vector3 consoleVisiblePosition = new(0, 0, 0);
 
     //scripts
+    private Player_Movement PlayerMovementScript;
+    private UI_Inventory PlayerInventoryScript;
+    private Player_Stats PlayerStatsScript;
+    private UI_PlayerMenu PlayerMenuScript;
     private GameManager GameManagerScript;
     private UI_PauseMenu PauseMenuScript;
     private Manager_KeyBindings KeyBindingsScript;
     private Manager_Settings SettingsScript;
+    private Manager_GameSaving GameSavingScript;
     private Manager_UIReuse UIReuseScript;
 
     private void Awake()
@@ -46,13 +60,22 @@ public class Manager_Console : MonoBehaviour
         PauseMenuScript = GetComponent<UI_PauseMenu>();
         KeyBindingsScript = GetComponent<Manager_KeyBindings>();
         SettingsScript = GetComponent<Manager_Settings>();
+        GameSavingScript = GetComponent<Manager_GameSaving>();
         UIReuseScript = GetComponent<Manager_UIReuse>();
 
         currentScene = SceneManager.GetActiveScene().buildIndex;
 
-        if (currentScene == 1)
+        //console is always enabled at the beginning in main menu
+        if (currentScene == 0)
         {
+            canToggleConsole = true;
+        }
+        else if (currentScene == 1)
+        {
+            PlayerMovementScript = thePlayer.GetComponent<Player_Movement>();
+            PlayerInventoryScript = thePlayer.GetComponent<UI_Inventory>();
             PlayerStatsScript = thePlayer.GetComponent<Player_Stats>();
+            PlayerMenuScript = GetComponent<UI_PlayerMenu>();
         }
 
         debugMenuEnabled = true;
@@ -67,82 +90,161 @@ public class Manager_Console : MonoBehaviour
 
     private void Update()
     {
-        if (KeyBindingsScript.GetButtonDown("ToggleConsole")
+        if (KeyBindingsScript.GetKeyDown("ToggleConsole")
             && canToggleConsole)
         {
-            isConsoleOpen = !isConsoleOpen;
-        }
-
-        //choose newer and older inserted commands with arrow keys
-        if (isConsoleOpen
-            && insertedCommands.Count > 0)
-        {
-            //always picks newest added console command if input field is empty
-            if ((Input.GetKeyDown(KeyCode.UpArrow)
-                || Input.GetKeyDown(KeyCode.DownArrow))
-                && UIReuseScript.consoleInputField.text == "")
+            if (currentScene == 0)
             {
-                currentSelectedInsertedCommand = insertedCommands.Count - 1;
-                UIReuseScript.consoleInputField.text = insertedCommands[^1];
-                UIReuseScript.consoleInputField.MoveToEndOfLine(false, false);
+                isConsoleOpen = !isConsoleOpen;
             }
-            else
+            else if (currentScene == 1
+                     && !PauseMenuScript.isKeyAssignUIOpen)
             {
-                if (Input.GetKeyDown(KeyCode.UpArrow))
-                {
-                    currentSelectedInsertedCommand--;
-                    if (currentSelectedInsertedCommand < 0)
-                    {
-                        currentSelectedInsertedCommand = insertedCommands.Count - 1;
-                    }
-
-                    UIReuseScript.consoleInputField.text = insertedCommands[currentSelectedInsertedCommand];
-                    UIReuseScript.consoleInputField.MoveToEndOfLine(false, false);
-                }
-                else if (Input.GetKeyDown(KeyCode.DownArrow))
-                {
-                    currentSelectedInsertedCommand++;
-                    if (currentSelectedInsertedCommand == insertedCommands.Count)
-                    {
-                        currentSelectedInsertedCommand = 0;
-                    }
-
-                    UIReuseScript.consoleInputField.text = insertedCommands[currentSelectedInsertedCommand];
-                    UIReuseScript.consoleInputField.MoveToEndOfLine(false, false);
-                }
+                PauseMenuScript.isConsoleOpen = !PauseMenuScript.isConsoleOpen;
             }
         }
 
         //open console
-        if (isConsoleOpen
-            && !UIReuseScript.par_Console.activeInHierarchy)
+        if (!UIReuseScript.par_Console.activeInHierarchy)
         {
-            if (currentScene == 1)
+            if ((currentScene == 0
+                && isConsoleOpen)
+                || currentScene == 1
+                && PauseMenuScript.isConsoleOpen)
             {
-                //cannot unpause game while console is open
-                PauseMenuScript.canUnpause = false;
-
-                PauseMenuScript.PauseWithoutUI();
+                if (currentScene == 1)
+                {
+                    PauseMenuScript.PauseWithoutUI();
+                }
+                OpenConsole();
             }
-
-            OpenConsole();
         }
         //close console
-        else if (!isConsoleOpen
-                 && UIReuseScript.par_Console.activeInHierarchy)
+        else if (UIReuseScript.par_Console.activeInHierarchy)
         {
-            if (currentScene == 1)
+            if ((currentScene == 0
+                && !isConsoleOpen)
+                || currentScene == 1
+                && !PauseMenuScript.isConsoleOpen)
             {
-                //can unpause game once console is closed
-                PauseMenuScript.canUnpause = true;
-
-                if (!PauseMenuScript.isPaused)
+                if (currentScene == 1)
                 {
+                    if (isSelectingTarget)
+                    {
+                        CreateNewConsoleLine("Cancelled target selection command.", "CONSOLE_INFO_MESSAGE");
+                        UIReuseScript.par_Console.transform.localPosition = consoleVisiblePosition;
+                        isSelectingTarget = false;
+                    }
+
                     PauseMenuScript.UnpauseGame();
                 }
+                CloseConsole();
+            }
+        }
+
+        //choose newer and older inserted commands with arrow keys
+        if (insertedCommands.Count > 0)
+        {
+            if ((currentScene == 0
+                && isConsoleOpen)
+                || (currentScene == 1
+                && PauseMenuScript.isConsoleOpen))
+            {
+                //always picks newest added console command if input field is empty
+                if ((Input.GetKeyDown(KeyCode.UpArrow)
+                    || Input.GetKeyDown(KeyCode.DownArrow))
+                    && UIReuseScript.consoleInputField.text == "")
+                {
+                    if (isSelectingTarget)
+                    {
+                        CreateNewConsoleLine("Cancelled target selection command.", "CONSOLE_INFO_MESSAGE");
+                        UIReuseScript.par_Console.transform.localPosition = consoleVisiblePosition;
+                        isSelectingTarget = false;
+                    }
+
+                    currentSelectedInsertedCommand = insertedCommands.Count - 1;
+                    UIReuseScript.consoleInputField.text = insertedCommands[^1];
+                    UIReuseScript.consoleInputField.MoveToEndOfLine(false, false);
+                }
+                else
+                {
+                    if (Input.GetKeyDown(KeyCode.UpArrow))
+                    {
+                        if (isSelectingTarget)
+                        {
+                            CreateNewConsoleLine("Cancelled target selection command.", "CONSOLE_INFO_MESSAGE");
+                            UIReuseScript.par_Console.transform.localPosition = consoleVisiblePosition;
+                            isSelectingTarget = false;
+                        }
+
+                        currentSelectedInsertedCommand--;
+                        if (currentSelectedInsertedCommand < 0)
+                        {
+                            currentSelectedInsertedCommand = insertedCommands.Count - 1;
+                        }
+
+                        UIReuseScript.consoleInputField.text = insertedCommands[currentSelectedInsertedCommand];
+                        UIReuseScript.consoleInputField.MoveToEndOfLine(false, false);
+                    }
+                    else if (Input.GetKeyDown(KeyCode.DownArrow))
+                    {
+                        if (isSelectingTarget)
+                        {
+                            CreateNewConsoleLine("Cancelled target selection command.", "CONSOLE_INFO_MESSAGE");
+                            UIReuseScript.par_Console.transform.localPosition = consoleVisiblePosition;
+                            isSelectingTarget = false;
+                        }
+
+                        currentSelectedInsertedCommand++;
+                        if (currentSelectedInsertedCommand == insertedCommands.Count)
+                        {
+                            currentSelectedInsertedCommand = 0;
+                        }
+
+                        UIReuseScript.consoleInputField.text = insertedCommands[currentSelectedInsertedCommand];
+                        UIReuseScript.consoleInputField.MoveToEndOfLine(false, false);
+                    }
+                }
+            }
+        }
+
+        //if target is being selected
+        if (isSelectingTarget)
+        {
+            if (UIReuseScript.par_Console.transform.localPosition != consoleHiddenPosition)
+            {
+                UIReuseScript.par_Console.transform.localPosition = consoleHiddenPosition;
             }
 
-            CloseConsole();
+            //pressing left mouse button selects a target
+            if (Input.GetMouseButtonDown(0))
+            {
+                bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit hitInfo);
+                if (hit)
+                {
+                    if (hitInfo.transform.GetComponent<Env_Item>() != null
+                        || hitInfo.transform.GetComponent<UI_Inventory>() != null
+                        || hitInfo.transform.GetComponent<Env_Door>() != null)
+                    {
+                        CreateNewConsoleLine("Hit " + hitInfo.transform.name + ".", "CONSOLE_INFO_MESSAGE");
+                        target = hitInfo.transform.gameObject;
+                    }
+                    else
+                    {
+                        CreateNewConsoleLine("Did not hit anything interactable...", "CONSOLE_INFO_MESSAGE");
+                    }
+
+                    UIReuseScript.par_Console.transform.localPosition = consoleVisiblePosition;
+
+                    isSelectingTarget = false;
+                }
+                else
+                {
+                    CreateNewConsoleLine("Cancelled target selection command.", "CONSOLE_INFO_MESSAGE");
+                    UIReuseScript.par_Console.transform.localPosition = consoleVisiblePosition;
+                    isSelectingTarget = false;
+                }
+            }
         }
     }
 
@@ -166,7 +268,7 @@ public class Manager_Console : MonoBehaviour
 
         insertedCommands.Add(input);
         currentSelectedInsertedCommand = insertedCommands.Count - 1;
-        CreateNewConsoleLine("--" + input + "--", "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("--" + input + "--", "CONSOLE_COMMAND");
 
         //if inserted text was not empty and player pressed enter
         if (separatedWords.Count >= 1)
@@ -197,14 +299,28 @@ public class Manager_Console : MonoBehaviour
                     Command_ToggleDebugMenu();
                 }
 
+                //toggle godmode
+                else if (separatedWords[0] == "tgm"
+                         && separatedWords.Count == 1
+                         && PlayerStatsScript.currentHealth > 0)
+                {
+                    Command_ToggleGodMode();
+                }
+                //toggle noclip
+                else if (separatedWords[0] == "tnc"
+                         && separatedWords.Count == 1)
+                {
+                    Command_ToggleNoclip();
+                }
+
                 //show all saves
-                else if (separatedWords[0] == "showallsaves"
+                else if (separatedWords[0] == "shsa"
                          && separatedWords.Count == 1)
                 {
                     Command_ShowAllSaves();
                 }
                 //delete all saves
-                else if (separatedWords[0] == "deleteallsaves"
+                else if (separatedWords[0] == "desa"
                          && separatedWords.Count == 1)
                 {
                     Command_DeleteAllSaves();
@@ -226,40 +342,40 @@ public class Manager_Console : MonoBehaviour
                 }
 
                 //reset all key bindings to default values
-                else if (separatedWords[0] == "resetallkeybindings"
+                else if (separatedWords[0] == "reke"
                          && separatedWords.Count == 1)
                 {
                     Command_ResetAllKeyBindings();
                 }
                 //list all key bindings and their values
-                else if (separatedWords[0] == "showallkeybindings"
+                else if (separatedWords[0] == "shke"
                          && separatedWords.Count == 1)
                 {
                     Command_ShowAllKeyBindings();
                 }
                 //set keybindingname to keybindingvalue
-                else if (separatedWords[0] == "setkeybinding"
+                else if (separatedWords[0] == "seke"
                          && separatedWords.Count == 3)
                 {
                     Command_SetKeyBinding();
                 }
 
                 //reset all settings to default values
-                else if (separatedWords[0] == "resetallsettings"
+                else if (separatedWords[0] == "rese"
                          && separatedWords.Count == 1
                          && currentScene == 1)
                 {
                     Command_ResetAllSettings();
                 }
                 //list all settings and their values
-                else if (separatedWords[0] == "showallsettings"
+                else if (separatedWords[0] == "shse"
                          && separatedWords.Count == 1
                          && currentScene == 1)
                 {
                     Command_ShowAllSettings();
                 }
                 //set settingsname to settingsvalue
-                else if (separatedWords[0] == "setsettings"
+                else if (separatedWords[0] == "sese"
                          && separatedWords.Count == 3
                          && currentScene == 1)
                 {
@@ -298,26 +414,101 @@ public class Manager_Console : MonoBehaviour
                     {
                         Command_TeleportPlayer();
                     }
+
                     //show player stats
-                    else if (separatedWords[1] == "showstats"
+                    else if (separatedWords[1] == "shst"
                              && separatedWords.Count == 2)
                     {
                         Command_ShowPlayerStats();
                     }
                     //reset player stats
-                    else if (separatedWords[1] == "resetstats"
+                    else if (separatedWords[1] == "rest"
                              && separatedWords.Count == 2
                              && PlayerStatsScript.currentHealth > 0)
                     {
                         Command_ResetPlayerStats();
                     }
                     //set player stat
-                    else if (separatedWords[1] == "setstat"
+                    else if (separatedWords[1] == "sest"
                              && separatedWords.Count == 4
                              && PlayerStatsScript.currentHealth > 0)
                     {
                         Command_SetPlayerStat();
                     }
+
+                    //list all item types
+                    else if (separatedWords[1] == "sait"
+                             && separatedWords.Count == 2)
+                    {
+                        Command_ShowAllItemTypes();
+                    }
+                    //list all items of the selected item type that start with the selected english alphabet letter
+                    else if (separatedWords.Count == 3
+                             && separatedWords[2].Length == 1
+                             && (separatedWords[1] == "shwe"
+                             || separatedWords[1] == "shar"
+                             || separatedWords[1] == "shsh"
+                             || separatedWords[1] == "shco"
+                             || separatedWords[1] == "shai"
+                             || separatedWords[1] == "shsp"
+                             || separatedWords[1] == "sham"
+                             || separatedWords[1] == "shmi"))
+                    {
+                        char letter = separatedWords[2].ToCharArray()[0];
+                        bool foundLetter = false;
+                        foreach (char c in letters)
+                        {
+                            if (letter == c)
+                            {
+                                foundLetter = true;
+                                break;
+                            }
+                        }
+
+                        if (foundLetter)
+                        {
+                            Command_ShowItemTypeItems(separatedWords[1], letter);
+                        }
+                        else
+                        {
+                            CreateNewConsoleLine("Error: Inserted item type first letter is invalid! It must be a lower-case english alphabet letter.", "CONSOLE_ERROR_MESSAGE");
+                        }
+                    }
+                    //list all player items, their counts and protected state
+                    else if (separatedWords[1] == "sapi"
+                             && separatedWords.Count == 2)
+                    {
+                        Command_ShowAllPlayerItems();
+                    }
+                    //add item to player inventory
+                    else if (separatedWords[1] == "additem"
+                             && separatedWords.Count == 4
+                             && PlayerStatsScript.currentHealth > 0)
+                    {
+                        Command_AddItem();
+                    }
+                    //remove item from player inventory
+                    else if (separatedWords[1] == "removeitem"
+                             && separatedWords.Count == 4
+                             && PlayerStatsScript.currentHealth > 0)
+                    {
+                        Command_RemoveItem();
+                    }
+                    //show all item stats
+                    else if (separatedWords[1] == "shis"
+                             && separatedWords.Count == 4
+                             && PlayerStatsScript.currentHealth > 0)
+                    {
+                        Command_ShowItemStats();
+                    }
+                    //set item stat
+                    else if (separatedWords[1] == "sest"
+                             && separatedWords.Count == 6
+                             && PlayerStatsScript.currentHealth > 0)
+                    {
+                        Command_SetItemStat();
+                    }
+
                     else
                     {
                         insertedCommands.Add(input);
@@ -327,6 +518,13 @@ public class Manager_Console : MonoBehaviour
                     }
                 }
 
+                //select target
+                else if (separatedWords[0] == "st"
+                         && separatedWords.Count == 1
+                         && currentScene == 1)
+                {
+                    Command_SelectTarget();
+                }
                 //list all target commands
                 else if (separatedWords[0] == "help"
                          && separatedWords[1] == "target"
@@ -335,23 +533,16 @@ public class Manager_Console : MonoBehaviour
                 {
                     Command_Help();
                 }
-                //select target
-                else if (separatedWords[0] == "st"
-                         && separatedWords.Count == 1
-                         && currentScene == 1)
-                {
-                    Command_SelectTarget();
-                }
                 //target commands
                 else if (separatedWords[0] == "target"
                          && currentScene == 1
                          && PlayerStatsScript.currentHealth > 0)
                 {
-                    //disable target
-                    if (separatedWords[1] == "disable"
-                        && separatedWords.Count == 2)
+                    //unlock target
+                    if (separatedWords[1] == "unlock"
+                             && separatedWords.Count == 2)
                     {
-                        Command_DisableTarget();
+                        Command_UnlockTarget();
                     }
                     else
                     {
@@ -393,18 +584,21 @@ public class Manager_Console : MonoBehaviour
             CreateNewConsoleLine("clear - clear console log.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("tdm - toggle debug menu.", "CONSOLE_INFO_MESSAGE");
 
-            CreateNewConsoleLine("showallsaves - show all game saves.", "CONSOLE_INFO_MESSAGE");
-            CreateNewConsoleLine("deleteallsaves - delete all game saves.", "CONSOLE_INFO_MESSAGE");
-            CreateNewConsoleLine("save savename - save game with save name (GAME SCENE ONLY).", "CONSOLE_INFO_MESSAGE");
-            CreateNewConsoleLine("load loadname - load game with game save name.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("tgm - toggle godmode.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("tnc - toggle noclip", "CONSOLE_INFO_MESSAGE");
 
-            CreateNewConsoleLine("resetallkeybindings - reset all key bindings to default values.", "CONSOLE_INFO_MESSAGE");
-            CreateNewConsoleLine("showallkeybindings - list all key bindings and their current values.", "CONSOLE_INFO_MESSAGE");
-            CreateNewConsoleLine("setkeybinding keybindingname keybindingvalue - set keybindingname to keybindingvalue.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("shsa - show all game saves.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("desa - delete all game saves [WARNING: THIS CANNOT BE UNDONE]", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("save string - save game with selected save name.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("load string - load game with selected save name.", "CONSOLE_INFO_MESSAGE");
 
-            CreateNewConsoleLine("resetallsettings - reset all settings to default values.", "CONSOLE_INFO_MESSAGE");
-            CreateNewConsoleLine("showallsettings - list all settings and their current values.", "CONSOLE_INFO_MESSAGE");
-            CreateNewConsoleLine("setsettings settingsname settingsvalue - set settingsname to settingsvalue.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("reke - reset all key bindings to default values.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("shke - list all key bindings and their current values.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("seke string string - set selected key binding to value.", "CONSOLE_INFO_MESSAGE");
+
+            CreateNewConsoleLine("rese - reset all settings to default values.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("shse - list all settings and their current values.", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("sese string string - set selected setting to value.", "CONSOLE_INFO_MESSAGE");
 
             CreateNewConsoleLine("restart - restart the game from the beginning.", "CONSOLE_INFO_MESSAGE");
             CreateNewConsoleLine("quit - quit game.", "CONSOLE_INFO_MESSAGE");
@@ -417,16 +611,23 @@ public class Manager_Console : MonoBehaviour
             if (separatedWords[1] == "player")
             {
                 CreateNewConsoleLine("---PLAYER COMMANDS---.", "CONSOLE_INFO_MESSAGE");
-                CreateNewConsoleLine("player tp valx valy valz - teleport player to xyz coordinates.", "CONSOLE_INFO_MESSAGE");
-                CreateNewConsoleLine("player showstats - list all player stats.", "CONSOLE_INFO_MESSAGE");
-                CreateNewConsoleLine("player resetstats - reset all player stats.", "CONSOLE_INFO_MESSAGE");
-                CreateNewConsoleLine("player setstat statName statValue - set player stat statName to statValue.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("player tp int int int - teleport player to xyz coordinates.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("player shst - list all player stats.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("player rest - reset all player stats.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("player sest string string - set selected player stat to value.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("player sait - list all spawnable item types.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("player shwe/shar/shsh/shco/shai/shsp/sham/shmi char - list all items of the selected item type that start with the selected english alphabet letter.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("player sapi - list all player inventory items, their counts and protected state.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("player additem string int - add selected count of items to player inventory.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("player removeitem string int - remove selected count of items from players inventory.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("player shis string int - list all selected item stats.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("player sest string int - set selected item stat to value.", "CONSOLE_INFO_MESSAGE");
             }
             else if (separatedWords[1] == "target")
             {
                 CreateNewConsoleLine("---TARGET COMMANDS---.", "CONSOLE_INFO_MESSAGE");
-                CreateNewConsoleLine("st - select target.", "CONSOLE_INFO_MESSAGE");
-                CreateNewConsoleLine("target disable - disable selected target.", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("st - select target with left mouse button (key binding not editable).", "CONSOLE_INFO_MESSAGE");
+                CreateNewConsoleLine("target unlock - unlock selected target.", "CONSOLE_INFO_MESSAGE");
             }
         }
     }
@@ -448,17 +649,44 @@ public class Manager_Console : MonoBehaviour
     {
         if (!debugMenuEnabled)
         {
-            GetComponent<Manager_UIReuse>().par_DebugMenu.transform.position -= new Vector3(0, 114, 0);
+            UIReuseScript.par_DebugMenu.transform.position -= new Vector3(0, 114, 0);
 
             CreateNewConsoleLine("Enabled debug menu.", "CONSOLE_INFO_MESSAGE");
             debugMenuEnabled = true;
         }
         else
         {
-            GetComponent<Manager_UIReuse>().par_DebugMenu.transform.position += new Vector3(0, 114, 0);
+            UIReuseScript.par_DebugMenu.transform.position += new Vector3(0, 114, 0);
 
             CreateNewConsoleLine("Disabled debug menu.", "CONSOLE_INFO_MESSAGE");
             debugMenuEnabled = false;
+        }
+    }
+
+    //toggle godmode
+    private void Command_ToggleGodMode()
+    {
+        PlayerStatsScript.isGodmodeEnabled = !PlayerStatsScript.isGodmodeEnabled;
+        if (!PlayerStatsScript.isGodmodeEnabled)
+        {
+            CreateNewConsoleLine("Disabled god mode.", "CONSOLE_INFO_MESSAGE");
+        }
+        else
+        {
+            CreateNewConsoleLine("Enabled god mode.", "CONSOLE_INFO_MESSAGE");
+        }
+    }
+    //toggle noclip
+    private void Command_ToggleNoclip()
+    {
+        PlayerMovementScript.isNoclipping = !PlayerMovementScript.isNoclipping;
+        if (!PlayerMovementScript.isNoclipping)
+        {
+            CreateNewConsoleLine("Disabled noclipping.", "CONSOLE_INFO_MESSAGE");
+        }
+        else
+        {
+            CreateNewConsoleLine("Enabled noclipping.", "CONSOLE_INFO_MESSAGE");
         }
     }
 
@@ -523,7 +751,7 @@ public class Manager_Console : MonoBehaviour
     {
         //save the potential save name
         string saveName = separatedWords[1];
-        GetComponent<Manager_GameSaving>().CreateSaveFile(saveName);
+        GameSavingScript.CreateSaveFile(saveName);
     }
     //load game save with name
     private void Command_LoadWithName()
@@ -531,7 +759,7 @@ public class Manager_Console : MonoBehaviour
         string path = GameManagerScript.savePath;
         if (File.Exists(path + @"\" + separatedWords[1] + ".txt"))
         {
-            GetComponent<Manager_GameSaving>().CreateLoadFile(separatedWords[1] + ".txt");
+            GameSavingScript.CreateLoadFile(separatedWords[1] + ".txt");
         }
         else
         {
@@ -599,7 +827,7 @@ public class Manager_Console : MonoBehaviour
                 TMP_Text buttonText = button.GetComponentInChildren<TMP_Text>();
                 UI_AssignKey AssignScript = button.GetComponentInChildren<UI_AssignKey>();
 
-                if (AssignScript.str_Info == userKey)
+                if (AssignScript.info == userKey)
                 {
                     buttonText.text = userValue.ToString().Replace("KeyCode.", "");
 
@@ -652,7 +880,7 @@ public class Manager_Console : MonoBehaviour
 
         foreach (Transform par in parents)
         {
-            string info = par.GetComponentInChildren<UI_AssignSettings>().str_Info;
+            string info = par.GetComponentInChildren<UI_AssignSettings>().info;
 
             //general settings
             if (info == "Difficulty")
@@ -1307,7 +1535,7 @@ public class Manager_Console : MonoBehaviour
                 //set teleport position
                 Vector3 teleportPos = new(firstVec, secondVec, thirdVec);
 
-                CreateNewConsoleLine("Sucessfully teleported player to " + teleportPos + "!", "CONSOLE_SUCCESS_MESSAGE");
+                CreateNewConsoleLine("Successfully teleported player to " + teleportPos + "!", "CONSOLE_SUCCESS_MESSAGE");
 
                 thePlayer.transform.position = teleportPos;
             }
@@ -1329,7 +1557,9 @@ public class Manager_Console : MonoBehaviour
         CreateNewConsoleLine("fov: " + SettingsScript.user_FieldOfView, "CONSOLE_INFO_MESSAGE");
         CreateNewConsoleLine("", "CONSOLE_INFO_MESSAGE");
 
-        CreateNewConsoleLine("---PLAYER STATS---", "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("---PLAYER MAIN VALUES---", "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Note: only player level is editable, cannot change player required points to level up.", "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("level: " + PlayerStatsScript.level + ", " + PlayerStatsScript.level_PointsToNextLevel, "CONSOLE_INFO_MESSAGE");
         CreateNewConsoleLine("maxhealth: " + PlayerStatsScript.maxHealth, "CONSOLE_INFO_MESSAGE");
         CreateNewConsoleLine("currenthealth: " + PlayerStatsScript.currentHealth, "CONSOLE_INFO_MESSAGE");
         CreateNewConsoleLine("maxStamina: " + PlayerStatsScript.maxStamina, "CONSOLE_INFO_MESSAGE");
@@ -1341,12 +1571,48 @@ public class Manager_Console : MonoBehaviour
         CreateNewConsoleLine("---INVENTORY STATS---", "CONSOLE_INFO_MESSAGE");
         CreateNewConsoleLine("maxinvspace: " + PlayerStatsScript.maxInvSpace, "CONSOLE_INFO_MESSAGE");
         CreateNewConsoleLine("invspace (not editable): " + PlayerStatsScript.invSpace, "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("", "CONSOLE_INFO_MESSAGE");
+
+        CreateNewConsoleLine("---PLAYER ATTRIBUTES---", "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Strength: " + PlayerStatsScript.Attributes["Strength"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Intelligence: " + PlayerStatsScript.Attributes["Intelligence"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Willpower: " + PlayerStatsScript.Attributes["Willpower"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Agility: " + PlayerStatsScript.Attributes["Agility"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Speed: " + PlayerStatsScript.Attributes["Speed"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Endurance: " + PlayerStatsScript.Attributes["Endurance"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Personality: " + PlayerStatsScript.Attributes["Personality"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Luck: " + PlayerStatsScript.Attributes["Luck"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("", "CONSOLE_INFO_MESSAGE");
+
+        CreateNewConsoleLine("---PLAYER SKILLS---", "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Note: only player skill level is editable, cannot change player required points to level up selecte skill.", "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Blade: " + PlayerStatsScript.Skills["Blade"] + ", " + PlayerStatsScript.SkillPoints["Blade"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Blunt: " + PlayerStatsScript.Skills["Blunt"] + ", " + PlayerStatsScript.SkillPoints["Blunt"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("HandToHand: " + PlayerStatsScript.Skills["HandToHand"] + ", " + PlayerStatsScript.SkillPoints["HandToHand"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Armorer: " + PlayerStatsScript.Skills["Armorer"] + ", " + PlayerStatsScript.SkillPoints["Armorer"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Block: " + PlayerStatsScript.Skills["Block"] + ", " + PlayerStatsScript.SkillPoints["Block"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("HeavyArmor: " + PlayerStatsScript.Skills["HeavyArmor"] + ", " + PlayerStatsScript.SkillPoints["HeavyArmor"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Athletics: " + PlayerStatsScript.Skills["Athletics"] + ", " + PlayerStatsScript.SkillPoints["Athletics"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Alteration: " + PlayerStatsScript.Skills["Alteration"] + ", " + PlayerStatsScript.SkillPoints["Alteration"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Destruction: " + PlayerStatsScript.Skills["Destruction"] + ", " + PlayerStatsScript.SkillPoints["Destruction"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Restoration: " + PlayerStatsScript.Skills["Restoration"] + ", " + PlayerStatsScript.SkillPoints["Restoration"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Alchemy: " + PlayerStatsScript.Skills["Alchemy"] + ", " + PlayerStatsScript.SkillPoints["Alchemy"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Conjuration: " + PlayerStatsScript.Skills["Conjuration"] + ", " + PlayerStatsScript.SkillPoints["Conjuration"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Mysticism: " + PlayerStatsScript.Skills["Mysticism"] + ", " + PlayerStatsScript.SkillPoints["Mysticism"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Illusion: " + PlayerStatsScript.Skills["Illusion"] + ", " + PlayerStatsScript.SkillPoints["Illusion"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Security: " + PlayerStatsScript.Skills["Security"] + ", " + PlayerStatsScript.SkillPoints["Security"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Sneak: " + PlayerStatsScript.Skills["Sneak"] + ", " + PlayerStatsScript.SkillPoints["Sneak"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Marksman: " + PlayerStatsScript.Skills["Marksman"] + ", " + PlayerStatsScript.SkillPoints["Marksman"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Acrobatics: " + PlayerStatsScript.Skills["Acrobatics"] + ", " + PlayerStatsScript.SkillPoints["Acrobatics"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("LightArmor: " + PlayerStatsScript.Skills["LightArmor"] + ", " + PlayerStatsScript.SkillPoints["LightArmor"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Mercantile: " + PlayerStatsScript.Skills["Mercantile"] + ", " + PlayerStatsScript.SkillPoints["Mercantile"], "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("Speechcraft: " + PlayerStatsScript.Skills["Speechcraft"] + ", " + PlayerStatsScript.SkillPoints["Speechcraft"], "CONSOLE_INFO_MESSAGE");
     }
     //reset all player stats
     private void Command_ResetPlayerStats()
     {
         PlayerStatsScript.ResetStats();
-        CreateNewConsoleLine("Sucessfully reset all player stats to their default values!", "CONSOLE_SUCCESS_MESSAGE");
+        CreateNewConsoleLine("Successfully reset all player stats to their default values!", "CONSOLE_SUCCESS_MESSAGE");
     }
     //set player stat
     private void Command_SetPlayerStat()
@@ -1368,22 +1634,22 @@ public class Manager_Console : MonoBehaviour
                 if (statName == "walkspeed")
                 {
                     PlayerStatsScript.walkSpeed = (int)statValue;
-                    CreateNewConsoleLine("Sucessfully set player walk speed to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    CreateNewConsoleLine("Successfully set player walk speed to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "sprintspeed")
                 {
                     PlayerStatsScript.sprintSpeed = (int)statValue;
-                    CreateNewConsoleLine("Sucessfully set player sprint speed to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    CreateNewConsoleLine("Successfully set player sprint speed to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "crouchspeed")
                 {
                     PlayerStatsScript.crouchSpeed = (int)statValue;
-                    CreateNewConsoleLine("Sucessfully set player crouch speed to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    CreateNewConsoleLine("Successfully set player crouch speed to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "jumpheight")
                 {
                     PlayerStatsScript.jumpHeight = (int)statValue;
-                    CreateNewConsoleLine("Sucessfully set player jump height to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    CreateNewConsoleLine("Successfully set player jump height to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "cameramovespeed")
                 {
@@ -1398,18 +1664,32 @@ public class Manager_Console : MonoBehaviour
                     {
                         SettingsScript.user_FieldOfView = (int)statValue;
                         thePlayer.GetComponentInChildren<Camera>().fieldOfView = (int)statValue;
-                        CreateNewConsoleLine("Sucessfully set player field of view to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                        CreateNewConsoleLine("Successfully set player field of view to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                     }
                     else
                     {
                         CreateNewConsoleLine("Error: Camera field of view must be between 70 and 110!", "CONSOLE_ERROR_MESSAGE");
                     }
                 }
+                else if (statName == "level")
+                {
+                    if (statValue >= 1
+                        && statValue <= 100)
+                    {
+                        PlayerStatsScript.level = (int)statValue;
+                        PlayerStatsScript.level_PointsToNextLevel = PlayerStatsScript.level * 500;
+                        CreateNewConsoleLine("Successfully set player level to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    }
+                    else
+                    {
+                        CreateNewConsoleLine("Error: Player level must be between 1 and 100!", "CONSOLE_ERROR_MESSAGE");
+                    }
+                }
                 else if (statName == "maxhealth")
                 {
                     PlayerStatsScript.maxHealth = (int)statValue;
                     PlayerStatsScript.UpdateBar(PlayerStatsScript.healthBar);
-                    CreateNewConsoleLine("Sucessfully set player max health to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    CreateNewConsoleLine("Successfully set player max health to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "currenthealth")
                 {
@@ -1421,14 +1701,14 @@ public class Manager_Console : MonoBehaviour
                     {
                         PlayerStatsScript.currentHealth = (int)statValue;
                         PlayerStatsScript.UpdateBar(PlayerStatsScript.healthBar);
-                        CreateNewConsoleLine("Sucessfully set player current health to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                        CreateNewConsoleLine("Successfully set player current health to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                     }
                 }
                 else if (statName == "maxstamina")
                 {
                     PlayerStatsScript.maxStamina = (int)statValue;
                     PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar);
-                    CreateNewConsoleLine("Sucessfully set player max stamina to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    CreateNewConsoleLine("Successfully set player max stamina to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "currentstamina")
                 {
@@ -1440,14 +1720,14 @@ public class Manager_Console : MonoBehaviour
                     {
                         PlayerStatsScript.currentStamina = (int)statValue;
                         PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar);
-                        CreateNewConsoleLine("Sucessfully set player current stamina to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                        CreateNewConsoleLine("Successfully set player current stamina to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                     }
                 }
                 else if (statName == "maxmagicka")
                 {
                     PlayerStatsScript.maxMagicka = (int)statValue;
                     PlayerStatsScript.UpdateBar(PlayerStatsScript.magickaBar);
-                    CreateNewConsoleLine("Sucessfully set player max magicka to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    CreateNewConsoleLine("Successfully set player max magicka to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "currentmagicka")
                 {
@@ -1459,14 +1739,102 @@ public class Manager_Console : MonoBehaviour
                     {
                         PlayerStatsScript.currentMagicka = (int)statValue;
                         PlayerStatsScript.UpdateBar(PlayerStatsScript.magickaBar);
-                        CreateNewConsoleLine("Sucessfully set player current magicka to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                        CreateNewConsoleLine("Successfully set player current magicka to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                     }
                 }
                 else if (statName == "maxinvspace")
                 {
                     PlayerStatsScript.maxInvSpace = (int)statValue;
-                    CreateNewConsoleLine("Sucessfully set player max inventory space to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    CreateNewConsoleLine("Successfully set player max inventory space to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
+
+                //set stat value
+                else if (statName == "Strength"
+                         || statName == "Intelligence"
+                         || statName == "Willpower"
+                         || statName == "Agility"
+                         || statName == "Speed"
+                         || statName == "Endurance"
+                         || statName == "Personality"
+                         || statName == "Luck")
+                {
+                    if (statValue >= 1
+                        && statValue <= 10)
+                    {
+                        foreach (KeyValuePair<string, int> attributes in PlayerStatsScript.Attributes)
+                        {
+                            string attributeName = attributes.Key;
+
+                            if (statName == attributeName)
+                            {
+                                PlayerStatsScript.Attributes[statName] = (int)statValue;
+
+                                CreateNewConsoleLine("Successfully set " + statName + " to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        CreateNewConsoleLine("Error: " + statName + " must be between 1 and 10!", "CONSOLE_ERROR_MESSAGE");
+                    }
+                }
+
+                //set skill level
+                else if (statName == "Blade"
+                         || statName == "Blunt"
+                         || statName == "HandToHand"
+                         || statName == "Armorer"
+                         || statName == "Block"
+                         || statName == "HeavyArmor"
+                         || statName == "Athletics"
+                         || statName == "Alteration"
+                         || statName == "Destruction"
+                         || statName == "Restoration"
+                         || statName == "Alchemy"
+                         || statName == "Conjuration"
+                         || statName == "Mysticism"
+                         || statName == "Illusion"
+                         || statName == "Security"
+                         || statName == "Sneak"
+                         || statName == "Marksman"
+                         || statName == "Acrobatics"
+                         || statName == "LightArmor"
+                         || statName == "Mercantile"
+                         || statName == "Speechcraft")
+                {
+                    if (statValue >= 1
+                        && statValue <= 100)
+                    {
+                        foreach (KeyValuePair<string, int> skills in PlayerStatsScript.Skills)
+                        {
+                            string skillName = skills.Key;
+
+                            if (statName == skillName)
+                            {
+                                PlayerStatsScript.Skills[statName] = (int)statValue;
+                                break;
+                            }
+                        }
+                        foreach (KeyValuePair<string, int> skillPoints in PlayerStatsScript.SkillPoints)
+                        {
+                            string skillName = skillPoints.Key;
+
+                            if (statName == skillName)
+                            {
+                                PlayerStatsScript.SkillPoints[statName] = PlayerStatsScript.Skills[statName] * 150;
+                                break;
+                            }
+                        }
+
+                        CreateNewConsoleLine("Successfully set " + statName + " to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    }
+                    else
+                    {
+                        CreateNewConsoleLine("Error: " + statName + " must be between 1 and 100!", "CONSOLE_ERROR_MESSAGE");
+                    }
+                }
+
                 else
                 {
                     CreateNewConsoleLine("Error: Inserted stat name was not found! Type player showstats to list all player stats.", "CONSOLE_ERROR_MESSAGE");
@@ -1480,15 +1848,518 @@ public class Manager_Console : MonoBehaviour
         }
     }
 
+    //list all spawnable item types
+    private void Command_ShowAllItemTypes()
+    {
+        CreateNewConsoleLine("shwe - show all weapons", "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("shar - show all armor", "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("shsh - show all shields", "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("shco - show all consumables", "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("shai - show all alchemy ingredients", "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("shsp - show all spells", "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("sham - show all ammo", "CONSOLE_INFO_MESSAGE");
+        CreateNewConsoleLine("shmi - show all misc items", "CONSOLE_INFO_MESSAGE");
+    }
+    //list all items of the selected item type that start with the selected english alphabet letter
+    private void Command_ShowItemTypeItems(string typeName, char letter)
+    {
+        int foundCount = 0;
+
+        foreach (GameObject item in PlayerMenuScript.templateItems)
+        {
+            Env_Item ItemScript = item.GetComponent<Env_Item>();
+            char firstLetter = item.name.ToCharArray()[0];
+            char lowerCaseLetter = char.ToLower(firstLetter);
+
+            if (letter == lowerCaseLetter)
+            {
+                if ((typeName == "shwe"
+                    && ItemScript.itemType == Env_Item.ItemType.weapon)
+                    || (typeName == "shar"
+                    && ItemScript.itemType == Env_Item.ItemType.armor)
+                    || (typeName == "shsh"
+                    && ItemScript.itemType == Env_Item.ItemType.shield)
+                    || (typeName == "shco"
+                    && ItemScript.itemType == Env_Item.ItemType.consumable)
+                    || (typeName == "shai"
+                    && ItemScript.itemType == Env_Item.ItemType.alchemyIngredient)
+                    || (typeName == "shsp"
+                    && ItemScript.itemType == Env_Item.ItemType.spell)
+                    || (typeName == "sham"
+                    && ItemScript.itemType == Env_Item.ItemType.ammo)
+                    || (typeName == "shmi"
+                    && ItemScript.itemType == Env_Item.ItemType.misc))
+                {
+                    CreateNewConsoleLine(item.name, "CONSOLE_INFO_MESSAGE");
+                    foundCount++;
+                }
+            }
+        }
+
+        if (foundCount == 0)
+        {
+            string type = "";
+            if (typeName == "shwe")
+            {
+                type = "weapons were";
+            }
+            else if (typeName == "shar")
+            {
+                type = "armor was";
+            }
+            else if (typeName == "shsh")
+            {
+                type = "shields were";
+            }
+            else if (typeName == "shco")
+            {
+                type = "consumables were";
+            }
+            else if (typeName == "shai")
+            {
+                type = "alchemy ingredients were";
+            }
+            else if (typeName == "shsp")
+            {
+                type = "spells were";
+            }
+            else if (typeName == "sham")
+            {
+                type = "ammo were";
+            }
+            else if (typeName == "shmi")
+            {
+                type = "misc items were";
+            }
+
+            CreateNewConsoleLine("Error: No " + type + " found with the beginning letter " + letter + "!", "CONSOLE_ERROR_MESSAGE");
+        }
+    }
+    //list all player inventory items and their count
+    private void Command_ShowAllPlayerItems()
+    {
+        if (PlayerInventoryScript.playerItems.Count > 0)
+        {
+            foreach (GameObject item in PlayerInventoryScript.playerItems)
+            {
+                Env_Item ItemScript = item.GetComponent<Env_Item>();
+
+                CreateNewConsoleLine(item.name + " x" + ItemScript.itemCount, "CONSOLE_INFO_MESSAGE");
+            }
+        }
+        else
+        {
+            CreateNewConsoleLine("Player inventory has no items to display.", "CONSOLE_INFO_MESSAGE");
+        }
+    }
+    //add items to player inventory
+    private void Command_AddItem()
+    {
+        var count = separatedWords[3];
+        bool isCountNumber = true;
+        foreach (char c in count)
+        {
+            if (!char.IsDigit(c))
+            {
+                isCountNumber = false;
+                break;
+            }
+        }
+
+        if (isCountNumber)
+        {
+            GameObject targetTemplateItem = null;
+            string itemName = separatedWords[2];
+            int itemCount = int.Parse(separatedWords[3]);
+
+            foreach (GameObject item in PlayerMenuScript.templateItems)
+            {
+                if (itemName == item.name)
+                {
+                    targetTemplateItem = item;
+                    break;
+                }
+            }
+
+            if (targetTemplateItem != null)
+            {
+                if (itemCount >= 1
+                    && itemCount <= 1000000)
+                {
+                    GameObject existingItem = null;
+                    foreach (GameObject item in PlayerInventoryScript.playerItems)
+                    {
+                        if (item.name == itemName
+                            && item.GetComponent<Env_Item>().isStackable)
+                        {
+                            existingItem = item;
+                            break;
+                        }
+                    }
+
+                    Env_Item ItemScript = targetTemplateItem.GetComponent<Env_Item>();
+                    int maxInventorySpace = PlayerStatsScript.maxInvSpace;
+                    int currentInventorySpace = PlayerStatsScript.invSpace;
+                    int totalTakenSpace = ItemScript.itemWeight * itemCount;
+
+                    if ((!ItemScript.isStackable
+                        && itemCount == 1)
+                        || ItemScript.isStackable)
+                    {
+                        if (totalTakenSpace <= maxInventorySpace)
+                        {
+                            if (existingItem != null)
+                            {
+                                existingItem.GetComponent<Env_Item>().itemCount += itemCount;
+                                PlayerStatsScript.invSpace += totalTakenSpace;
+
+                                CreateNewConsoleLine("Successfully added " + itemCount + " " + itemName + "(s) to player inventory!", "CONSOLE_SUCCESS_MESSAGE");
+                            }
+                            else
+                            {
+                                GameObject newItem = Instantiate(targetTemplateItem,
+                                                                 PlayerInventoryScript.par_PlayerItems.transform.position,
+                                                                 Quaternion.identity,
+                                                                 PlayerInventoryScript.par_PlayerItems.transform);
+                                newItem.SetActive(false);
+                                newItem.name = targetTemplateItem.name;
+                                newItem.GetComponent<Env_Item>().itemCount = itemCount;
+
+                                PlayerInventoryScript.playerItems.Add(newItem);
+                                PlayerStatsScript.invSpace += totalTakenSpace;
+
+                                CreateNewConsoleLine("Successfully added " + itemCount + " " + itemName + "(s) to player inventory!", "CONSOLE_SUCCESS_MESSAGE");
+                            }
+                        }
+                        else
+                        {
+                            CreateNewConsoleLine("Error: Not enough inventory space to add " + itemCount + " " + itemName + "(s)!", "CONSOLE_ERROR_MESSAGE");
+                        }
+                    }
+                    else
+                    {
+                        CreateNewConsoleLine("Error: Cannot add more than one of " + itemName + " because it is not stackable!", "CONSOLE_ERROR_MESSAGE");
+                    }
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Cannot spawn more than 1000000 items at once!", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+            else
+            {
+                CreateNewConsoleLine("Error: " + itemName + " is an invalid item name! Type player sait to sort through all spawnable item types.", "CONSOLE_ERROR_MESSAGE");
+            }
+        }
+        else
+        {
+            CreateNewConsoleLine("Error: Item count must be an integer!", "CONSOLE_ERROR_MESSAGE");
+        }
+    }
+    //remove items from player inventory
+    private void Command_RemoveItem()
+    {
+        var count = separatedWords[3];
+        bool isCountNumber = true;
+        foreach (char c in count)
+        {
+            if (!char.IsDigit(c))
+            {
+                isCountNumber = false;
+                break;
+            }
+        }
+
+        if (isCountNumber)
+        {
+            GameObject targetPlayerItem = null;
+            string itemName = separatedWords[2];
+            int itemCount = int.Parse(separatedWords[3]);
+
+            foreach (GameObject item in PlayerInventoryScript.playerItems)
+            {
+                if (itemName == item.name)
+                {
+                    targetPlayerItem = item;
+                    break;
+                }
+            }
+
+            if (targetPlayerItem != null)
+            {
+                if (!targetPlayerItem.GetComponent<Env_Item>().isProtected)
+                {
+                    if (itemCount >= 1
+                        && itemCount <= targetPlayerItem.GetComponent<Env_Item>().itemCount)
+                    {
+                        Env_Item ItemScript = targetPlayerItem.GetComponent<Env_Item>();
+                        int totalTakenWeight = ItemScript.itemWeight * ItemScript.itemCount;
+
+                        if ((!ItemScript.isStackable
+                            && itemCount == 1)
+                            || ItemScript.isStackable)
+                        {
+                            if (itemCount < targetPlayerItem.GetComponent<Env_Item>().itemCount)
+                            {
+                                targetPlayerItem.GetComponent<Env_Item>().itemCount -= itemCount;
+                                PlayerStatsScript.invSpace -= totalTakenWeight;
+
+                                CreateNewConsoleLine("Successfully removed " + itemCount + " " + itemName + "(s) from player inventory!", "CONSOLE_SUCCESS_MESSAGE");
+                            }
+                            else
+                            {
+                                PlayerStatsScript.invSpace -= totalTakenWeight;
+                                PlayerInventoryScript.playerItems.Remove(targetPlayerItem);
+                                Destroy(targetPlayerItem);
+
+                                CreateNewConsoleLine("Successfully removed " + itemCount + " " + itemName + "(s) from player inventory!", "CONSOLE_SUCCESS_MESSAGE");
+                            }
+                        }
+                        else
+                        {
+                            CreateNewConsoleLine("Error: Cannot remove more than one of " + itemName + " because it is not stackable!", "CONSOLE_ERROR_MESSAGE");
+                        }
+                    }
+                    else
+                    {
+                        CreateNewConsoleLine("Error: Cannot remove less than 1 and more than total count of the selected item!", "CONSOLE_ERROR_MESSAGE");
+                    }
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Cannot remove protected items from player inventory!", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+            else
+            {
+                CreateNewConsoleLine("Error: Did not find " + itemName + "(s) from player inventory! Type player sapi to list all player items.", "CONSOLE_ERROR_MESSAGE");
+            }
+        }
+        else
+        {
+            CreateNewConsoleLine("Error: Item count must be an integer!", "CONSOLE_ERROR_MESSAGE");
+        }
+    }
+    //show item stats
+    private void Command_ShowItemStats()
+    {
+        GameObject targetPlayerItem = null;
+        string itemName = separatedWords[2];
+
+        bool isItemIndexInt = int.TryParse(separatedWords[3], out _);
+        if (isItemIndexInt)
+        {
+            List<GameObject> sameItems = new();
+            foreach (GameObject item in PlayerInventoryScript.playerItems)
+            {
+                if (itemName == item.name)
+                {
+                    sameItems.Add(item);
+                }
+            }
+            foreach (GameObject item in sameItems)
+            {
+                if (int.Parse(separatedWords[3]) == sameItems.IndexOf(item))
+                {
+                    targetPlayerItem = item;
+                    break;
+                }
+            }
+        }
+
+        if (targetPlayerItem == null)
+        {
+            CreateNewConsoleLine("Error: Item position or name is invalid! Type player sapi to list all player items.", "CONSOLE_ERROR_MESSAGE");
+        }
+        else
+        {
+            Env_Item ItemScript = targetPlayerItem.GetComponent<Env_Item>();
+            CreateNewConsoleLine("isProtected (not editable): " + ItemScript.isProtected + "", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("isStackable (not editable): " + ItemScript.isStackable + "", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("value: " + ItemScript.itemValue + "", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("weight: " + ItemScript.itemWeight + "", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("count: " + ItemScript.itemCount + "", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("type (not editable): " + ItemScript.itemType.ToString() + "", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("quality (not editable): " + ItemScript.itemQuality.ToString() + "", "CONSOLE_INFO_MESSAGE");
+        }
+    }
+    //set item stat
+    private void Command_SetItemStat()
+    {
+        GameObject targetPlayerItem = null;
+        string itemName = separatedWords[2];
+
+        bool isItemIndexInt = int.TryParse(separatedWords[3], out _);
+        if (isItemIndexInt)
+        {
+            List<GameObject> sameItems = new();
+            foreach (GameObject item in PlayerInventoryScript.playerItems)
+            {
+                if (itemName == item.name)
+                {
+                    sameItems.Add(item);
+                }
+            }
+            foreach (GameObject item in sameItems)
+            {
+                if (int.Parse(separatedWords[3]) == sameItems.IndexOf(item))
+                {
+                    targetPlayerItem = item;
+                    break;
+                }
+            }
+        }
+
+        if (targetPlayerItem == null)
+        {
+            CreateNewConsoleLine("Error: Item position or name is invalid! Type player sapi to list all player items.", "CONSOLE_ERROR_MESSAGE");
+        }
+        else
+        {
+            Env_Item ItemScript = targetPlayerItem.GetComponent<Env_Item>();
+            bool isStatValueInt = int.TryParse(separatedWords[5], out _);
+
+            if (separatedWords[4] != "value"
+                && separatedWords[4] != "weight"
+                && separatedWords[4] != "count")
+            {
+                CreateNewConsoleLine("Error: Stat name " + separatedWords[4] + " is invalid or not editable! Type player shis " + separatedWords[1] + " to list all stats for this item.", "CONSOLE_ERROR_MESSAGE");
+            }
+            else
+            {
+                if (!isStatValueInt)
+                {
+                    CreateNewConsoleLine("Error: Stat value " + separatedWords[4] + " must be an integer!", "CONSOLE_ERROR_MESSAGE");
+                }
+                else
+                {
+                    int statValue = int.Parse(separatedWords[5]);
+                    if (separatedWords[4] == "value")
+                    {
+                        if (statValue >= 0 
+                            && statValue <= 25000)
+                        {
+                            ItemScript.itemValue = statValue;
+                            CreateNewConsoleLine("Successfully set " + separatedWords[2] + " item value to " + statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                        }
+                        else
+                        {
+                            CreateNewConsoleLine("Error: Item value must be between 0 and 25000!", "CONSOLE_ERROR_MESSAGE");
+                        }
+                    }
+                    else if (separatedWords[4] == "weight")
+                    {
+                        if (statValue >= 0
+                            && statValue <= 100)
+                        {
+                            ItemScript.itemWeight = statValue;
+                            CreateNewConsoleLine("Successfully set " + separatedWords[2] + " item weight to " + statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                        }
+                        else
+                        {
+                            CreateNewConsoleLine("Error: Item weight must be between 0 and 100!", "CONSOLE_ERROR_MESSAGE");
+                        }
+                    }
+                    else if (separatedWords[4] == "count")
+                    {
+                        if (ItemScript.isStackable)
+                        {
+                            if (statValue >= 1
+                                && statValue <= 1000000)
+                            {
+                                int currentSingleWeight = ItemScript.itemWeight;
+                                int currentTotalWeight = ItemScript.itemCount * ItemScript.itemWeight;
+                                int currentTakenSpace = PlayerStatsScript.invSpace;
+                                int maxSpace = PlayerStatsScript.maxInvSpace;
+
+                                int availableSpaceWithoutItem = maxSpace - currentTakenSpace - currentTotalWeight;
+                                int availableSpaceWithNewCount = maxSpace - availableSpaceWithoutItem + currentSingleWeight * statValue;
+
+                                if (availableSpaceWithNewCount >= 0)
+                                {
+                                    ItemScript.itemCount = statValue;
+                                    PlayerStatsScript.invSpace = availableSpaceWithNewCount;
+                                    CreateNewConsoleLine("Successfully set " + separatedWords[2] + " item count to " + statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                                }
+                                else
+                                {
+                                    CreateNewConsoleLine("Error: Cannot set item count to " + statValue + " because it would take more space than available space!", "CONSOLE_ERROR_MESSAGE");
+                                }
+                            }
+                            else
+                            {
+                                CreateNewConsoleLine("Error: Item count must be between 0 and 1000000!", "CONSOLE_ERROR_MESSAGE");
+                            }
+                        }
+                        else
+                        {
+                            CreateNewConsoleLine("Error: Cannot edit non-stackable item count!", "CONSOLE_ERROR_MESSAGE");
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     //select target
     private void Command_SelectTarget()
     {
-        CreateNewConsoleLine("Command does not yet have any functions...", "CONSOLE_INFO_MESSAGE");
+        target = null;
+        isSelectingTarget = true;
+        CreateNewConsoleLine("Selecting target...", "CONSOLE_INFO_MESSAGE");
     }
-    //disable selected target
-    private void Command_DisableTarget()
+    //unlock selected target
+    private void Command_UnlockTarget()
     {
-        CreateNewConsoleLine("Command does not yet have any functions...", "CONSOLE_INFO_MESSAGE");
+        if (target == null)
+        {
+            CreateNewConsoleLine("Error: No target selected! Type st to select a target.", "CONSOLE_ERROR_MESSAGE");
+        }
+        else
+        {
+            //unlock respawnable container
+            if (target.GetComponent<UI_Inventory>() 
+                && target.GetComponent<UI_Inventory>().containerType
+                == UI_Inventory.ContainerType.respawnable)
+            {
+                if (!target.GetComponent<Env_LockStatus>().isUnlocked)
+                {
+                    target.GetComponent<Env_LockStatus>().isUnlocked = true;
+                    CreateNewConsoleLine("Successfully unlocked container " + target.GetComponent<UI_Inventory>().containerName + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+                else
+                {
+                    CreateNewConsoleLine("Error: Selected container " + target.GetComponent<UI_Inventory>().containerName + " is already unlocked!", "CONSOLE_ERROR_MESSAGE");
+                }
+            }
+            //unlock door or open gate
+            else if (target.GetComponent<Env_Door>())
+            {
+                Manager_Door DoorManagerScript = target.GetComponent<Env_Door>().DoorManagerScript;
+                if (DoorManagerScript.doorType == Manager_Door.DoorType.door_Single 
+                    || DoorManagerScript.doorType == Manager_Door.DoorType.door_Double)
+                {
+                    if (!DoorManagerScript.GetComponent<Env_LockStatus>().isUnlocked)
+                    {
+                        DoorManagerScript.GetComponent<Env_LockStatus>().isUnlocked = true;
+                        CreateNewConsoleLine("Successfully unlocked " + DoorManagerScript.doorName + "!", "CONSOLE_SUCCESS_MESSAGE");
+                    }
+                    else
+                    {
+                        CreateNewConsoleLine("Error: Selected door " + DoorManagerScript.doorName + " is already unlocked!", "CONSOLE_ERROR_MESSAGE");
+                    }
+                }
+                else if (DoorManagerScript.doorType == Manager_Door.DoorType.gate)
+                {
+                    DoorManagerScript.OpenDoor();
+                    CreateNewConsoleLine("Successfully opened " + DoorManagerScript.doorName + "!", "CONSOLE_SUCCESS_MESSAGE");
+                }
+            }
+            else
+            {
+                CreateNewConsoleLine("Error: Selected target is not an unlockable object!", "CONSOLE_ERROR_MESSAGE");
+            }
+        }
     }
 
     public void HandleLog(string logString, string unusedStackString, LogType type)

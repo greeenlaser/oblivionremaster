@@ -122,7 +122,7 @@ public class Manager_KeyBindings : MonoBehaviour
             //get the assign script from the button
             UI_AssignKey AssignScript = keyButton.GetComponent<UI_AssignKey>();
             //get the info from the script - what will the pressed button do
-            string info = AssignScript.str_Info;
+            string info = AssignScript.info;
 
             //get all keys from key bindings keycodes and convert to string array
             string[] values = new string[KeyBindings.Keys.Count];
@@ -180,7 +180,7 @@ public class Manager_KeyBindings : MonoBehaviour
                 {
                     Button btn = buttonParent.GetComponentInChildren<Button>();
                     string buttonText = btn.GetComponentInChildren<TMP_Text>().text;
-                    string buttonInfo = btn.GetComponentInChildren<UI_AssignKey>().str_Info;
+                    string buttonInfo = btn.GetComponentInChildren<UI_AssignKey>().info;
                     if (buttonInfo == key)
                     {
                         buttonText = "None";
@@ -209,7 +209,7 @@ public class Manager_KeyBindings : MonoBehaviour
             RebuildKeyBindingsList("combat");
         }
 
-        Debug.Log("Sucessfully assigned key " + pressedKey.ToString().Replace("KeyCode.", "") + " to action " + info + "!");
+        Debug.Log("Successfully assigned key " + pressedKey.ToString().Replace("KeyCode.", "") + " to action " + info + "!");
     }
     public void ResetKeyBindings(bool canReset)
     {
@@ -251,8 +251,8 @@ public class Manager_KeyBindings : MonoBehaviour
 
             //assigns default combat key bindings
             KeyBindings["CastSpell"] = KeyCode.C;
-            KeyBindings["UseWeaponOrShootBow"] = KeyCode.Mouse0;
-            KeyBindings["BlockOrAimBow"] = KeyCode.Mouse1;
+            KeyBindings["MainAttack"] = KeyCode.Mouse0;
+            KeyBindings["SideAttack"] = KeyCode.Mouse1;
             KeyBindings["DropEquippedWeapon"] = KeyCode.R;
 
             if (currentScene == 1)
@@ -313,8 +313,8 @@ public class Manager_KeyBindings : MonoBehaviour
 
         keyBindingsFile.WriteLine("---COMBAT KEYBINDS---");
         keyBindingsFile.WriteLine("CastSpell: " + KeyBindings["CastSpell"].ToString().Replace("KeyCode.", ""));
-        keyBindingsFile.WriteLine("UseWeaponOrShootBow: " + KeyBindings["UseWeaponOrShootBow"].ToString().Replace("KeyCode.", ""));
-        keyBindingsFile.WriteLine("BlockOrAimBow: " + KeyBindings["BlockOrAimBow"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("MainAttack: " + KeyBindings["MainAttack"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("SideAttack: " + KeyBindings["SideAttack"].ToString().Replace("KeyCode.", ""));
         keyBindingsFile.WriteLine("DropEquippedWeapon: " + KeyBindings["DropEquippedWeapon"].ToString().Replace("KeyCode.", ""));
 
         Debug.Log("Successfully saved " + KeyBindings.Count + " key bindings!");
@@ -361,8 +361,8 @@ public class Manager_KeyBindings : MonoBehaviour
                     }
                     //load combat key bindings
                     else if (type == "CastSpell"
-                             || type == "UseWeaponOrShootBow"
-                             || type == "BlockOrAimBow"
+                             || type == "MainAttack"
+                             || type == "SideAttack"
                              || type == "DropEquippedWeapon")
                     {
                         KeyBindings[type] = (KeyCode)Enum.Parse(typeof(KeyCode), value);
@@ -378,12 +378,8 @@ public class Manager_KeyBindings : MonoBehaviour
         }
     }
 
-    /*
-    this method checks for all keypresses in the game 
-    and does the actions that were requested 
-    if the pressed key is assigned
-    */
-    public bool GetButtonDown(string buttonName)
+    //checks if key was pressed once
+    public bool GetKeyDown(string buttonName)
     {
         if (!KeyBindings.ContainsKey(buttonName))
         {
@@ -391,14 +387,19 @@ public class Manager_KeyBindings : MonoBehaviour
         }
         else
         {
-            if (buttonName == "Sprint")
-            {
-                return Input.GetKey(KeyBindings[buttonName]);
-            }
-            else
-            {
-                return Input.GetKeyDown(KeyBindings[buttonName]);
-            }
+            return Input.GetKeyDown(KeyBindings[buttonName]);
+        }
+    }
+    //checks if key was held down
+    public bool GetKey(string buttonName)
+    {
+        if (!KeyBindings.ContainsKey(buttonName))
+        {
+            return false;
+        }
+        else
+        {
+            return Input.GetKey(KeyBindings[buttonName]);
         }
     }
 }

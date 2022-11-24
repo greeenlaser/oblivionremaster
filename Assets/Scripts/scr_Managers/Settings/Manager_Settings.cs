@@ -43,14 +43,14 @@ public class Manager_Settings : MonoBehaviour
         res_3840x2160,
         res_5120x1440
     }
-    public UserDefined_FullScreenMode def_FullScreenMode;
+    public UserDefined_FullScreenMode def_FullScreenMode = UserDefined_FullScreenMode.FullScreenWindow;
     [HideInInspector] public UserDefined_FullScreenMode user_FullScreenMode;
     public enum UserDefined_FullScreenMode
     {
-        MaximizedWindow,
         ExclusiveFullScreen,
-        Windowed,
-        FullScreenWindow
+        FullScreenWindow,
+        MaximizedWindow,
+        Windowed
     }
     public int def_FieldOfView = 90;
     [HideInInspector] public int user_FieldOfView;
@@ -100,8 +100,6 @@ public class Manager_Settings : MonoBehaviour
     [HideInInspector] public int user_NPCVolume;
 
     //private variables
-    private float timer;
-    private float deltaTime;
     private int currentScene;
 
     //scripts
@@ -112,6 +110,9 @@ public class Manager_Settings : MonoBehaviour
 
     private void Awake()
     {
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 60;
+
         ConfirmationScript = GetComponent<UI_Confirmation>();
         GameManagerScript = GetComponent<GameManager>();
         UIReuseScript = GetComponent<Manager_UIReuse>();
@@ -124,22 +125,6 @@ public class Manager_Settings : MonoBehaviour
         {
             PlayerCameraScript = playerMainCamera.GetComponent<Player_Camera>();
         }
-    }
-
-    private void Update()
-    {
-        //framerate block beginning
-        deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
-        float msec = Mathf.FloorToInt(deltaTime * 1000.0f);
-        float fps = Mathf.FloorToInt(1.0f / deltaTime);
-
-        timer += Time.unscaledDeltaTime;
-        if (timer > 0.1f)
-        {
-            UIReuseScript.txt_FPS.text = fps + " (" + msec + ")";
-            timer = 0;
-        }
-        //framerate block ending
     }
 
     //set slider limits to all sliders
@@ -165,7 +150,7 @@ public class Manager_Settings : MonoBehaviour
             {
                 Slider slider = par.GetComponentInChildren<Slider>();
                 UI_AssignSettings AssignScript = slider.GetComponent<UI_AssignSettings>();
-                string info = AssignScript.str_Info;
+                string info = AssignScript.info;
 
                 if (info == "Difficulty")
                 {
@@ -231,26 +216,29 @@ public class Manager_Settings : MonoBehaviour
             Slider slider;
             Button button;
 
-            if (buttonUIParent.GetComponentInChildren<TMP_Dropdown>() != null
-                && buttonUIParent.GetComponentInChildren<TMP_Dropdown>().gameObject.activeInHierarchy)
+            foreach (Transform child in buttonUIParent.transform)
             {
-                dropdown = buttonUIParent.GetComponentInChildren<TMP_Dropdown>();
-                dropdown.ClearOptions();
-                AssignEvent(dropdown.gameObject, "dropdown");
-            }
-            else if (buttonUIParent.GetComponentInChildren<Slider>() != null
-                     && buttonUIParent.GetComponentInChildren<Slider>().gameObject.activeInHierarchy)
-            {
-                slider = buttonUIParent.GetComponentInChildren<Slider>();
-                slider.onValueChanged.RemoveAllListeners();
-                AssignEvent(slider.gameObject, "slider");
-            }
-            else if (buttonUIParent.GetComponentInChildren<Button>() != null
-                     && buttonUIParent.GetComponentInChildren<Button>().gameObject.activeInHierarchy)
-            {
-                button = buttonUIParent.GetComponentInChildren<Button>();
-                button.onClick.RemoveAllListeners();
-                AssignEvent(button.gameObject, "button");
+                if (child.name == "dropdown_Settings"
+                    && child.gameObject.activeInHierarchy)
+                {
+                    dropdown = buttonUIParent.GetComponentInChildren<TMP_Dropdown>();
+                    dropdown.ClearOptions();
+                    AssignEvent(dropdown.gameObject, "dropdown");
+                }
+                else if (child.name == "slider_Settings"
+                         && child.gameObject.activeInHierarchy)
+                {
+                    slider = buttonUIParent.GetComponentInChildren<Slider>();
+                    slider.onValueChanged.RemoveAllListeners();
+                    AssignEvent(slider.gameObject, "slider");
+                }
+                else if (child.name == "button_Settings"
+                         && child.gameObject.activeInHierarchy)
+                {
+                    button = buttonUIParent.GetComponentInChildren<Button>();
+                    button.onClick.RemoveAllListeners();
+                    AssignEvent(button.gameObject, "button");
+                }
             }
         }
     }
@@ -259,7 +247,7 @@ public class Manager_Settings : MonoBehaviour
     public void AssignEvent(GameObject target, string targetType)
     {
         UI_AssignSettings AssignScript = target.GetComponent<UI_AssignSettings>();
-        string info = AssignScript.str_Info;
+        string info = AssignScript.info;
 
         if (targetType == "dropdown")
         {
@@ -356,7 +344,7 @@ public class Manager_Settings : MonoBehaviour
             //assign shadow quality choices, current choice and event
             else if (info == "ShadowQuality")
             {
-                List<string> values = new(Enum.GetNames(typeof(ShadowQuality)));
+                List<string> values = new(Enum.GetNames(typeof(UserDefined_ShadowQuality)));
                 dropdown.AddOptions(values);
                 foreach (string res in values)
                 {
@@ -532,7 +520,7 @@ public class Manager_Settings : MonoBehaviour
     public void DropdownEvent(TMP_Dropdown target)
     {
         UI_AssignSettings SettingsScript = target.GetComponent<UI_AssignSettings>();
-        string info = SettingsScript.str_Info;
+        string info = SettingsScript.info;
 
         string newValue = target.value.ToString();
 
@@ -561,7 +549,7 @@ public class Manager_Settings : MonoBehaviour
     public void SliderEvent(Slider target, TMP_Text sliderText)
     {
         UI_AssignSettings SettingsScript = target.GetComponent<UI_AssignSettings>();
-        string info = SettingsScript.str_Info;
+        string info = SettingsScript.info;
 
         if (info == "Difficulty"         //general settings
             || info == "MouseSpeed"
@@ -585,7 +573,7 @@ public class Manager_Settings : MonoBehaviour
     public void ButtonEvent(Button target)
     { 
         UI_AssignSettings SettingsScript = target.GetComponent<UI_AssignSettings>();
-        string info = SettingsScript.str_Info;
+        string info = SettingsScript.info;
         if (info == "VSyncState")
         {
             if (target.GetComponentInChildren<TMP_Text>().text == "true")
@@ -680,11 +668,11 @@ public class Manager_Settings : MonoBehaviour
             user_EnableVSync = def_EnableVsync;
             if (user_EnableVSync == "true")
             {
-                QualitySettings.vSyncCount = 1;
+                Application.targetFrameRate = 60;
             }
             else if (user_EnableVSync == "false")
             {
-                QualitySettings.vSyncCount = 0;
+                Application.targetFrameRate = 999;
             }
 
             //reset texture quality
@@ -777,33 +765,33 @@ public class Manager_Settings : MonoBehaviour
 
         foreach (GameObject par in parents)
         {
-            TMP_Dropdown dropDown = null;
+            Dropdown dropDown = null;
             Slider slider = null;
             Button button = null;
 
             UI_AssignSettings AssignScript;
             string info = "";
 
-            if (par.GetComponentInChildren<TMP_Dropdown>() != null
-                && par.GetComponentInChildren<TMP_Dropdown>().gameObject.activeInHierarchy)
+            if (par.GetComponentInChildren<Dropdown>() != null
+                && par.GetComponentInChildren<Dropdown>().gameObject.activeInHierarchy)
             {
-                dropDown = par.GetComponentInChildren<TMP_Dropdown>();
+                dropDown = par.GetComponentInChildren<Dropdown>();
                 AssignScript = dropDown.GetComponent<UI_AssignSettings>();
-                info = AssignScript.str_Info;
+                info = AssignScript.info;
             }
             else if (par.GetComponentInChildren<Slider>() != null
                      && par.GetComponentInChildren<Slider>().gameObject.activeInHierarchy)
             {
                 slider = par.GetComponentInChildren<Slider>();
                 AssignScript = slider.GetComponent<UI_AssignSettings>();
-                info = AssignScript.str_Info;
+                info = AssignScript.info;
             }
             else if (par.GetComponentInChildren<Button>() != null
                      && par.GetComponentInChildren<Button>().gameObject.activeInHierarchy)
             {
                 button = par.GetComponentInChildren<Button>();
                 AssignScript = button.GetComponent<UI_AssignSettings>();
-                info = AssignScript.str_Info;
+                info = AssignScript.info;
             }
 
             //general settings
@@ -829,6 +817,7 @@ public class Manager_Settings : MonoBehaviour
             {
                 //TODO: assign preset
                 string dropDownValue = dropDown.options[dropDown.value].ToString();
+                Debug.Log(dropDownValue);
                 user_Preset = (UserDefined_Preset)Enum.Parse(typeof(UserDefined_Preset), dropDownValue);
             }
             //apply resolution and fullscreen mode
@@ -870,11 +859,11 @@ public class Manager_Settings : MonoBehaviour
                 user_EnableVSync = button.GetComponentInChildren<TMP_Text>().text;
                 if (user_EnableVSync == "true")
                 {
-                    QualitySettings.vSyncCount = 1;
+                    Application.targetFrameRate = 60;
                 }
                 else if (user_EnableVSync == "false")
                 {
-                    QualitySettings.vSyncCount = 0;
+                    Application.targetFrameRate = 999;
                 }
             }
             else if (info == "TextureQuality")
@@ -1012,7 +1001,7 @@ public class Manager_Settings : MonoBehaviour
             foreach (Transform parent in parents)
             {
                 UI_AssignSettings AssignScript = parent.transform.GetComponentInChildren<UI_AssignSettings>();
-                string info = AssignScript.str_Info;
+                string info = AssignScript.info;
 
                 foreach (string line in File.ReadLines(settingsFilePath))
                 {
@@ -1087,11 +1076,11 @@ public class Manager_Settings : MonoBehaviour
                                 user_EnableVSync = value;
                                 if (user_EnableVSync == "true")
                                 {
-                                    QualitySettings.vSyncCount = 1;
+                                    Application.targetFrameRate = 60;
                                 }
                                 else if (user_EnableVSync == "false")
                                 {
-                                    QualitySettings.vSyncCount = 0;
+                                    Application.targetFrameRate = 999;
                                 }
                             }
                             else if (type == "TextureQuality")

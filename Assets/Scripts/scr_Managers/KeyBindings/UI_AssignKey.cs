@@ -1,31 +1,39 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UI_AssignKey : MonoBehaviour
 {
     [Header("Assignables")]
-    public string str_Info;
     [SerializeField] private GameObject par_Managers;
 
     //public but hidden variables
+    [HideInInspector] public string info;
     [HideInInspector] public KeyCode pressedKey;
 
     //private variables
     private bool isAssignUIOpen;
     private float timer;
     private UI_PauseMenu PauseMenuScript;
-    private Manager_Console ConsoleScript;
     private Manager_KeyBindings KeyBindingsScript;
     private Manager_UIReuse UIReuseScript;
 
     private void Awake()
     {
         PauseMenuScript = par_Managers.GetComponent<UI_PauseMenu>();
-        ConsoleScript = par_Managers.GetComponent<Manager_Console>();
         KeyBindingsScript = par_Managers.GetComponent<Manager_KeyBindings>();
         UIReuseScript = par_Managers.GetComponent<Manager_UIReuse>();
+
+        foreach (Transform item in transform.parent)
+        {
+            if (item.name == "txt_KeyBinding")
+            {
+                info = item.GetComponent<TMP_Text>().text;
+                break;
+            }
+        }
     }
 
     private void Update()
@@ -33,7 +41,7 @@ public class UI_AssignKey : MonoBehaviour
         if (isAssignUIOpen)
         {
             timer -= Time.unscaledDeltaTime;
-            UIReuseScript.txt_AssignKey.text = "Assigning key to " + str_Info + ". Press any key to assign it to this function or wait " + (int)timer + " second(s) for the assign UI to close by itself.";
+            UIReuseScript.txt_AssignKey.text = "Assigning key to " + info + ". Press any key to assign it to this function or wait " + (int)timer + " second(s) for the assign UI to close by itself.";
 
             if (timer <= 0)
             {
@@ -54,7 +62,7 @@ public class UI_AssignKey : MonoBehaviour
                 {
                     KeyBindingsScript.AssignKey(gameObject.GetComponent<Button>(),
                                                 pressedKey,
-                                                str_Info);
+                                                info);
                     CloseAssigning();
                 }
             }
@@ -63,8 +71,7 @@ public class UI_AssignKey : MonoBehaviour
 
     public void OpenAssigning()
     {
-        PauseMenuScript.canTogglePMUI = false;
-        ConsoleScript.canToggleConsole = false;
+        PauseMenuScript.isKeyAssignUIOpen = true;
 
         UIReuseScript.par_KeyAssign.SetActive(true);
 
@@ -75,8 +82,7 @@ public class UI_AssignKey : MonoBehaviour
     }
     public void CloseAssigning()
     {
-        PauseMenuScript.canTogglePMUI = true;
-        ConsoleScript.canToggleConsole = true;
+        PauseMenuScript.isKeyAssignUIOpen = false;
 
         UIReuseScript.par_KeyAssign.SetActive(false);
 
