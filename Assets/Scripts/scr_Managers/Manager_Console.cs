@@ -9,6 +9,7 @@ using UnityEngine.SceneManagement;
 using static Manager_Settings;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using System.Reflection;
+using UnityEditor;
 
 public class Manager_Console : MonoBehaviour
 {
@@ -1487,7 +1488,13 @@ public class Manager_Console : MonoBehaviour
     //quit game
     private void Command_Quit()
     {
+        #if UNITY_EDITOR
+        EditorApplication.ExitPlaymode();
+        #endif
+
+        #if UNITY_STANDALONE
         Application.Quit();
+        #endif
     }
 
     //teleport player to xyz coordinates

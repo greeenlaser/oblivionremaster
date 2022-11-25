@@ -668,13 +668,84 @@ public class Manager_GameSaving : MonoBehaviour
                     //set reset time
                     if (type == "DaysSinceReset")
                     {
-                        DateAndTimeScript.daysSinceLastRestart = int.Parse(values[0]);
+                        bool isInt = int.TryParse(values[0], out _);
+                        if (isInt)
+                        {
+                            if (int.Parse(values[0]) >= 0
+                                && int.Parse(values[0]) <= 3)
+                            {
+                                DateAndTimeScript.daysSinceLastRestart = int.Parse(values[0]);
+                            }
+                            else
+                            {
+                                Manager_ForceQuit.ForceQuit("Days since restart",
+                                                            "",
+                                                            "game saving script " + SaveFileName + " save file",
+                                                            "is out of range");
+                            }
+                        }
+                        else
+                        {
+                            Manager_ForceQuit.ForceQuit("Days since restart",
+                                                        "",
+                                                        "game saving script " + SaveFileName + " save file",
+                                                        "is not allowed");
+                        }
                     }
                     //load time
                     else if (type == "TimeAndDate")
                     {
-                        int min = int.Parse(values[0]);
-                        int hr = int.Parse(values[1]);
+                        int min = 0;
+                        int hr = 0;
+
+                        bool isMinInt = int.TryParse(values[0], out _);
+                        bool isHourInt = int.TryParse(values[1], out _);
+                        if (isHourInt)
+                        {
+                            if (int.Parse(values[1]) >= 0 
+                                && int.Parse(values[1]) <= 24)
+                            {
+                                hr = int.Parse(values[1]);
+                            }
+                            else
+                            {
+                                Manager_ForceQuit.ForceQuit("Time and date",
+                                                            " hour",
+                                                            "game saving script " + SaveFileName + " save file",
+                                                            "is out of range");
+                            }
+                        }
+                        else
+                        {
+                            Manager_ForceQuit.ForceQuit("Time and date",
+                                                        " hour",
+                                                        "game saving script " + SaveFileName + " save file",
+                                                        "is not allowed");
+                        }
+
+                        foreach (char c in values[2])
+                        {
+                            if (char.IsDigit(c))
+                            {
+                                Manager_ForceQuit.ForceQuit("Time and date",
+                                                            " day",
+                                                            "game saving script " + SaveFileName + " save file",
+                                                            "is not allowed");
+                            }
+                        }
+                        foreach (char c in values[3])
+                        {
+                            if (char.IsDigit(c))
+                            {
+                                Manager_ForceQuit.ForceQuit("Time and date",
+                                                            " month",
+                                                            "game saving script " + SaveFileName + " save file",
+                                                            "is not allowed");
+                            }
+                        }
+
+                        min = int.Parse(values[0]);
+                        
                         string date = values[2];
                         string month = values[3];
 
