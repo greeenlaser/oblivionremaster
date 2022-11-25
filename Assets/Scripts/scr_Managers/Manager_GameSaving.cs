@@ -678,76 +678,146 @@ public class Manager_GameSaving : MonoBehaviour
                             }
                             else
                             {
-                                Manager_ForceQuit.ForceQuit("Days since restart",
-                                                            "",
-                                                            "game saving script " + SaveFileName + " save file",
-                                                            "is out of range");
+                                Debug.LogError("Error: Days since restart value is out of range! Resetting to default value.");
+                                DateAndTimeScript.daysSinceLastRestart = 3;
                             }
                         }
                         else
                         {
-                            Manager_ForceQuit.ForceQuit("Days since restart",
-                                                        "",
-                                                        "game saving script " + SaveFileName + " save file",
-                                                        "is not allowed");
+                            Debug.LogError("Error: Days since restart value is invalid! Resetting to default value.");
+                            DateAndTimeScript.daysSinceLastRestart = 3;
                         }
                     }
                     //load time
                     else if (type == "TimeAndDate")
                     {
+                        //minute
                         int min = 0;
-                        int hr = 0;
-
                         bool isMinInt = int.TryParse(values[0], out _);
+                        if (isMinInt)
+                        {
+                            if (int.Parse(values[0]) >= 0
+                                && int.Parse(values[0]) <= 59)
+                            {
+                                min = int.Parse(values[0]);
+                            }
+                            else
+                            {
+                                Debug.LogError("Error: Time and date minute value is out of range! Resetting to default value.");
+                                min = 0;
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError("Error: Time and date minute value is invalid! Resetting to default value.");
+                            min = 0;
+                        }
+
+                        //hour
+                        int hr = 0;
                         bool isHourInt = int.TryParse(values[1], out _);
                         if (isHourInt)
                         {
                             if (int.Parse(values[1]) >= 0 
-                                && int.Parse(values[1]) <= 24)
+                                && int.Parse(values[1]) <= 23)
                             {
                                 hr = int.Parse(values[1]);
                             }
                             else
                             {
-                                Manager_ForceQuit.ForceQuit("Time and date",
-                                                            " hour",
-                                                            "game saving script " + SaveFileName + " save file",
-                                                            "is out of range");
+                                Debug.LogError("Error: Time and date hour value is out of range! Resetting to default value.");
+                                hr = 12;
                             }
                         }
                         else
                         {
-                            Manager_ForceQuit.ForceQuit("Time and date",
-                                                        " hour",
-                                                        "game saving script " + SaveFileName + " save file",
-                                                        "is not allowed");
+                            Debug.LogError("Error: Time and date hour value is invalid! Resetting to default value.");
+                            hr = 12;
                         }
 
-                        foreach (char c in values[2])
-                        {
-                            if (char.IsDigit(c))
-                            {
-                                Manager_ForceQuit.ForceQuit("Time and date",
-                                                            " day",
-                                                            "game saving script " + SaveFileName + " save file",
-                                                            "is not allowed");
-                            }
-                        }
+                        //month
+                        string month = "";
+                        bool foundBadMonthChar = false;
                         foreach (char c in values[3])
                         {
                             if (char.IsDigit(c))
                             {
-                                Manager_ForceQuit.ForceQuit("Time and date",
-                                                            " month",
-                                                            "game saving script " + SaveFileName + " save file",
-                                                            "is not allowed");
+                                foundBadMonthChar = true;
+                                break;
                             }
                         }
+                        if (!foundBadMonthChar)
+                        {
+                            bool foundCorrectMonthName = false;
+                            foreach (KeyValuePair<string, int> theMonth in DateAndTimeScript.Months)
+                            {
+                                string monthName = theMonth.Key;
+                                if (month == monthName)
+                                {
+                                    foundCorrectMonthName = true;
+                                    break;
+                                }
+                            }
+                            if (foundCorrectMonthName)
+                            {
+                                month = values[3];
+                            }
+                            else
+                            {
+                                Debug.LogError("Error: Time and date month value is invalid! Resetting to default value.");
+                                month = "Last Seed";
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError("Error: Time and date month value is invalid! Resetting to default value.");
+                            month = "Last Seed";
+                        }
 
-                        min = int.Parse(values[0]);
-                        
-                        string date = values[2];
-                        string month = values[3];
+                        //day
+                        string date = "";
+                        bool foundDayName = false;
+                        string[] splitDate = values[2].Split(' ');
+                        int dayNumber = int.Parse(splitDate[0]);
+                        string dayName = splitDate[1];
+                        foreach (string theDayName in DateAndTimeScript.Days)
+                        {
+                            if (dayName == theDayName)
+                            {
+                                foundDayName = true;
+                                break;
+                            }
+                        }
+                        if (foundDayName)
+                        {
+                            bool isCurrentMonthDayInRange = false;
+                            foreach (KeyValuePair<string, int> theMonth in DateAndTimeScript.Months)
+                            {
+                                string monthName = theMonth.Key;
+                                int monthMaxdays = theMonth.Value;
+                                if (month == monthName
+                                    && dayNumber <= monthMaxdays
+                                    && dayNumber >= 1)
+                                {
+                                    isCurrentMonthDayInRange = true;
+                                    break;
+                                }
+                            }
+                            if (isCurrentMonthDayInRange)
+                            {
+                                date = values[2];
+                            }
+                            else
+                            {
+                                Debug.LogError("Error: Time and date day value is out of range! Resetting to default value.");
+                                date = "27 Morndas";
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError("Error: Time and date day value is invalid! Resetting to default value.");
+                            date = "27 Morndas";
+                        }
 
                         DateAndTimeScript.SetDateAndTime(min, hr, date, month);
                     }

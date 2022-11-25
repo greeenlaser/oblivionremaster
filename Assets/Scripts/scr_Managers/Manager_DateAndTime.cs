@@ -18,11 +18,11 @@ public class Manager_DateAndTime : MonoBehaviour
     [HideInInspector] public string monthName;
 
     //day and month names
-    private readonly string[] Days = new string[]
+    public readonly string[] Days = new string[]
     {
         "Morndas", "Tirdas", "Middas", "Turdas", "Fredas", "Loredas", "Sundas"
     };
-    private readonly Dictionary<string, int> Months = new();
+    public readonly Dictionary<string, int> Months = new();
 
     //private variables
     private bool moveSun;
