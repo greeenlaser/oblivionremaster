@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
+using Palmmedia.ReportGenerator.Core.Reporting.Builders;
 
 public class Manager_KeyBindings : MonoBehaviour
 {
@@ -34,6 +35,23 @@ public class Manager_KeyBindings : MonoBehaviour
     //private variables
     private string settingsPath;
     private int currentScene;
+    private readonly string[] keycodes = new string[]
+    {
+        "None", "Backspace", "Tab", "Clear", "Return", "Pause", "Escape", "Space", "Exclaim", "DoubleQuote", "Hash", "Dollar", "Ampersand",
+        "Quote", "LeftParen", "RightParen", "Asterisk", "Plus", "Comma", "Minus", "Period", "Slash",
+        "Alpha0", "Alpha1", "Alpha2", "Alpha3", "Alpha4", "Alpha5", "Alpha6", "Alpha7", "Alpha8", "Alpha9",
+        "Colon", "Semicolon", "Less", "Equals", "Greater", "Question", "At", "LeftBracket", "Backslash", "RightBracket", "Caret", "Underscore", "BackQuote",
+        "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+        "Delete", "Keypad0", "Keypad1", "Keypad2", "Keypad3", "Keypad4", "Keypad5", "Keypad6", "Keypad7", "Keypad8", "Keypad9",
+        "KeypadPeriod", "KeypadDivide", "KeypadMultiply", "KeypadMinus",  "KeypadPlus", "KeypadEnter", "KeypadEquals",
+        "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown",
+        "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15",
+        "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt",
+        "RightApple", "RightCommand", "LeftApple", "LeftCommand", "LeftWindows", "RightWindows", "AltGr", "Help", "Print", "SysReq", "Break", "Menu",
+        "Mouse0", "Mouse1", "Mouse2", "Mouse3", "Mouse4", "Mouse5", "Mouse6"
+    };
+
+    //scripts
     private UI_Confirmation ConfirmationScript;
     private GameManager GameManagerScript;
     private Manager_UIReuse UIReuseScript;
@@ -335,37 +353,53 @@ public class Manager_KeyBindings : MonoBehaviour
                 {
                     string[] valueSplit = line.Split(':');
                     string type = valueSplit[0];
-                    string value = valueSplit[1];
+                    string value = valueSplit[1].Replace(" ", "");
 
-                    //load general key bindings
-                    if (type == "Save"
-                        || type == "Load"
-                        || type == "TogglePauseMenu"
-                        || type == "ToggleConsole"
-                        || type == "TogglePlayerMenu"
-                        || type == "PickUpOrInteract")
+                    bool foundCorrectKeycode = false;
+                    foreach (string keycode in keycodes)
                     {
-                        KeyBindings[type] = (KeyCode)Enum.Parse(typeof(KeyCode), value);
+                        if (keycode == value)
+                        {
+                            foundCorrectKeycode = true;
+                            break;
+                        }
                     }
-                    //load movement key bindings
-                    else if (type == "WalkForwards"
-                             || type == "WalkBackwards"
-                             || type == "WalkLeft"
-                             || type == "WalkRight"
-                             || type == "Jump"
-                             || type == "Sprint"
-                             || type == "Crouch"
-                             || type == "ToggleFirstAndThirdPerson")
+                    if (foundCorrectKeycode)
                     {
-                        KeyBindings[type] = (KeyCode)Enum.Parse(typeof(KeyCode), value);
+                        //load general key bindings
+                        if (type == "Save"
+                            || type == "Load"
+                            || type == "TogglePauseMenu"
+                            || type == "ToggleConsole"
+                            || type == "TogglePlayerMenu"
+                            || type == "PickUpOrInteract")
+                        {
+                            KeyBindings[type] = (KeyCode)Enum.Parse(typeof(KeyCode), value);
+                        }
+                        //load movement key bindings
+                        else if (type == "WalkForwards"
+                                 || type == "WalkBackwards"
+                                 || type == "WalkLeft"
+                                 || type == "WalkRight"
+                                 || type == "Jump"
+                                 || type == "Sprint"
+                                 || type == "Crouch"
+                                 || type == "ToggleFirstAndThirdPerson")
+                        {
+                            KeyBindings[type] = (KeyCode)Enum.Parse(typeof(KeyCode), value);
+                        }
+                        //load combat key bindings
+                        else if (type == "CastSpell"
+                                 || type == "MainAttack"
+                                 || type == "SideAttack"
+                                 || type == "DropEquippedWeapon")
+                        {
+                            KeyBindings[type] = (KeyCode)Enum.Parse(typeof(KeyCode), value);
+                        }
                     }
-                    //load combat key bindings
-                    else if (type == "CastSpell"
-                             || type == "MainAttack"
-                             || type == "SideAttack"
-                             || type == "DropEquippedWeapon")
+                    else
                     {
-                        KeyBindings[type] = (KeyCode)Enum.Parse(typeof(KeyCode), value);
+                        Debug.LogError("Error: " + type + " name in key bindings file is invalid! Resetting to default value.");
                     }
                 }
             }

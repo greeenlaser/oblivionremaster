@@ -903,13 +903,13 @@ public class Manager_GameSaving : MonoBehaviour
                             }
                             else
                             {
-                                Debug.LogError("Error: Inserted level required points value in game save " + saveFileName + " is out of range! Resetting to default value.");
+                                Debug.LogError("Error: Level required points value in game save " + saveFileName + " is out of range! Resetting to default value.");
                                 PlayerStatsScript.level_PointsToNextLevel = PlayerStatsScript.level * 500;
                             }
                         }
                         else
                         {
-                            Debug.LogError("Error: Inserted level value in game save " + saveFileName + " is out of range! Resetting to default value.");
+                            Debug.LogError("Error: Level value in game save " + saveFileName + " is out of range! Resetting to default value.");
                             PlayerStatsScript.level = 1;
                         }
                     }
@@ -930,14 +930,14 @@ public class Manager_GameSaving : MonoBehaviour
                         }
                         else
                         {
-                            Debug.LogError("Error: Inserted " + type + " value in game save " + saveFileName + " is invalid! Resetting to default value.");
+                            Debug.LogError("Error: " + type + " value in game save " + saveFileName + " is invalid! Resetting to default value.");
                             insertedValue = 100;
                         }
                         
                         if (insertedValue < 1
                             || insertedValue > 1000000)
                         {
-                            Debug.LogError("Error: Inserted " + type + " value in game save " + saveFileName + " is out of range! Resetting to default value.");
+                            Debug.LogError("Error: " + type + " value in game save " + saveFileName + " is out of range! Resetting to default value.");
                             insertedValue = 100;
                         }
 
@@ -997,7 +997,7 @@ public class Manager_GameSaving : MonoBehaviour
                             }
                             else
                             {
-                                Debug.LogError("Error: Inserted max inventory space value in game save " + saveFileName + " is out of range! Setting to inventory space value.");
+                                Debug.LogError("Error: Max inventory space value in game save " + saveFileName + " is out of range! Setting to inventory space value.");
                             }
                         }
                     }
@@ -1029,12 +1029,12 @@ public class Manager_GameSaving : MonoBehaviour
                                 || insertedValue > 10)
                             {
                                 insertedValue = 1;
-                                Debug.LogError("Error: Inserted " + type + " attribute level in game save " + saveFileName + " is out of range! Resetting to default value.");
+                                Debug.LogError("Error: " + type + " attribute level in game save " + saveFileName + " is out of range! Resetting to default value.");
                             }
                         }
                         else
                         {
-                            Debug.LogError("Error: Inserted " + type + " attribute level in game save " + saveFileName + " is invalid! Resetting to default value.");
+                            Debug.LogError("Error: " + type + " attribute level in game save " + saveFileName + " is invalid! Resetting to default value.");
                             insertedValue = 1;
                         }
 
@@ -1082,12 +1082,12 @@ public class Manager_GameSaving : MonoBehaviour
                                 || insertedSkillLevel > 10)
                             {
                                 insertedSkillLevel = 1;
-                                Debug.LogError("Error: Inserted " + type + " skill level in game save " + saveFileName + " is out of range! Resetting to default value.");
+                                Debug.LogError("Error: " + type + " skill level in game save " + saveFileName + " is out of range! Resetting to default value.");
                             }
                         }
                         else
                         {
-                            Debug.LogError("Error: Inserted " + type + " skill level in game save " + saveFileName + " is invalid! Resetting to default value.");
+                            Debug.LogError("Error: " + type + " skill level in game save " + saveFileName + " is invalid! Resetting to default value.");
                             insertedSkillLevel = 1;
                         }
 
@@ -1119,12 +1119,12 @@ public class Manager_GameSaving : MonoBehaviour
                                 || insertedSkillpoints > PlayerStatsScript.Skills[type] * 150)
                             {
                                 insertedSkillpoints = 1;
-                                Debug.LogError("Error: Inserted " + type + " skill points value in game save " + saveFileName + " is out of range! Resetting to default value.");
+                                Debug.LogError("Error: " + type + " skill points value in game save " + saveFileName + " is out of range! Resetting to default value.");
                             }
                         }
                         else
                         {
-                            Debug.LogError("Error: Inserted " + type + " skill points value in game save " + saveFileName + " is invalid! Resetting to default value.");
+                            Debug.LogError("Error: " + type + " skill points value in game save " + saveFileName + " is invalid! Resetting to default value.");
                             insertedSkillpoints = PlayerStatsScript.Skills[type] * 150;
                         }
 
