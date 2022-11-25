@@ -306,7 +306,6 @@ public class Manager_KeyBindings : MonoBehaviour
         using StreamWriter keyBindingsFile = File.CreateText(filePath);
 
         keyBindingsFile.WriteLine("Save file for " + UIReuseScript.txt_GameVersion.text + ".");
-        keyBindingsFile.WriteLine("WARNING - Invalid values will break the game - edit at your own risk!");
         keyBindingsFile.WriteLine("");
 
         keyBindingsFile.WriteLine("---GENERAL KEYBINDS---");

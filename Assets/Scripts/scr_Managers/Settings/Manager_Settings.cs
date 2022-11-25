@@ -746,7 +746,6 @@ public class Manager_Settings : MonoBehaviour
         using StreamWriter settingsFile = File.CreateText(filePath);
 
         settingsFile.WriteLine("Settings file for " + UIReuseScript.txt_GameVersion.text + ".");
-        settingsFile.WriteLine("WARNING - Invalid values will break the game - edit at your own risk!");
         settingsFile.WriteLine("");
 
         List<GameObject> parents = new();
