@@ -1017,28 +1017,125 @@ public class Manager_Settings : MonoBehaviour
                             if (type == "Difficulty")
                             {
                                 //TODO: assign difficulty
-                                user_Difficulty = int.Parse(value);
+                                int insertedValue;
+                                bool isInt = int.TryParse(value, out _);
+                                if (isInt)
+                                {
+                                    insertedValue = int.Parse(value);
+                                    if (insertedValue >= -100
+                                        && insertedValue < 100)
+                                    {
+                                        user_Difficulty = insertedValue;
+                                    }
+                                    else
+                                    {
+                                        Debug.LogError("Error: Inserted " + type + " value in settings file is out of range! Resetting to default value.");
+                                        user_Difficulty = def_Difficulty;
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.LogError("Error: Inserted " + type + " value in settings file is invalid! Resetting to default value.");
+                                    user_Difficulty = def_Difficulty;
+                                }
                             }
                             else if (type == "MouseSpeed")
                             {
-                                user_MouseSpeed = int.Parse(value);
-                                PlayerCameraScript.sensX = user_MouseSpeed;
-                                PlayerCameraScript.sensY = user_MouseSpeed;
+                                int insertedValue;
+                                bool isInt = int.TryParse(value, out _);
+                                if (isInt)
+                                {
+                                    insertedValue = int.Parse(value);
+                                    if (insertedValue >= 1
+                                        && insertedValue <= 100)
+                                    {
+                                        user_MouseSpeed = insertedValue;
+                                    }
+                                    else
+                                    {
+                                        Debug.LogError("Error: Inserted " + type + " value in settings file is invalid! Resetting to default value.");
+                                        user_MouseSpeed = def_MouseSpeed;
+                                        PlayerCameraScript.sensX = user_MouseSpeed;
+                                        PlayerCameraScript.sensY = user_MouseSpeed;
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.LogError("Error: Inserted " + type + " value in settings file is invalid! Resetting to default value.");
+                                    user_MouseSpeed = def_MouseSpeed;
+                                    PlayerCameraScript.sensX = user_MouseSpeed;
+                                    PlayerCameraScript.sensY = user_MouseSpeed;
+                                }
                             }
 
                             //graphics settings
                             else if (type == "Preset")
                             {
                                 //TODO: apply preset
-                                user_Preset = (UserDefined_Preset)Enum.Parse(typeof(UserDefined_Preset), value);
+
+                                string[] presetNames = Enum.GetNames(typeof(UserDefined_Preset));
+                                bool foundCorrectPresetName = false;
+                                foreach (string presetName in presetNames)
+                                {
+                                    if (presetName == value)
+                                    {
+                                        foundCorrectPresetName = true;
+                                        break;
+                                    }
+                                }
+                                if (foundCorrectPresetName)
+                                {
+                                    user_Preset = (UserDefined_Preset)Enum.Parse(typeof(UserDefined_Preset), value);
+                                }
+                                else
+                                {
+                                    Debug.LogError("Error: Inserted " + type + " value in settings file is invalid! Resetting to default value.");
+                                    user_Preset = def_Preset;
+                                }
                             }
                             else if (info == "Resolution")
                             {
-                                user_Resolution = (UserDefined_Resolution)Enum.Parse(typeof(UserDefined_Resolution), "res_" + value);
+                                string[] resolutions = Enum.GetNames(typeof(UserDefined_Resolution));
+                                bool foundCorrectResolution = false;
+                                foreach (string res in resolutions)
+                                {
+                                    if (res.Replace("res_", "") == value)
+                                    {
+                                        foundCorrectResolution = true;
+                                        break;
+                                    }
+                                }
+                                if (foundCorrectResolution)
+                                {
+                                    user_Resolution = (UserDefined_Resolution)Enum.Parse(typeof(UserDefined_Resolution), "res_" + value);
+                                }
+                                else
+                                {
+                                    Debug.LogError("Error: Inserted " + type + " value in settings file is invalid! Resetting to default value.");
+                                    user_Resolution = def_Resolution;
+                                }
                             }
                             else if (info == "FullScreenMode")
                             {
-                                user_FullScreenMode = (UserDefined_FullScreenMode)Enum.Parse(typeof(UserDefined_FullScreenMode), value);
+                                string[] fullscreenModes = Enum.GetNames(typeof(UserDefined_FullScreenMode));
+                                bool foundCorrectFullscreenMode = false;
+                                foreach (string mode in fullscreenModes)
+                                {
+                                    if (mode == value)
+                                    {
+                                        foundCorrectFullscreenMode = true;
+                                        break;
+                                    }
+                                }
+                                if (foundCorrectFullscreenMode)
+                                {
+                                    user_FullScreenMode = (UserDefined_FullScreenMode)Enum.Parse(typeof(UserDefined_FullScreenMode), value);
+                                }
+                                else
+                                {
+                                    Debug.LogError("Error: Inserted " + type + " value in settings file is invalid! Resetting to default value.");
+                                    user_FullScreenMode = def_FullScreenMode;
+                                }
 
                                 //apply resolution and fullscreen mode
                                 string resolution = user_Resolution.ToString();
@@ -1068,12 +1165,44 @@ public class Manager_Settings : MonoBehaviour
                             }
                             else if (type == "FieldOfView")
                             {
-                                user_FieldOfView = int.Parse(value);
-                                playerMainCamera.GetComponent<Camera>().fieldOfView = user_FieldOfView;
+                                int insertedValue;
+                                bool isInt = int.TryParse(value, out _);
+                                if (isInt)
+                                {
+                                    insertedValue = int.Parse(value);
+                                    if (insertedValue >= 70
+                                        && insertedValue <= 110)
+                                    {
+                                        user_FieldOfView = insertedValue;
+                                        playerMainCamera.GetComponent<Camera>().fieldOfView = user_FieldOfView;
+                                    }
+                                    else
+                                    {
+                                        Debug.LogError("Error: Inserted " + type + " value in settings file is out of range! Resetting to default value.");
+                                        user_FieldOfView = def_FieldOfView;
+                                        playerMainCamera.GetComponent<Camera>().fieldOfView = user_FieldOfView;
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.LogError("Error: Inserted " + type + " value in settings file is invalid! Resetting to default value.");
+                                    user_FieldOfView = def_FieldOfView;
+                                    playerMainCamera.GetComponent<Camera>().fieldOfView = user_FieldOfView;
+                                }
                             }
                             else if (type == "VSyncState")
                             {
-                                user_EnableVSync = value;
+                                if (value == "true"
+                                    || value == "false")
+                                {
+                                    user_EnableVSync = value;
+                                }
+                                else
+                                {
+                                    Debug.LogError("Error: Inserted " + type + " value in settings file is invalid! Resetting to default value.");
+                                    user_EnableVSync = def_EnableVsync;
+                                }
+
                                 if (user_EnableVSync == "true")
                                 {
                                     Application.targetFrameRate = 60;
@@ -1086,69 +1215,338 @@ public class Manager_Settings : MonoBehaviour
                             else if (type == "TextureQuality")
                             {
                                 //TODO: apply texture quality
-                                user_TextureQuality = (UserDefined_TextureQuality)Enum.Parse(typeof(UserDefined_TextureQuality), value);
+
+                                string[] textureQualityValues = Enum.GetNames(typeof(UserDefined_TextureQuality));
+                                bool foundCorrectTextureQuality = false;
+                                foreach (string tex in textureQualityValues)
+                                {
+                                    if (tex == value)
+                                    {
+                                        foundCorrectTextureQuality = true;
+                                        break;
+                                    }
+                                }
+                                if (foundCorrectTextureQuality)
+                                {
+                                    user_TextureQuality = (UserDefined_TextureQuality)Enum.Parse(typeof(UserDefined_TextureQuality), value);
+                                }
+                                else
+                                {
+                                    Debug.LogError("Error: Inserted " + type + " value in settings file is invalid! Resetting to default value.");
+                                    user_TextureQuality = def_TextureQuality;
+                                }
                             }
                             else if (type == "LightDistance")
                             {
                                 //TODO: apply light distance
-                                user_LightDistance = int.Parse(value);
+
+                                int insertedValue;
+                                bool isInt = int.TryParse(value, out _);
+                                if (isInt)
+                                {
+                                    insertedValue = int.Parse(value);
+                                    if (insertedValue >= 15
+                                        && insertedValue <= 5000)
+                                    {
+                                        user_LightDistance = insertedValue;
+                                    }
+                                    else
+                                    {
+                                        Debug.LogError("Error: Inserted " + type + " value in settings file is out of range! Resetting to default value.");
+                                        user_LightDistance = def_LightDistance;
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.LogError("Error: Inserted " + type + " value in settings file is invalid! Resetting to default value.");
+                                    user_LightDistance = def_LightDistance;
+                                }
                             }
                             else if (type == "ShadowDistance")
                             {
                                 //TODO: apply shadow distance
-                                user_ShadowDistance = int.Parse(value);
+
+                                int insertedValue;
+                                bool isInt = int.TryParse(value, out _);
+                                if (isInt)
+                                {
+                                    insertedValue = int.Parse(value);
+                                    if (insertedValue >= 15
+                                        && insertedValue <= 5000)
+                                    {
+                                        user_ShadowDistance = insertedValue;
+                                    }
+                                    else
+                                    {
+                                        Debug.LogError("Error: Inserted " + type + " value in settings file is out of range! Resetting to default value.");
+                                        user_ShadowDistance = def_ShadowDistance;
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.LogError("Error: Inserted " + type + " value in settings file is invalid! Resetting to default value.");
+                                    user_ShadowDistance = def_ShadowDistance;
+                                }
                             }
                             else if (type == "ShadowQuality")
                             {
                                 //TODO: apply shadow quality
-                                user_ShadowQuality = (UserDefined_ShadowQuality)Enum.Parse(typeof(UserDefined_ShadowQuality), value);
+
+                                string[] shadowQualityValues = Enum.GetNames(typeof(UserDefined_ShadowQuality));
+                                bool foundCorrectShadowValue = false;
+                                foreach (string shadow in shadowQualityValues)
+                                {
+                                    if (shadow == value)
+                                    {
+                                        foundCorrectShadowValue = true;
+                                        break;
+                                    }
+                                }
+                                if (foundCorrectShadowValue)
+                                {
+                                    user_ShadowQuality = (UserDefined_ShadowQuality)Enum.Parse(typeof(UserDefined_ShadowQuality), value);
+                                }
+                                else
+                                {
+                                    Debug.LogError("Error: Inserted " + type + " value in settings file is invalid! Resetting to default value.");
+                                    user_ShadowQuality = def_ShadowQuality;
+                                }
                             }
                             else if (type == "TreeDistance")
                             {
                                 //TODO: apply tree distance
-                                user_TreeDistance = int.Parse(value);
+
+                                int insertedValue;
+                                bool isInt = int.TryParse(value, out _);
+                                if (isInt)
+                                {
+                                    insertedValue = int.Parse(value);
+                                    if (insertedValue >= 15
+                                        && insertedValue <= 5000)
+                                    {
+                                        user_TreeDistance = insertedValue;
+                                    }
+                                    else
+                                    {
+                                        Debug.LogError("Error: Inserted " + type + " value in settings file is out of range! Resetting to default value.");
+                                        user_TreeDistance = def_TreeDistance;
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.LogError("Error: Inserted " + type + " value in settings file is invalid! Resetting to default value.");
+                                    user_TreeDistance = def_TreeDistance;
+                                }
                             }
                             else if (type == "GrassDistance")
                             {
                                 //TODO: apply grass distance
-                                user_GrassDistance = int.Parse(value);
+
+                                int insertedValue;
+                                bool isInt = int.TryParse(value, out _);
+                                if (isInt)
+                                {
+                                    insertedValue = int.Parse(value);
+                                    if (insertedValue >= 15
+                                        && insertedValue <= 5000)
+                                    {
+                                        user_GrassDistance = insertedValue;
+                                    }
+                                    else
+                                    {
+                                        Debug.LogError("Error: Inserted " + type + " value in settings file is out of range! Resetting to default value.");
+                                        user_GrassDistance = def_GrassDistance;
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.LogError("Error: Inserted " + type + " value in settings file is invalid! Resetting to default value.");
+                                    user_GrassDistance = def_GrassDistance;
+                                }
                             }
                             else if (type == "ObjectDistance")
                             {
                                 //TODO: apply object distance
-                                user_ObjectDistance = int.Parse(value);
+
+                                int insertedValue;
+                                bool isInt = int.TryParse(value, out _);
+                                if (isInt)
+                                {
+                                    insertedValue = int.Parse(value);
+                                    if (insertedValue >= 15
+                                        && insertedValue <= 5000)
+                                    {
+                                        user_ObjectDistance = insertedValue;
+                                    }
+                                    else
+                                    {
+                                        Debug.LogError("Error: Inserted " + type + " value in settings file is out of range! Resetting to default value.");
+                                        user_ObjectDistance = def_ObjectDistance;
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.LogError("Error: Inserted " + type + " value in settings file is invalid! Resetting to default value.");
+                                    user_ObjectDistance = def_ObjectDistance;
+                                }
                             }
                             else if (type == "ItemDistance")
                             {
                                 //TODO: apply item distance
-                                user_ItemDistance = int.Parse(value);
+
+                                int insertedValue;
+                                bool isInt = int.TryParse(value, out _);
+                                if (isInt)
+                                {
+                                    insertedValue = int.Parse(value);
+                                    if (insertedValue >= 15
+                                        && insertedValue <= 5000)
+                                    {
+                                        user_ItemDistance = insertedValue;
+                                    }
+                                    else
+                                    {
+                                        Debug.LogError("Error: Inserted " + type + " value in settings file is out of range! Resetting to default value.");
+                                        user_ItemDistance = def_ItemDistance;
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.LogError("Error: Inserted " + type + " value in settings file is invalid! Resetting to default value.");
+                                    user_ItemDistance = def_ItemDistance;
+                                }
                             }
                             else if (type == "AIDistance")
                             {
                                 //TODO: apply AI distance
-                                user_AIDistance = int.Parse(value);
+
+                                int insertedValue;
+                                bool isInt = int.TryParse(value, out _);
+                                if (isInt)
+                                {
+                                    insertedValue = int.Parse(value);
+                                    if (insertedValue >= 15
+                                        && insertedValue <= 5000)
+                                    {
+                                        user_AIDistance = insertedValue;
+                                    }
+                                    else
+                                    {
+                                        Debug.LogError("Error: Inserted " + type + " value in settings file is out of range! Resetting to default value.");
+                                        user_AIDistance = def_AIDistance;
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.LogError("Error: Inserted " + type + " value in settings file is invalid! Resetting to default value.");
+                                    user_AIDistance = def_AIDistance;
+                                }
                             }
 
                             //audio settings
                             else if (type == "MasterVolume")
                             {
                                 //TODO: apply master volume
-                                user_MasterVolume = int.Parse(value);
+
+                                int insertedValue;
+                                bool isInt = int.TryParse(value, out _);
+                                if (isInt)
+                                {
+                                    insertedValue = int.Parse(value);
+                                    if (insertedValue >= 0
+                                        && insertedValue <= 100)
+                                    {
+                                        user_MasterVolume = insertedValue;
+                                    }
+                                    else
+                                    {
+                                        Debug.LogError("Error: Inserted " + type + " value in settings file is out of range! Resetting to default value.");
+                                        user_MasterVolume = def_MasterVolume;
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.LogError("Error: Inserted " + type + " value in settings file is invalid! Resetting to default value.");
+                                    user_MasterVolume = def_MasterVolume;
+                                }
                             }
                             else if (type == "MusicVolume")
                             {
                                 //TODO: apply music volume
-                                user_MusicVolume = int.Parse(value);
+
+                                int insertedValue;
+                                bool isInt = int.TryParse(value, out _);
+                                if (isInt)
+                                {
+                                    insertedValue = int.Parse(value);
+                                    if (insertedValue >= 0
+                                        && insertedValue <= 100)
+                                    {
+                                        user_MusicVolume = insertedValue;
+                                    }
+                                    else
+                                    {
+                                        Debug.LogError("Error: Inserted " + type + " value in settings file is out of range! Resetting to default value.");
+                                        user_MusicVolume = def_MusicVolume;
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.LogError("Error: Inserted " + type + " value in settings file is invalid! Resetting to default value.");
+                                    user_MusicVolume = def_MusicVolume;
+                                }
                             }
                             else if (type == "SFXVolume")
                             {
                                 //TODO: apply SFX volume
-                                user_SFXVolume = int.Parse(value);
+
+                                int insertedValue;
+                                bool isInt = int.TryParse(value, out _);
+                                if (isInt)
+                                {
+                                    insertedValue = int.Parse(value);
+                                    if (insertedValue >= 0
+                                        && insertedValue <= 100)
+                                    {
+                                        user_SFXVolume = insertedValue;
+                                    }
+                                    else
+                                    {
+                                        Debug.LogError("Error: Inserted " + type + " value in settings file is out of range! Resetting to default value.");
+                                        user_SFXVolume = def_SFXVolume;
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.LogError("Error: Inserted " + type + " value in settings file is invalid! Resetting to default value.");
+                                    user_SFXVolume = def_SFXVolume;
+                                }
                             }
                             else if (type == "NPCVolume")
                             {
                                 //TODO: apply NPC volume
-                                user_NPCVolume = int.Parse(value);
+
+                                int insertedValue;
+                                bool isInt = int.TryParse(value, out _);
+                                if (isInt)
+                                {
+                                    insertedValue = int.Parse(value);
+                                    if (insertedValue >= 0
+                                        && insertedValue <= 100)
+                                    {
+                                        user_NPCVolume = insertedValue;
+                                    }
+                                    else
+                                    {
+                                        Debug.LogError("Error: Inserted " + type + " value in settings file is out of range! Resetting to default value.");
+                                        user_NPCVolume = def_NPCVolume;
+                                    }
+                                }
+                                else
+                                {
+                                    Debug.LogError("Error: Inserted " + type + " value in settings file is invalid! Resetting to default value.");
+                                    user_NPCVolume = def_NPCVolume;
+                                }
                             }
                         }
                     }
