@@ -114,12 +114,7 @@ public class Env_ReceiveEffect : MonoBehaviour
                     && !PlayerStatsScript.isGodmodeEnabled)
                 {
                     PlayerStatsScript.currentHealth -= effectValue;
-                    if (PlayerStatsScript.currentHealth <= 0)
-                    {
-                        UIReuseScript.par_DeathUI.SetActive(true);
-                        PlayerStatsScript.currentHealth = 0;
-                    }
-                    PlayerStatsScript.UpdateBar(PlayerStatsScript.healthBar);
+                    PlayerStatsScript.PlayerDeath();
                 }
                 break;
             case EffectType.drainMagicka:

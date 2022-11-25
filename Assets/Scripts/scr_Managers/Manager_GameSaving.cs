@@ -7,7 +7,6 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 using System.Linq;
-using UnityEditor;
 
 public class Manager_GameSaving : MonoBehaviour
 {
@@ -334,7 +333,6 @@ public class Manager_GameSaving : MonoBehaviour
         using StreamWriter saveFile = File.CreateText(SaveFilePath);
 
         saveFile.WriteLine("Save file for " + UIReuseScript.txt_GameVersion.text + ".");
-        saveFile.WriteLine("WARNING - Invalid values will break the game - edit at your own risk!");
         saveFile.WriteLine("");
 
         saveFile.WriteLine("---GLOBAL VALUES---");
@@ -679,13 +677,13 @@ public class Manager_GameSaving : MonoBehaviour
                             }
                             else
                             {
-                                Debug.LogError("Error: Days since restart value is out of range! Resetting to default value.");
+                                Debug.LogError("Error: Days since restart value in game save " + saveFileName + " is out of range! Resetting to default value.");
                                 DateAndTimeScript.daysSinceLastRestart = 3;
                             }
                         }
                         else
                         {
-                            Debug.LogError("Error: Days since restart value is invalid! Resetting to default value.");
+                            Debug.LogError("Error: Days since restart value in game save " + saveFileName + " is invalid! Resetting to default value.");
                             DateAndTimeScript.daysSinceLastRestart = 3;
                         }
                     }
@@ -704,13 +702,13 @@ public class Manager_GameSaving : MonoBehaviour
                             }
                             else
                             {
-                                Debug.LogError("Error: Time and date minute value is out of range! Resetting to default value.");
+                                Debug.LogError("Error: Time and date minute value in game save " + saveFileName + " is out of range! Resetting to default value.");
                                 min = 0;
                             }
                         }
                         else
                         {
-                            Debug.LogError("Error: Time and date minute value is invalid! Resetting to default value.");
+                            Debug.LogError("Error: Time and date minute value in game save " + saveFileName + " is invalid! Resetting to default value.");
                             min = 0;
                         }
 
@@ -726,13 +724,13 @@ public class Manager_GameSaving : MonoBehaviour
                             }
                             else
                             {
-                                Debug.LogError("Error: Time and date hour value is out of range! Resetting to default value.");
+                                Debug.LogError("Error: Time and date hour value in game save " + saveFileName + " is out of range! Resetting to default value.");
                                 hr = 12;
                             }
                         }
                         else
                         {
-                            Debug.LogError("Error: Time and date hour value is invalid! Resetting to default value.");
+                            Debug.LogError("Error: Time and date hour value in game save " + saveFileName + " is invalid! Resetting to default value.");
                             hr = 12;
                         }
 
@@ -765,13 +763,13 @@ public class Manager_GameSaving : MonoBehaviour
                             }
                             else
                             {
-                                Debug.LogError("Error: Time and date month value is invalid! Resetting to default value.");
+                                Debug.LogError("Error: Time and date month value in game save " + saveFileName + " is invalid! Resetting to default value.");
                                 month = "Last Seed";
                             }
                         }
                         else
                         {
-                            Debug.LogError("Error: Time and date month value is invalid! Resetting to default value.");
+                            Debug.LogError("Error: Time and date month value in game save " + saveFileName + " is invalid! Resetting to default value.");
                             month = "Last Seed";
                         }
 
@@ -810,13 +808,13 @@ public class Manager_GameSaving : MonoBehaviour
                             }
                             else
                             {
-                                Debug.LogError("Error: Time and date day value is out of range! Resetting to default value.");
+                                Debug.LogError("Error: Time and date day value in game save " + saveFileName + " is out of range! Resetting to default value.");
                                 date = "27 Morndas";
                             }
                         }
                         else
                         {
-                            Debug.LogError("Error: Time and date day value is invalid! Resetting to default value.");
+                            Debug.LogError("Error: Time and date day value in game save " + saveFileName + " is invalid! Resetting to default value.");
                             date = "27 Morndas";
                         }
 
@@ -826,52 +824,182 @@ public class Manager_GameSaving : MonoBehaviour
                     //load player position and rotation
                     else if (type == "PlayerPosition")
                     {
-                        thePlayer.transform.position = new(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]));
+                        bool isFirstFloat = float.TryParse(values[0], out _);
+                        bool isSecondFloat = float.TryParse(values[1], out _);
+                        bool isThirdFloat = float.TryParse(values[2], out _);
+
+                        if (isFirstFloat
+                            && isSecondFloat
+                            && isThirdFloat)
+                        {
+                            thePlayer.transform.position = new(float.Parse(values[0]), 
+                                                               float.Parse(values[1]), 
+                                                               float.Parse(values[2]));
+                        }
+                        else
+                        {
+                            Debug.LogError("Error: One or more player position values in game save " + saveFileName + " are invalid! Resetting to default values.");
+                            thePlayer.transform.position = Vector3.zero;
+                        }
                     }
                     else if (type == "PlayerRotation")
                     {
-                        Vector3 rot = new(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]));
-                        thePlayer.transform.rotation = Quaternion.Euler(rot);
+                        bool isFirstFloat = float.TryParse(values[0], out _);
+                        bool isSecondFloat = float.TryParse(values[1], out _);
+                        bool isThirdFloat = float.TryParse(values[2], out _);
+
+                        if (isFirstFloat
+                            && isSecondFloat
+                            && isThirdFloat)
+                        {
+                            Vector3 rot = new(float.Parse(values[0]), 
+                                              float.Parse(values[1]), 
+                                              float.Parse(values[2]));
+                            thePlayer.transform.rotation = Quaternion.Euler(rot);
+                        }
+                        else
+                        {
+                            Debug.LogError("Error: One or more player rotation values in game save " + saveFileName + " are invalid! Resetting to default values.");
+                            thePlayer.transform.rotation = Quaternion.Euler(Vector3.zero);
+                        }
                     }
                     else if (type == "PlayerCameraRotation")
                     {
-                        Vector3 camRot = new(float.Parse(values[0]), float.Parse(values[1]), float.Parse(values[2]));
-                        thePlayer.GetComponentInChildren<Camera>().transform.rotation = Quaternion.Euler(camRot);
+                        bool isFirstFloat = float.TryParse(values[0], out _);
+                        bool isSecondFloat = float.TryParse(values[1], out _);
+                        bool isThirdFloat = float.TryParse(values[2], out _);
+
+                        if (isFirstFloat
+                            && isSecondFloat
+                            && isThirdFloat)
+                        {
+                            Vector3 camRot = new(float.Parse(values[0]), 
+                                                 float.Parse(values[1]), 
+                                                 float.Parse(values[2]));
+                            thePlayer.GetComponentInChildren<Camera>().transform.rotation = Quaternion.Euler(camRot);
+                        }
+                        else
+                        {
+                            Debug.LogError("Error: One or more player camera rotation values in game save " + saveFileName + " are invalid! Resetting to default values.");
+                            thePlayer.GetComponentInChildren<Camera>().transform.rotation = Quaternion.Euler(Vector3.zero);
+                        }
                     }
 
                     //load player main values
                     else if (type == "Level")
                     {
-                        PlayerStatsScript.level = int.Parse(values[0]);
-                        PlayerStatsScript.level_PointsToNextLevel = int.Parse(values[1]);
+                        int insertedLevel = int.Parse(values[0]);
+                        int insertedLevelPoints = int.Parse(values[1]);
+
+                        if (insertedLevel >= 1
+                            && insertedLevel <= 100)
+                        {
+                            PlayerStatsScript.level = int.Parse(values[0]);
+
+                            if (insertedLevelPoints >= 1
+                                && insertedLevelPoints <= insertedLevel * 500)
+                            {
+                                PlayerStatsScript.level_PointsToNextLevel = int.Parse(values[1]);
+                            }
+                            else
+                            {
+                                Debug.LogError("Error: Inserted level required points value in game save " + saveFileName + " is out of range! Resetting to default value.");
+                                PlayerStatsScript.level_PointsToNextLevel = PlayerStatsScript.level * 500;
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError("Error: Inserted level value in game save " + saveFileName + " is out of range! Resetting to default value.");
+                            PlayerStatsScript.level = 1;
+                        }
                     }
-                    else if (type == "MaxHealth")
+                    else if (type == "MaxHealth"
+                             || type == "Health"
+                             || type == "MaxStamina"
+                             || type == "Stamina"
+                             || type == "MaxMagicka"
+                             || type == "Magicka"
+                             || type == "MaxInvSpace")
                     {
-                        PlayerStatsScript.maxHealth = float.Parse(values[0]);
-                    }
-                    else if (type == "Health")
-                    {
-                        PlayerStatsScript.currentHealth = float.Parse(values[0]);
-                    }
-                    else if (type == "MaxStamina")
-                    {
-                        PlayerStatsScript.maxStamina = float.Parse(values[0]);
-                    }
-                    else if (type == "Stamina")
-                    {
-                        PlayerStatsScript.currentStamina = float.Parse(values[0]);
-                    }
-                    else if (type == "MaxMagicka")
-                    {
-                        PlayerStatsScript.maxMagicka = float.Parse(values[0]);
-                    }
-                    else if (type == "Magicka")
-                    {
-                        PlayerStatsScript.currentMagicka = float.Parse(values[0]);
-                    }
-                    else if (type == "MaxInvSpace")
-                    {
-                        PlayerStatsScript.maxInvSpace = int.Parse(values[0]);
+                        float insertedValue = 1;
+
+                        bool isFloat = float.TryParse(values[0], out _);
+                        if (isFloat)
+                        {
+                            insertedValue = float.Parse(values[0]);
+                        }
+                        else
+                        {
+                            Debug.LogError("Error: Inserted " + type + " value in game save " + saveFileName + " is invalid! Resetting to default value.");
+                            insertedValue = 100;
+                        }
+                        
+                        if (insertedValue < 1
+                            || insertedValue > 1000000)
+                        {
+                            Debug.LogError("Error: Inserted " + type + " value in game save " + saveFileName + " is out of range! Resetting to default value.");
+                            insertedValue = 100;
+                        }
+
+                        if (type == "MaxHealth")
+                        {
+                            PlayerStatsScript.maxHealth = insertedValue;
+                            if (PlayerStatsScript.currentHealth > PlayerStatsScript.maxHealth)
+                            {
+                                PlayerStatsScript.maxHealth = PlayerStatsScript.currentHealth;
+                            }
+                        }
+                        else if (type == "Health")
+                        {
+                            PlayerStatsScript.currentHealth = insertedValue;
+                            if (PlayerStatsScript.currentHealth > PlayerStatsScript.maxHealth)
+                            {
+                                PlayerStatsScript.maxHealth = PlayerStatsScript.currentHealth;
+                            }
+                        }
+                        else if (type == "MaxStamina")
+                        {
+                            PlayerStatsScript.maxStamina = insertedValue;
+                            if (PlayerStatsScript.currentStamina > PlayerStatsScript.maxStamina)
+                            {
+                                PlayerStatsScript.maxStamina = PlayerStatsScript.currentStamina;
+                            }
+                        }
+                        else if (type == "Stamina")
+                        {
+                            PlayerStatsScript.currentStamina = insertedValue;
+                            if (PlayerStatsScript.currentStamina > PlayerStatsScript.maxStamina)
+                            {
+                                PlayerStatsScript.maxStamina = PlayerStatsScript.currentStamina;
+                            }
+                        }
+                        else if (type == "MaxMagicka")
+                        {
+                            PlayerStatsScript.maxMagicka = insertedValue;
+                            if (PlayerStatsScript.currentMagicka > PlayerStatsScript.maxMagicka)
+                            {
+                                PlayerStatsScript.maxMagicka = PlayerStatsScript.currentMagicka;
+                            }
+                        }
+                        else if (type == "Magicka")
+                        {
+                            PlayerStatsScript.currentMagicka = insertedValue;
+                            if (PlayerStatsScript.currentMagicka > PlayerStatsScript.maxMagicka)
+                            {
+                                PlayerStatsScript.maxMagicka = PlayerStatsScript.currentMagicka;
+                            }
+                        }
+                        else if (type == "MaxInvSpace")
+                        {
+                            if ((int)insertedValue >= PlayerStatsScript.invSpace)
+                            {
+                                PlayerStatsScript.maxInvSpace = (int)insertedValue;
+                            }
+                            else
+                            {
+                                Debug.LogError("Error: Inserted max inventory space value in game save " + saveFileName + " is out of range! Setting to inventory space value.");
+                            }
+                        }
                     }
 
                     //load player attributes
@@ -892,13 +1020,31 @@ public class Manager_GameSaving : MonoBehaviour
                             attributeValues.Add(attributes.Value);
                         }
 
+                        int insertedValue = 1;
+                        bool isInt = int.TryParse(values[0], out _);
+                        if (isInt)
+                        {
+                            insertedValue = int.Parse(values[0]);
+                            if (insertedValue < 1
+                                || insertedValue > 10)
+                            {
+                                insertedValue = 1;
+                                Debug.LogError("Error: Inserted " + type + " attribute level in game save " + saveFileName + " is out of range! Resetting to default value.");
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError("Error: Inserted " + type + " attribute level in game save " + saveFileName + " is invalid! Resetting to default value.");
+                            insertedValue = 1;
+                        }
+
                         for (int i = 0; i < attributeNames.Count; i++)
                         {
                             string attributeName = attributeNames[i];
 
                             if (attributeName == type)
                             {
-                                PlayerStatsScript.Attributes[type] = int.Parse(values[0]);
+                                PlayerStatsScript.Attributes[type] = insertedValue;
                             }
                         }
                     }
@@ -926,6 +1072,25 @@ public class Manager_GameSaving : MonoBehaviour
                              || type == "Mercantile"
                              || type == "Speechcraft")
                     {
+                        //skill level
+                        int insertedSkillLevel = 1;
+                        bool isInt = int.TryParse(values[0], out _);
+                        if (isInt)
+                        {
+                            insertedSkillLevel = int.Parse(values[0]);
+                            if (insertedSkillLevel < 1
+                                || insertedSkillLevel > 10)
+                            {
+                                insertedSkillLevel = 1;
+                                Debug.LogError("Error: Inserted " + type + " skill level in game save " + saveFileName + " is out of range! Resetting to default value.");
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError("Error: Inserted " + type + " skill level in game save " + saveFileName + " is invalid! Resetting to default value.");
+                            insertedSkillLevel = 1;
+                        }
+
                         List<string> skillNames = new();
                         List<int> skillValues = new();
                         foreach (KeyValuePair<string, int> skills in PlayerStatsScript.Skills)
@@ -940,8 +1105,27 @@ public class Manager_GameSaving : MonoBehaviour
 
                             if (skillName == type)
                             {
-                                PlayerStatsScript.Skills[type] = int.Parse(values[0]);
+                                PlayerStatsScript.Skills[type] = insertedSkillLevel;
                             }
+                        }
+
+                        //skillpoints count
+                        int insertedSkillpoints = 0;
+                        bool isInt2 = int.TryParse(values[0], out _);
+                        if (isInt2)
+                        {
+                            insertedSkillpoints = int.Parse(values[0]);
+                            if (insertedSkillpoints < 0
+                                || insertedSkillpoints > PlayerStatsScript.Skills[type] * 150)
+                            {
+                                insertedSkillpoints = 1;
+                                Debug.LogError("Error: Inserted " + type + " skill points value in game save " + saveFileName + " is out of range! Resetting to default value.");
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError("Error: Inserted " + type + " skill points value in game save " + saveFileName + " is invalid! Resetting to default value.");
+                            insertedSkillpoints = PlayerStatsScript.Skills[type] * 150;
                         }
 
                         List<string> skillPointNames = new();
@@ -958,7 +1142,7 @@ public class Manager_GameSaving : MonoBehaviour
 
                             if (skillPointName == type)
                             {
-                                PlayerStatsScript.SkillPoints[type] = int.Parse(values[0]);
+                                PlayerStatsScript.SkillPoints[type] = insertedSkillpoints;
                             }
                         }
                     }
@@ -975,6 +1159,7 @@ public class Manager_GameSaving : MonoBehaviour
                                 break;
                             }
                         }
+
                         GameObject spawnedItem = Instantiate(templateItem,
                                                              PlayerInventoryScript.par_PlayerItems.transform.position,
                                                              Quaternion.identity,

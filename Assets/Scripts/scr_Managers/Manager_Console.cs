@@ -3,13 +3,11 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using static Manager_Settings;
-using Unity.VisualScripting.Antlr3.Runtime.Tree;
-using System.Reflection;
-using UnityEditor;
 
 public class Manager_Console : MonoBehaviour
 {
@@ -1695,59 +1693,76 @@ public class Manager_Console : MonoBehaviour
                 else if (statName == "maxhealth")
                 {
                     PlayerStatsScript.maxHealth = (int)statValue;
+                    if (PlayerStatsScript.currentHealth > PlayerStatsScript.maxHealth)
+                    {
+                        PlayerStatsScript.currentHealth = PlayerStatsScript.maxHealth;
+                    }
                     PlayerStatsScript.UpdateBar(PlayerStatsScript.healthBar);
+
+                    if (PlayerStatsScript.currentHealth == 0
+                        && !PlayerStatsScript.isGodmodeEnabled)
+                    {
+                        PlayerStatsScript.PlayerDeath();
+                    }
+
                     CreateNewConsoleLine("Successfully set player max health to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "currenthealth")
                 {
-                    if (statValue > PlayerStatsScript.maxHealth)
+                    PlayerStatsScript.currentHealth = (int)statValue;
+                    if (PlayerStatsScript.currentHealth > PlayerStatsScript.maxHealth)
                     {
-                        CreateNewConsoleLine("Error: Player health must be less than or equal to max health!", "CONSOLE_ERROR_MESSAGE");
+                        PlayerStatsScript.maxHealth = PlayerStatsScript.currentHealth;
                     }
-                    else
+                    PlayerStatsScript.UpdateBar(PlayerStatsScript.healthBar);
+
+                    if (PlayerStatsScript.currentHealth == 0
+                        && !PlayerStatsScript.isGodmodeEnabled)
                     {
-                        PlayerStatsScript.currentHealth = (int)statValue;
-                        PlayerStatsScript.UpdateBar(PlayerStatsScript.healthBar);
-                        CreateNewConsoleLine("Successfully set player current health to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                        PlayerStatsScript.PlayerDeath();
                     }
+
+                    CreateNewConsoleLine("Successfully set player current health to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "maxstamina")
                 {
                     PlayerStatsScript.maxStamina = (int)statValue;
+                    if (PlayerStatsScript.currentStamina > PlayerStatsScript.maxStamina)
+                    {
+                        PlayerStatsScript.currentStamina = PlayerStatsScript.maxStamina;
+                    }
                     PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar);
                     CreateNewConsoleLine("Successfully set player max stamina to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "currentstamina")
                 {
-                    if (statValue > PlayerStatsScript.maxStamina)
+                    PlayerStatsScript.currentStamina = (int)statValue;
+                    if (PlayerStatsScript.currentStamina > PlayerStatsScript.maxStamina)
                     {
-                        CreateNewConsoleLine("Error: Player stamina must be less than or equal to max stamina!", "CONSOLE_ERROR_MESSAGE");
+                        PlayerStatsScript.maxStamina = PlayerStatsScript.currentStamina;
                     }
-                    else
-                    {
-                        PlayerStatsScript.currentStamina = (int)statValue;
-                        PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar);
-                        CreateNewConsoleLine("Successfully set player current stamina to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
-                    }
+                    PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar);
+                    CreateNewConsoleLine("Successfully set player current stamina to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "maxmagicka")
                 {
                     PlayerStatsScript.maxMagicka = (int)statValue;
+                    if (PlayerStatsScript.currentMagicka > PlayerStatsScript.maxMagicka)
+                    {
+                        PlayerStatsScript.currentMagicka = PlayerStatsScript.maxMagicka;
+                    }
                     PlayerStatsScript.UpdateBar(PlayerStatsScript.magickaBar);
                     CreateNewConsoleLine("Successfully set player max magicka to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "currentmagicka")
                 {
-                    if (statValue > PlayerStatsScript.maxMagicka)
+                    PlayerStatsScript.currentMagicka = (int)statValue;
+                    if (PlayerStatsScript.currentMagicka > PlayerStatsScript.maxMagicka)
                     {
-                        CreateNewConsoleLine("Error: Player magicka must be less than or equal to max magicka!", "CONSOLE_ERROR_MESSAGE");
+                        PlayerStatsScript.maxMagicka = PlayerStatsScript.currentMagicka;
                     }
-                    else
-                    {
-                        PlayerStatsScript.currentMagicka = (int)statValue;
-                        PlayerStatsScript.UpdateBar(PlayerStatsScript.magickaBar);
-                        CreateNewConsoleLine("Successfully set player current magicka to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
-                    }
+                    PlayerStatsScript.UpdateBar(PlayerStatsScript.magickaBar);
+                    CreateNewConsoleLine("Successfully set player current magicka to " + (int)statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
                 }
                 else if (statName == "maxinvspace")
                 {

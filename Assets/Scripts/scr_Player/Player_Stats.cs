@@ -51,11 +51,16 @@ public class Player_Stats : MonoBehaviour
     [Header("Scripts")]
     [SerializeField] private GameObject par_Managers;
 
+    //scripts
+    private Manager_UIReuse UIReuseScript;
+
     private void Awake()
     {
         //debugging method for checking what the max possible achievable
         //level is with the current level and skill levelup system
         //StartCoroutine(GetMaxAchievableLevel());
+
+        UIReuseScript = par_Managers.GetComponent<Manager_UIReuse>();
     }
 
     public void ResetStats()
@@ -134,6 +139,18 @@ public class Player_Stats : MonoBehaviour
             magickaBar.maxValue = maxMagicka;
             magickaBar.value = currentMagicka;
         }
+    }
+
+    //if player dies then the death UI is opened
+    public void PlayerDeath()
+    {
+        if (currentHealth < 0)
+        {
+            currentHealth = 0;
+        }
+        UpdateBar(healthBar);
+
+        UIReuseScript.par_DeathUI.SetActive(true);
     }
 
     //level up a skill if player gained more points than the skill required
