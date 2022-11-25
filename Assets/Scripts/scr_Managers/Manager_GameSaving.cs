@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using UnityEditor;
 
 public class Manager_GameSaving : MonoBehaviour
 {
@@ -338,9 +339,9 @@ public class Manager_GameSaving : MonoBehaviour
 
         saveFile.WriteLine("---GLOBAL VALUES---");
         saveFile.WriteLine("DaysSinceReset: " + DateAndTimeScript.daysSinceLastRestart);
-        saveFile.WriteLine("TimeAndDate: " + DateAndTimeScript.minute + ", " 
-                                           + DateAndTimeScript.hour + ", "
-                                           + DateAndTimeScript.dayName + ", " 
+        saveFile.WriteLine("TimeAndDate: " + DateAndTimeScript.minute + "," 
+                                           + DateAndTimeScript.hour + ","
+                                           + DateAndTimeScript.dayName + "," 
                                            + DateAndTimeScript.monthName);
         saveFile.WriteLine("");
 
@@ -752,7 +753,7 @@ public class Manager_GameSaving : MonoBehaviour
                             foreach (KeyValuePair<string, int> theMonth in DateAndTimeScript.Months)
                             {
                                 string monthName = theMonth.Key;
-                                if (month == monthName)
+                                if (values[3] == monthName)
                                 {
                                     foundCorrectMonthName = true;
                                     break;
