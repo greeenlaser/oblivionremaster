@@ -47,7 +47,7 @@ public class Manager_KeyBindings : MonoBehaviour
         "UpArrow", "DownArrow", "RightArrow", "LeftArrow", "Insert", "Home", "End", "PageUp", "PageDown",
         "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15",
         "Numlock", "CapsLock", "ScrollLock", "RightShift", "LeftShift", "RightControl", "LeftControl", "RightAlt", "LeftAlt",
-        "RightApple", "RightCommand", "LeftApple", "LeftCommand", "LeftWindows", "RightWindows", "AltGr", "Help", "Print", "SysReq", "Break", "Menu",
+        "RightCommand", "LeftCommand", "LeftWindows", "RightWindows", "AltGr", "Help", "Print", "SysReq", "Break", "Menu",
         "Mouse0", "Mouse1", "Mouse2", "Mouse3", "Mouse4", "Mouse5", "Mouse6"
     };
 
