@@ -349,15 +349,40 @@ public class Manager_GameSaving : MonoBehaviour
         float posZ = Mathf.Round(thePlayer.transform.position.z * 100f) / 100f;
         saveFile.WriteLine("PlayerPosition: " + posX + ", " + posY + ", " + posZ);
 
-        float rotX = Mathf.Round(thePlayer.transform.rotation.x * 100f) / 100f;
-        float rotY = Mathf.Round(thePlayer.transform.rotation.y * 100f) / 100f;
-        float rotZ = Mathf.Round(thePlayer.transform.rotation.z * 100f) / 100f;
-        saveFile.WriteLine("PlayerRotation: " + rotX + ", " + rotY + ", " + rotZ);
+        Vector3 angle = thePlayer.GetComponentInChildren<Camera>().transform.eulerAngles;
+        float x = angle.x;
+        float y = angle.y;
 
-        float camRotX = Mathf.Round(thePlayer.GetComponentInChildren<Camera>().transform.rotation.x * 100f) / 100f;
-        float camRotY = Mathf.Round(thePlayer.GetComponentInChildren<Camera>().transform.rotation.y * 100f) / 100f;
-        float camRotZ = Mathf.Round(thePlayer.GetComponentInChildren<Camera>().transform.rotation.z * 100f) / 100f;
-        saveFile.WriteLine("PlayerCameraRotation: " + camRotX + ", " + camRotY + ", " + camRotZ);
+        if (Vector3.Dot(transform.up, Vector3.up) >= 0f)
+        {
+            if (angle.x >= 0f && angle.x <= 90f)
+            {
+                x = angle.x;
+            }
+            if (angle.x >= 270f && angle.x <= 360f)
+            {
+                x = angle.x - 360f;
+            }
+        }
+        if (Vector3.Dot(transform.up, Vector3.up) < 0f)
+        {
+            if (angle.x >= 0f && angle.x <= 90f)
+            {
+                x = 180 - angle.x;
+            }
+            if (angle.x >= 270f && angle.x <= 360f)
+            {
+                x = 180 - angle.x;
+            }
+        }
+
+        if (angle.y > 180)
+        {
+            y = angle.y - 360f;
+        }
+
+        saveFile.WriteLine("PlayerRotation: " + 0 + ", " + y + ", " + 0);
+        saveFile.WriteLine("PlayerCameraRotation: " + x + ", " + 0 + ", " + 0);
         saveFile.WriteLine("");
 
         saveFile.WriteLine("---PLAYER MAIN VALUES---");
@@ -855,7 +880,7 @@ public class Manager_GameSaving : MonoBehaviour
                             Vector3 rot = new(float.Parse(values[0]), 
                                               float.Parse(values[1]), 
                                               float.Parse(values[2]));
-                            thePlayer.transform.rotation = Quaternion.Euler(rot);
+                            thePlayer.transform.eulerAngles = rot;
                         }
                         else
                         {
@@ -876,7 +901,7 @@ public class Manager_GameSaving : MonoBehaviour
                             Vector3 camRot = new(float.Parse(values[0]), 
                                                  float.Parse(values[1]), 
                                                  float.Parse(values[2]));
-                            thePlayer.GetComponentInChildren<Camera>().transform.rotation = Quaternion.Euler(camRot);
+                            thePlayer.GetComponentInChildren<Camera>().transform.eulerAngles = camRot;
                         }
                         else
                         {
