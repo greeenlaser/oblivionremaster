@@ -4,10 +4,8 @@ using UnityEngine;
 
 public class Env_ObjectPickup : MonoBehaviour
 {
-    [Tooltip("Max distance from where the object can be picked up.")]
     [Range(1f, 5f)]
     public float maxDistance = 3f;
-    [Tooltip("How strong is the throwing force?")]
     [Range(10f, 30f)]
     [SerializeField] private float throwForce = 15f;
     [Range(1f, 10f)]
@@ -76,7 +74,6 @@ public class Env_ObjectPickup : MonoBehaviour
             if (isColliding && theCollider != null)
             {
                 rb.freezeRotation = false;
-                //Debug.Log(name + " is colliding with " + theCollider.name + "!");
             }
             else if (!isColliding)
             {
@@ -91,7 +88,6 @@ public class Env_ObjectPickup : MonoBehaviour
             if (Vector3.Distance(transform.position, PlayerRaycastScript.pos_HoldItem.transform.position) > 3)
             {
                 DropObject();
-                //Debug.Log("Dropped " + gameObject.GetComponent<Env_Item>().fakeName + " because player went too far from it!");
             }
             //throws held object if player presses right mouse button
             if (Input.GetKeyDown(KeyCode.Mouse1))

@@ -38,10 +38,10 @@ public class Env_Item : MonoBehaviour
 
     private void Awake()
     {
-        //forces default layer for all items
-        if (gameObject.layer != LayerMask.NameToLayer("LimitedCollision"))
+        //forces default name for all items
+        if (name != itemName)
         {
-            gameObject.layer = LayerMask.NameToLayer("LimitedCollision");
+            name = itemName;
         }
     }
 }

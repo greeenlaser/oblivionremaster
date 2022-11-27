@@ -98,8 +98,8 @@ public class UI_Inventory : MonoBehaviour
                 }
                 if (!hasLockpicks)
                 {
-                    Debug.Log("Did not find lockpicks to unlock " + containerName + "!");
                     AnnouncementScript.CreateAnnouncement("Did not find lockpicks to unlock " + containerName + "!");
+                    Debug.Log("Did not find lockpicks to unlock " + containerName + "!");
                 }
             }
             else
@@ -116,8 +116,8 @@ public class UI_Inventory : MonoBehaviour
 
                 if (!foundKey)
                 {
-                    Debug.Log("Did not find right key to unlock " + containerName + "!");
                     AnnouncementScript.CreateAnnouncement("Did not find right key to unlock " + containerName + "!");
+                    Debug.Log("Did not find right key to unlock " + containerName + "!");
                 }
                 else
                 {
@@ -572,8 +572,8 @@ public class UI_Inventory : MonoBehaviour
             }
             else
             {
-                Debug.Log("Not enough space to take " + targetItem.name + "(s)!");
                 AnnouncementScript.CreateAnnouncement("Not enough space to take " + targetItem.name + "(s)!");
+                Debug.Log("Not enough space to take " + targetItem.name + "(s)!");
             }
         }
         //player takes/places items from/to container
@@ -665,8 +665,8 @@ public class UI_Inventory : MonoBehaviour
         if (originalLocation == PlayerMenuScript.par_DroppedItems
             && targetLocation == par_PlayerItems)
         {
-            Debug.Log("Picked up " + selectedCount + " " + item.name + "(s).");
             AnnouncementScript.CreateAnnouncement("Picked up " + selectedCount + " " + item.name + "(s).");
+            Debug.Log("Picked up " + selectedCount + " " + item.name + "(s).");
         }
 
         //if the player isnt moving all of the items
@@ -755,8 +755,6 @@ public class UI_Inventory : MonoBehaviour
         {
             RemoveDuplicates();
         }
-
-        //Debug.Log("Successfully moved " + selectedCount + " " + targetItem.name + "(s) from " + originalLocation.transform.parent.name + " to " + targetLocation.transform.parent.name + "!");
     }
 
     //remove all duplicate items from target inventory

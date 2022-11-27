@@ -14,8 +14,6 @@ public class Player_Stats : MonoBehaviour
     [HideInInspector] public int crouchSpeed;
     [SerializeField] private float defaultJumpHeight = 1.75f;
     [HideInInspector] public float jumpHeight;
-    [HideInInspector] public Vector3 cameraWalkHeight = new(0, 0.6f, 0);
-    [HideInInspector] public Vector3 cameraCrouchHeight = new(0, 0.3f, 0);
 
     [Header("Combat main values")]
     [HideInInspector] public bool isGodmodeEnabled;

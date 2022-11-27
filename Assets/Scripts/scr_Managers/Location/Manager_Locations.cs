@@ -35,9 +35,12 @@ public class Manager_Locations : MonoBehaviour
     //gets the current location type of the player
     public void UpdateCurrentLocation(string theLocationType)
     {
-        locationType = (LocationType)Enum.Parse(typeof(LocationType), theLocationType);
-        GlobalAudioScript.audioType = (UserDefined_AudioType)Enum.Parse(typeof(UserDefined_AudioType), theLocationType);
-        GlobalAudioScript.PlayAudioType();
+        if (locationType != (LocationType)Enum.Parse(typeof(LocationType), theLocationType))
+        {
+            locationType = (LocationType)Enum.Parse(typeof(LocationType), theLocationType);
+            GlobalAudioScript.audioType = (UserDefined_AudioType)Enum.Parse(typeof(UserDefined_AudioType), theLocationType);
+            GlobalAudioScript.PlayAudioType();
+        }
     }
 
     //used automatically after 3 in-game days or when game is first opened

@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class Env_DrawDebugShape : MonoBehaviour
 {
-    public bool showAlways;
-    public UserDefined_Color color;
-    public enum UserDefined_Color
+    [Header("General")]
+    [SerializeField] private bool showAlways;
+    [SerializeField] private UserDefined_Color color;
+    [SerializeField] private enum UserDefined_Color
     {
         green,
         red,
@@ -15,8 +16,8 @@ public class Env_DrawDebugShape : MonoBehaviour
         white,
         black
     }
-    public Shape shape;
-    public enum Shape
+    [SerializeField] private Shape shape;
+    [SerializeField] private enum Shape
     {
         cube,
         wireCube,
@@ -26,21 +27,25 @@ public class Env_DrawDebugShape : MonoBehaviour
         ray
     }
 
+    [Header("Connect to cell")]
+    [SerializeField] private bool connectedToCellScript;
+    [SerializeField] private Trigger_Location CellScript;
+
     [Header("Cube")]
-    public Vector3 scale;
+    [SerializeField] private Vector3 scale;
 
     [Header("Sphere")]
-    public float radius;
+    [SerializeField] private float radius;
 
     [Header("Line")]
-    public Transform lineStartPos;
-    public Transform lineEndPos;
+    [SerializeField] private Transform lineStartPos;
+    [SerializeField] private Transform lineEndPos;
 
     [Header("Ray")]
-    public Transform rayStartPos;
-    public float distance;
-    public Direction direction;
-    public enum Direction
+    [SerializeField] private Transform rayStartPos;
+    [SerializeField] private float distance;
+    [SerializeField] private Direction direction;
+    [SerializeField] private enum Direction
     {
         front,
         back,
@@ -53,6 +58,15 @@ public class Env_DrawDebugShape : MonoBehaviour
     //private variables
     private Vector3 dir;
 
+    private void Awake()
+    {
+        if (connectedToCellScript)
+        {
+            CellScript = GetComponent<Trigger_Location>();
+        }
+    }
+
+    //always shows gizmos
     private void OnDrawGizmos()
     {
         if (showAlways)
@@ -87,10 +101,24 @@ public class Env_DrawDebugShape : MonoBehaviour
                     Gizmos.DrawWireCube(transform.position, scale);
                     break;
                 case Shape.sphere:
-                    Gizmos.DrawSphere(transform.position, radius);
+                    if (connectedToCellScript)
+                    {
+                        Gizmos.DrawSphere(transform.position, CellScript.maxDistanceToDiscover);
+                    }
+                    else
+                    {
+                        Gizmos.DrawSphere(transform.position, radius);
+                    }
                     break;
                 case Shape.wireSphere:
-                    Gizmos.DrawWireSphere(transform.position, radius);
+                    if (connectedToCellScript)
+                    {
+                        Gizmos.DrawWireSphere(transform.position, CellScript.maxDistanceToDiscover);
+                    }
+                    else
+                    {
+                        Gizmos.DrawWireSphere(transform.position, radius);
+                    }
                     break;
                 case Shape.line:
                     Gizmos.DrawLine(lineStartPos.position, lineEndPos.position);
@@ -127,6 +155,8 @@ public class Env_DrawDebugShape : MonoBehaviour
             }
         }
     }
+
+    //only shows gizmos if this item is selected
     private void OnDrawGizmosSelected()
     {
         if (!showAlways)
@@ -161,10 +191,24 @@ public class Env_DrawDebugShape : MonoBehaviour
                     Gizmos.DrawWireCube(transform.position, scale);
                     break;
                 case Shape.sphere:
-                    Gizmos.DrawSphere(transform.position, radius);
+                    if (connectedToCellScript)
+                    {
+                        Gizmos.DrawSphere(transform.position, CellScript.maxDistanceToDiscover);
+                    }
+                    else
+                    {
+                        Gizmos.DrawSphere(transform.position, radius);
+                    }
                     break;
                 case Shape.wireSphere:
-                    Gizmos.DrawWireSphere(transform.position, radius);
+                    if (connectedToCellScript)
+                    {
+                        Gizmos.DrawWireSphere(transform.position, CellScript.maxDistanceToDiscover);
+                    }
+                    else
+                    {
+                        Gizmos.DrawWireSphere(transform.position, radius);
+                    }
                     break;
                 case Shape.line:
                     Gizmos.DrawLine(lineStartPos.position, lineEndPos.position);

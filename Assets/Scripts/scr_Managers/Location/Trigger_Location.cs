@@ -16,7 +16,7 @@ public class Trigger_Location : MonoBehaviour
         battle
     }
     [SerializeField] private float maxDistanceToEnable;
-    [SerializeField] private float maxDistanceToDiscover;
+    public float maxDistanceToDiscover;
     [SerializeField] private GameObject location;
     [SerializeField] private GameObject location_discovered;
     public List<GameObject> containers;
@@ -78,20 +78,21 @@ public class Trigger_Location : MonoBehaviour
                 location_discovered.transform.localScale = discoveredStartScale * distance / 3;
             }
         }
-        else if (Vector3.Distance(thePlayer.transform.position, transform.position) <= maxDistanceToDiscover)
+        else if (Vector3.Distance(thePlayer.transform.position, transform.position) <= maxDistanceToEnable)
         {
-            if (location.activeInHierarchy)
-            {
-                location.SetActive(false);
-            }
             if (location_discovered.activeInHierarchy)
             {
                 location_discovered.SetActive(false);
             }
 
+            //plays location music
+            LocationManagerScript.UpdateCurrentLocation(locationType.ToString());
+
             if (!wasDiscovered)
             {
                 AnnouncementScript.CreateAnnouncement("Discovered " + cellName + "!");
+                Debug.Log("Discovered " + cellName + "!");
+
                 wasDiscovered = true;
             }
         }
@@ -104,19 +105,6 @@ public class Trigger_Location : MonoBehaviour
             if (location_discovered.activeInHierarchy)
             {
                 location_discovered.SetActive(false);
-            }
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            string theLocationType = locationType.ToString();
-            string currentLocationType = LocationManagerScript.locationType.ToString();
-            if (theLocationType != currentLocationType)
-            {
-                LocationManagerScript.UpdateCurrentLocation(theLocationType);
             }
         }
     }

@@ -44,7 +44,6 @@ public class Manager_Door : MonoBehaviour
     private Env_LockStatus LockStatusScript;
     private UI_Inventory PlayerInventoryScript;
     private UI_Lockpicking LockpickingScript;
-    private UI_PauseMenu PauseMenuScript;
     private Manager_Announcements AnnouncementScript;
 
     private void Awake()
@@ -52,7 +51,6 @@ public class Manager_Door : MonoBehaviour
         LockStatusScript = GetComponent<Env_LockStatus>();
         PlayerInventoryScript = thePlayer.GetComponent<UI_Inventory>();
         LockpickingScript = par_Managers.GetComponent<UI_Lockpicking>();
-        PauseMenuScript = par_Managers.GetComponent<UI_PauseMenu>();
         AnnouncementScript = par_Managers.GetComponent<Manager_Announcements>();
 
         if (par_RotationCenter != null)
@@ -167,6 +165,7 @@ public class Manager_Door : MonoBehaviour
                     if (!hasLockpicks)
                     {
                         AnnouncementScript.CreateAnnouncement("Did not find lockpicks to unlock " + doorName.Replace("_", " ") + "!");
+                        Debug.Log("Did not find lockpicks to unlock " + doorName.Replace("_", " ") + "!");
                     }
                 }
                 else
@@ -184,6 +183,7 @@ public class Manager_Door : MonoBehaviour
                     if (!foundKey)
                     {
                         AnnouncementScript.CreateAnnouncement("Did not find right key to unlock " + doorName.Replace("_", " ") + "!");
+                        Debug.Log("Did not find right key to unlock " + doorName.Replace("_", " ") + "!");
                     }
                     else
                     {

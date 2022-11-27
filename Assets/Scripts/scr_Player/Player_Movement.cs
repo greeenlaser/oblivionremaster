@@ -65,7 +65,7 @@ public class Player_Movement : MonoBehaviour
         canJump = true;
 
         originalHeight = CharacterController.height;
-        PlayerCamera.transform.localPosition = PlayerStatsScript.cameraWalkHeight;
+        PlayerCamera.transform.localPosition = new(0, 0.6f, 0);
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -115,7 +115,6 @@ public class Player_Movement : MonoBehaviour
 
             //check if smallest velocity is less than or equal to -25f
             if (minVelocity <= -25f)
-                //&& PlayerHealthScript.canTakeDamage)
             {
                 ApplyFallDamage();
                 minVelocity = -2f;
@@ -152,19 +151,17 @@ public class Player_Movement : MonoBehaviour
             && PlayerStatsScript.currentStamina >= Time.deltaTime * 10
             && horizontalVelocity.magnitude > 0.3f)
         {
-            //Debug.Log("Player is sprinting!");
-
             currentSpeed = PlayerStatsScript.sprintSpeed;
             PlayerStatsScript.currentStamina -= Time.deltaTime * 10;
             PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar);
 
             if (isCrouching)
             {
-                isCrouching = false;
-
                 CharacterController.height = originalHeight;
 
-                PlayerCamera.transform.localPosition = PlayerStatsScript.cameraWalkHeight;
+                PlayerCamera.transform.localPosition = new(0, 0.6f, 0);
+
+                isCrouching = false;
             }
         }
         //force-disables sprinting if the player is no longer moving but still holding down sprint key
@@ -236,7 +233,7 @@ public class Player_Movement : MonoBehaviour
 
                     CharacterController.height = originalHeight / 2;
 
-                    PlayerCamera.transform.localPosition = PlayerStatsScript.cameraCrouchHeight;
+                    PlayerCamera.transform.localPosition = new(0, 0.3f, 0);
                 }
                 else if (!isCrouching)
                 {
@@ -244,7 +241,7 @@ public class Player_Movement : MonoBehaviour
 
                     CharacterController.height = originalHeight;
 
-                    PlayerCamera.transform.localPosition = PlayerStatsScript.cameraWalkHeight;
+                    PlayerCamera.transform.localPosition = new(0, 0.6f, 0);
                 }
             }
         }
@@ -255,7 +252,7 @@ public class Player_Movement : MonoBehaviour
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 
-        Vector3 move = transform.right * x + PlayerCamera.gameObject.transform.forward * z;
+        Vector3 move = transform.right * x + PlayerCamera.transform.forward * z;
         move = Vector3.ClampMagnitude(move, 1);
 
         transform.position += noclipMoveSpeed * Time.deltaTime * move;

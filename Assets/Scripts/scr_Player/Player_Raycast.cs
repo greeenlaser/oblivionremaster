@@ -72,8 +72,6 @@ public class Player_Raycast : MonoBehaviour
                         if (target != hitTarget.transform.gameObject)
                         {
                             target = hitTarget.transform.gameObject;
-
-                            //Debug.Log("looking at " + target.name + "...");
                         }
 
                         timer = 0;

@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using TMPro;
-using Palmmedia.ReportGenerator.Core.Reporting.Builders;
 
 public class Manager_KeyBindings : MonoBehaviour
 {
