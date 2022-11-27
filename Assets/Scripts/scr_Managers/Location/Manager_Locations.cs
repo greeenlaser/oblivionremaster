@@ -54,6 +54,6 @@ public class Manager_Locations : MonoBehaviour
 
         DateAndTimeScript.daysSinceLastRestart = 3;
 
-        Debug.Log("Successfully reset all locations!");
+        Debug.Log("Info: Reset all locations.");
     }
 }

@@ -36,6 +36,6 @@ public class Manager_DealEffect : MonoBehaviour
                                    effectValue,
                                    effectDuration);
 
-        Debug.Log(dealerName + " dealt " + effectValue + " " + effectName + " to " + receiver.name + " for " + effectDuration + " seconds.");
+        Debug.Log("Info: " + dealerName + " dealt " + effectValue + " " + effectName + " to " + receiver.name + " for " + effectDuration + " seconds.");
     }
 }

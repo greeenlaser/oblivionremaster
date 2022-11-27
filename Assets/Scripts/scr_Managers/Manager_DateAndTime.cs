@@ -73,7 +73,7 @@ public class Manager_DateAndTime : MonoBehaviour
             tenMinuteCounter--;
             if (tenMinuteCounter == 0)
             {
-                Debug.Log("Time is " + hour + ":00.");
+                Debug.Log("Info: Time is " + hour + ":00.");
                 SetSunPosition();
             }
 

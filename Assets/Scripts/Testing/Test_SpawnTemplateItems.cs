@@ -24,6 +24,6 @@ public class Test_SpawnTemplateItems : MonoBehaviour
         newItem.name = newItem.GetComponent<Env_Item>().itemName;
         newItem.SetActive(true);
 
-        Debug.Log("Spawned " + newItem.name.Replace("_", " ") + " at " + transform.position.ToString() + ".");
+        Debug.Log("Info: Spawned " + newItem.name.Replace("_", " ") + " at " + transform.position.ToString() + ".");
     }
 }

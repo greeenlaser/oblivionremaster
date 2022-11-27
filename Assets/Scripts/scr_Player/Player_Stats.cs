@@ -203,7 +203,7 @@ public class Player_Stats : MonoBehaviour
                         SkillPoints[skill] = skillLevel * 150 - savedPoints;
                         GivePlayerExperience(skillLevel * 25);
 
-                        Debug.Log("Leveled up " + skill + " to " + skillLevel + "!");
+                        Debug.Log("Info: Leveled up " + skill + " to " + skillLevel + ".");
                         leveledUpSkill = false;
                     }
                     else
@@ -245,7 +245,7 @@ public class Player_Stats : MonoBehaviour
             level++;
             level_PointsToNextLevel = level * 500 - extraExp;
 
-            Debug.Log("Player leveled up to " + level + "!");
+            Debug.Log("Info: Player leveled up to " + level + ".");
         }
     }
 
@@ -294,7 +294,7 @@ public class Player_Stats : MonoBehaviour
             skillCount++;
         }
 
-        Debug.Log("Player reached level " + level + " with " + expRequired + " exp remaining until next level...");
+        Debug.Log("Info: Player reached level " + level + " with " + expRequired + " exp remaining until next level...");
     }
     */
 }

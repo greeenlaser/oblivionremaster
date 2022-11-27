@@ -165,7 +165,7 @@ public class Manager_Door : MonoBehaviour
                     if (!hasLockpicks)
                     {
                         AnnouncementScript.CreateAnnouncement("Did not find lockpicks to unlock " + doorName.Replace("_", " ") + "!");
-                        Debug.Log("Did not find lockpicks to unlock " + doorName.Replace("_", " ") + "!");
+                        Debug.LogWarning("Requirements not met: Did not find lockpicks to unlock " + doorName.Replace("_", " ") + "!");
                     }
                 }
                 else
@@ -183,7 +183,7 @@ public class Manager_Door : MonoBehaviour
                     if (!foundKey)
                     {
                         AnnouncementScript.CreateAnnouncement("Did not find right key to unlock " + doorName.Replace("_", " ") + "!");
-                        Debug.Log("Did not find right key to unlock " + doorName.Replace("_", " ") + "!");
+                        Debug.LogWarning("Requirements not met: Did not find right key to unlock " + doorName.Replace("_", " ") + "!");
                     }
                     else
                     {

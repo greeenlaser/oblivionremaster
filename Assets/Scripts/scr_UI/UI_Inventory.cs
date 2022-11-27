@@ -99,7 +99,7 @@ public class UI_Inventory : MonoBehaviour
                 if (!hasLockpicks)
                 {
                     AnnouncementScript.CreateAnnouncement("Did not find lockpicks to unlock " + containerName + "!");
-                    Debug.Log("Did not find lockpicks to unlock " + containerName + "!");
+                    Debug.LogWarning("Requirements not met: Did not find lockpicks to unlock " + containerName + "!");
                 }
             }
             else
@@ -117,7 +117,7 @@ public class UI_Inventory : MonoBehaviour
                 if (!foundKey)
                 {
                     AnnouncementScript.CreateAnnouncement("Did not find right key to unlock " + containerName + "!");
-                    Debug.Log("Did not find right key to unlock " + containerName + "!");
+                    Debug.LogWarning("Requirements not met: Did not find right key to unlock " + containerName + "!");
                 }
                 else
                 {
@@ -536,7 +536,7 @@ public class UI_Inventory : MonoBehaviour
     //equip/use selected item in player inventory
     public void UseItem(GameObject targetItem)
     {
-        Debug.Log("using/consuming " + targetItem.GetComponent<Env_Item>().itemName.Replace("_", " ") + "...");
+        Debug.Log("Info: Using/consuming " + targetItem.GetComponent<Env_Item>().itemName.Replace("_", " ") + "...");
     }
     //take an item from a container or from the world
     public void TakeItem(GameObject targetItem, 
@@ -573,7 +573,7 @@ public class UI_Inventory : MonoBehaviour
             else
             {
                 AnnouncementScript.CreateAnnouncement("Not enough space to take " + targetItem.name + "(s)!");
-                Debug.Log("Not enough space to take " + targetItem.name + "(s)!");
+                Debug.LogWarning("Requirements not met: Not enough space to take " + targetItem.name + "(s)!");
             }
         }
         //player takes/places items from/to container
@@ -666,7 +666,7 @@ public class UI_Inventory : MonoBehaviour
             && targetLocation == par_PlayerItems)
         {
             AnnouncementScript.CreateAnnouncement("Picked up " + selectedCount + " " + item.name + "(s).");
-            Debug.Log("Picked up " + selectedCount + " " + item.name + "(s).");
+            Debug.Log("Info: Picked up " + selectedCount + " " + item.name + "(s).");
         }
 
         //if the player isnt moving all of the items

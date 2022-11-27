@@ -226,7 +226,7 @@ public class Manager_KeyBindings : MonoBehaviour
             RebuildKeyBindingsList("combat");
         }
 
-        Debug.Log("Successfully assigned key " + pressedKey.ToString().Replace("KeyCode.", "") + " to action " + info + "!");
+        Debug.Log("Success: Assigned key " + pressedKey.ToString().Replace("KeyCode.", "") + " to action " + info + "!");
     }
     public void ResetKeyBindings(bool canReset)
     {
@@ -333,7 +333,7 @@ public class Manager_KeyBindings : MonoBehaviour
         keyBindingsFile.WriteLine("SideAttack: " + KeyBindings["SideAttack"].ToString().Replace("KeyCode.", ""));
         keyBindingsFile.WriteLine("DropEquippedWeapon: " + KeyBindings["DropEquippedWeapon"].ToString().Replace("KeyCode.", ""));
 
-        Debug.Log("Successfully saved " + KeyBindings.Count + " key bindings!");
+        Debug.Log("Success: Saved " + KeyBindings.Count + " key bindings!");
     }
     //load all key bindings from KeyBindings.txt if it exists,
     //otherwise load default values
@@ -397,16 +397,16 @@ public class Manager_KeyBindings : MonoBehaviour
                     }
                     else
                     {
-                        Debug.LogError("Error: " + type + " name in key bindings file is invalid! Resetting to default value.");
+                        Debug.LogError("Incorrect value: " + type + " name in key bindings file is invalid! Resetting to default value.");
                     }
                 }
             }
-            Debug.Log("Successfully loaded key bindings from " + GameManagerScript.settingsPath + @"\KeyBindings.txt" + "!");
+            Debug.Log("Success: Loaded key bindings from " + GameManagerScript.settingsPath + @"\KeyBindings.txt" + "!");
         }
         else
         {
             ResetKeyBindings(true);
-            Debug.Log("Loaded default key bindings.");
+            Debug.Log("Info: Loaded default key bindings.");
         }
     }
 

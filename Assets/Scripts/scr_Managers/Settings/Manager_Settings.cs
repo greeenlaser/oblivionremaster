@@ -816,7 +816,6 @@ public class Manager_Settings : MonoBehaviour
             {
                 //TODO: assign preset
                 string dropDownValue = dropDown.options[dropDown.value].ToString();
-                Debug.Log(dropDownValue);
                 user_Preset = (UserDefined_Preset)Enum.Parse(typeof(UserDefined_Preset), dropDownValue);
             }
             //apply resolution and fullscreen mode
@@ -966,7 +965,7 @@ public class Manager_Settings : MonoBehaviour
         settingsFile.WriteLine("SFXVolume: " + user_SFXVolume);
         settingsFile.WriteLine("NPCVolume: " + user_NPCVolume);
 
-        Debug.Log("Successfully saved settings to " + filePath + ".");
+        Debug.Log("Success: Saved settings to " + filePath + "!");
     }
 
     //load settings from Settings.txt,
@@ -978,7 +977,7 @@ public class Manager_Settings : MonoBehaviour
         if (!File.Exists(settingsFilePath))
         {
             ResetSettings(true);
-            Debug.Log("Loaded default settings.");
+            Debug.Log("Info: Loaded default settings.");
         }
         else
         {
@@ -1028,13 +1027,13 @@ public class Manager_Settings : MonoBehaviour
                                     }
                                     else
                                     {
-                                        Debug.LogError("Error: " + type + " value in settings file is out of range! Resetting to default value.");
+                                        Debug.LogError("Incorrect value: " + type + " value in settings file is out of range! Resetting to default value.");
                                         user_Difficulty = def_Difficulty;
                                     }
                                 }
                                 else
                                 {
-                                    Debug.LogError("Error: " + type + " value in settings file is invalid! Resetting to default value.");
+                                    Debug.LogError("Incorrect value: " + type + " value in settings file is invalid! Resetting to default value.");
                                     user_Difficulty = def_Difficulty;
                                 }
                             }
@@ -1052,7 +1051,7 @@ public class Manager_Settings : MonoBehaviour
                                     }
                                     else
                                     {
-                                        Debug.LogError("Error: " + type + " value in settings file is invalid! Resetting to default value.");
+                                        Debug.LogError("Incorrect value: " + type + " value in settings file is invalid! Resetting to default value.");
                                         user_MouseSpeed = def_MouseSpeed;
                                         PlayerCameraScript.sensX = user_MouseSpeed;
                                         PlayerCameraScript.sensY = user_MouseSpeed;
@@ -1060,7 +1059,7 @@ public class Manager_Settings : MonoBehaviour
                                 }
                                 else
                                 {
-                                    Debug.LogError("Error: " + type + " value in settings file is invalid! Resetting to default value.");
+                                    Debug.LogError("Incorrect value: " + type + " value in settings file is invalid! Resetting to default value.");
                                     user_MouseSpeed = def_MouseSpeed;
                                     PlayerCameraScript.sensX = user_MouseSpeed;
                                     PlayerCameraScript.sensY = user_MouseSpeed;
@@ -1088,7 +1087,7 @@ public class Manager_Settings : MonoBehaviour
                                 }
                                 else
                                 {
-                                    Debug.LogError("Error: " + type + " value in settings file is invalid! Resetting to default value.");
+                                    Debug.LogError("Incorrect value: " + type + " value in settings file is invalid! Resetting to default value.");
                                     user_Preset = def_Preset;
                                 }
                             }
@@ -1110,7 +1109,7 @@ public class Manager_Settings : MonoBehaviour
                                 }
                                 else
                                 {
-                                    Debug.LogError("Error: " + type + " value in settings file is invalid! Resetting to default value.");
+                                    Debug.LogError("Incorrect value: " + type + " value in settings file is invalid! Resetting to default value.");
                                     user_Resolution = def_Resolution;
                                 }
                             }
@@ -1132,7 +1131,7 @@ public class Manager_Settings : MonoBehaviour
                                 }
                                 else
                                 {
-                                    Debug.LogError("Error: " + type + " value in settings file is invalid! Resetting to default value.");
+                                    Debug.LogError("Incorrect value: " + type + " value in settings file is invalid! Resetting to default value.");
                                     user_FullScreenMode = def_FullScreenMode;
                                 }
 
@@ -1177,14 +1176,14 @@ public class Manager_Settings : MonoBehaviour
                                     }
                                     else
                                     {
-                                        Debug.LogError("Error: " + type + " value in settings file is out of range! Resetting to default value.");
+                                        Debug.LogError("Incorrect value: " + type + " value in settings file is out of range! Resetting to default value.");
                                         user_FieldOfView = def_FieldOfView;
                                         playerMainCamera.GetComponent<Camera>().fieldOfView = user_FieldOfView;
                                     }
                                 }
                                 else
                                 {
-                                    Debug.LogError("Error: " + type + " value in settings file is invalid! Resetting to default value.");
+                                    Debug.LogError("Incorrect value: " + type + " value in settings file is invalid! Resetting to default value.");
                                     user_FieldOfView = def_FieldOfView;
                                     playerMainCamera.GetComponent<Camera>().fieldOfView = user_FieldOfView;
                                 }
@@ -1198,7 +1197,7 @@ public class Manager_Settings : MonoBehaviour
                                 }
                                 else
                                 {
-                                    Debug.LogError("Error: " + type + " value in settings file is invalid! Resetting to default value.");
+                                    Debug.LogError("Incorrect value: " + type + " value in settings file is invalid! Resetting to default value.");
                                     user_EnableVSync = def_EnableVsync;
                                 }
 
@@ -1231,7 +1230,7 @@ public class Manager_Settings : MonoBehaviour
                                 }
                                 else
                                 {
-                                    Debug.LogError("Error: " + type + " value in settings file is invalid! Resetting to default value.");
+                                    Debug.LogError("Incorrect value: " + type + " value in settings file is invalid! Resetting to default value.");
                                     user_TextureQuality = def_TextureQuality;
                                 }
                             }
@@ -1251,13 +1250,13 @@ public class Manager_Settings : MonoBehaviour
                                     }
                                     else
                                     {
-                                        Debug.LogError("Error: " + type + " value in settings file is out of range! Resetting to default value.");
+                                        Debug.LogError("Incorrect value: " + type + " value in settings file is out of range! Resetting to default value.");
                                         user_LightDistance = def_LightDistance;
                                     }
                                 }
                                 else
                                 {
-                                    Debug.LogError("Error: " + type + " value in settings file is invalid! Resetting to default value.");
+                                    Debug.LogError("Incorrect value: " + type + " value in settings file is invalid! Resetting to default value.");
                                     user_LightDistance = def_LightDistance;
                                 }
                             }
@@ -1277,13 +1276,13 @@ public class Manager_Settings : MonoBehaviour
                                     }
                                     else
                                     {
-                                        Debug.LogError("Error: " + type + " value in settings file is out of range! Resetting to default value.");
+                                        Debug.LogError("Incorrect value: " + type + " value in settings file is out of range! Resetting to default value.");
                                         user_ShadowDistance = def_ShadowDistance;
                                     }
                                 }
                                 else
                                 {
-                                    Debug.LogError("Error: " + type + " value in settings file is invalid! Resetting to default value.");
+                                    Debug.LogError("Incorrect value: " + type + " value in settings file is invalid! Resetting to default value.");
                                     user_ShadowDistance = def_ShadowDistance;
                                 }
                             }
@@ -1307,7 +1306,7 @@ public class Manager_Settings : MonoBehaviour
                                 }
                                 else
                                 {
-                                    Debug.LogError("Error: " + type + " value in settings file is invalid! Resetting to default value.");
+                                    Debug.LogError("Incorrect value: " + type + " value in settings file is invalid! Resetting to default value.");
                                     user_ShadowQuality = def_ShadowQuality;
                                 }
                             }
@@ -1327,13 +1326,13 @@ public class Manager_Settings : MonoBehaviour
                                     }
                                     else
                                     {
-                                        Debug.LogError("Error: " + type + " value in settings file is out of range! Resetting to default value.");
+                                        Debug.LogError("Incorrect value: " + type + " value in settings file is out of range! Resetting to default value.");
                                         user_TreeDistance = def_TreeDistance;
                                     }
                                 }
                                 else
                                 {
-                                    Debug.LogError("Error: " + type + " value in settings file is invalid! Resetting to default value.");
+                                    Debug.LogError("Incorrect value: " + type + " value in settings file is invalid! Resetting to default value.");
                                     user_TreeDistance = def_TreeDistance;
                                 }
                             }
@@ -1353,13 +1352,13 @@ public class Manager_Settings : MonoBehaviour
                                     }
                                     else
                                     {
-                                        Debug.LogError("Error: " + type + " value in settings file is out of range! Resetting to default value.");
+                                        Debug.LogError("Incorrect value: " + type + " value in settings file is out of range! Resetting to default value.");
                                         user_GrassDistance = def_GrassDistance;
                                     }
                                 }
                                 else
                                 {
-                                    Debug.LogError("Error: " + type + " value in settings file is invalid! Resetting to default value.");
+                                    Debug.LogError("Incorrect value: " + type + " value in settings file is invalid! Resetting to default value.");
                                     user_GrassDistance = def_GrassDistance;
                                 }
                             }
@@ -1379,13 +1378,13 @@ public class Manager_Settings : MonoBehaviour
                                     }
                                     else
                                     {
-                                        Debug.LogError("Error: " + type + " value in settings file is out of range! Resetting to default value.");
+                                        Debug.LogError("Incorrect value: " + type + " value in settings file is out of range! Resetting to default value.");
                                         user_ObjectDistance = def_ObjectDistance;
                                     }
                                 }
                                 else
                                 {
-                                    Debug.LogError("Error: " + type + " value in settings file is invalid! Resetting to default value.");
+                                    Debug.LogError("Incorrect value: " + type + " value in settings file is invalid! Resetting to default value.");
                                     user_ObjectDistance = def_ObjectDistance;
                                 }
                             }
@@ -1405,13 +1404,13 @@ public class Manager_Settings : MonoBehaviour
                                     }
                                     else
                                     {
-                                        Debug.LogError("Error: " + type + " value in settings file is out of range! Resetting to default value.");
+                                        Debug.LogError("Incorrect value: " + type + " value in settings file is out of range! Resetting to default value.");
                                         user_ItemDistance = def_ItemDistance;
                                     }
                                 }
                                 else
                                 {
-                                    Debug.LogError("Error: " + type + " value in settings file is invalid! Resetting to default value.");
+                                    Debug.LogError("Incorrect value: " + type + " value in settings file is invalid! Resetting to default value.");
                                     user_ItemDistance = def_ItemDistance;
                                 }
                             }
@@ -1431,13 +1430,13 @@ public class Manager_Settings : MonoBehaviour
                                     }
                                     else
                                     {
-                                        Debug.LogError("Error: " + type + " value in settings file is out of range! Resetting to default value.");
+                                        Debug.LogError("Incorrect value: " + type + " value in settings file is out of range! Resetting to default value.");
                                         user_AIDistance = def_AIDistance;
                                     }
                                 }
                                 else
                                 {
-                                    Debug.LogError("Error: " + type + " value in settings file is invalid! Resetting to default value.");
+                                    Debug.LogError("Incorrect value: " + type + " value in settings file is invalid! Resetting to default value.");
                                     user_AIDistance = def_AIDistance;
                                 }
                             }
@@ -1459,13 +1458,13 @@ public class Manager_Settings : MonoBehaviour
                                     }
                                     else
                                     {
-                                        Debug.LogError("Error: " + type + " value in settings file is out of range! Resetting to default value.");
+                                        Debug.LogError("Incorrect value: " + type + " value in settings file is out of range! Resetting to default value.");
                                         user_MasterVolume = def_MasterVolume;
                                     }
                                 }
                                 else
                                 {
-                                    Debug.LogError("Error: " + type + " value in settings file is invalid! Resetting to default value.");
+                                    Debug.LogError("Incorrect value: " + type + " value in settings file is invalid! Resetting to default value.");
                                     user_MasterVolume = def_MasterVolume;
                                 }
                             }
@@ -1485,13 +1484,13 @@ public class Manager_Settings : MonoBehaviour
                                     }
                                     else
                                     {
-                                        Debug.LogError("Error: " + type + " value in settings file is out of range! Resetting to default value.");
+                                        Debug.LogError("Incorrect value: " + type + " value in settings file is out of range! Resetting to default value.");
                                         user_MusicVolume = def_MusicVolume;
                                     }
                                 }
                                 else
                                 {
-                                    Debug.LogError("Error: " + type + " value in settings file is invalid! Resetting to default value.");
+                                    Debug.LogError("Incorrect value: " + type + " value in settings file is invalid! Resetting to default value.");
                                     user_MusicVolume = def_MusicVolume;
                                 }
                             }
@@ -1511,13 +1510,13 @@ public class Manager_Settings : MonoBehaviour
                                     }
                                     else
                                     {
-                                        Debug.LogError("Error: " + type + " value in settings file is out of range! Resetting to default value.");
+                                        Debug.LogError("Incorrect value: " + type + " value in settings file is out of range! Resetting to default value.");
                                         user_SFXVolume = def_SFXVolume;
                                     }
                                 }
                                 else
                                 {
-                                    Debug.LogError("Error: " + type + " value in settings file is invalid! Resetting to default value.");
+                                    Debug.LogError("Incorrect value: " + type + " value in settings file is invalid! Resetting to default value.");
                                     user_SFXVolume = def_SFXVolume;
                                 }
                             }
@@ -1537,13 +1536,13 @@ public class Manager_Settings : MonoBehaviour
                                     }
                                     else
                                     {
-                                        Debug.LogError("Error: " + type + " value in settings file is out of range! Resetting to default value.");
+                                        Debug.LogError("Incorrect value: " + type + " value in settings file is out of range! Resetting to default value.");
                                         user_NPCVolume = def_NPCVolume;
                                     }
                                 }
                                 else
                                 {
-                                    Debug.LogError("Error: " + type + " value in settings file is invalid! Resetting to default value.");
+                                    Debug.LogError("Incorrect value: " + type + " value in settings file is invalid! Resetting to default value.");
                                     user_NPCVolume = def_NPCVolume;
                                 }
                             }
@@ -1552,7 +1551,7 @@ public class Manager_Settings : MonoBehaviour
                 }
             }
 
-            Debug.Log("Successfully loaded game settings from " + GameManagerScript.settingsPath + @"\Settings.txt" + "!");
+            Debug.Log("Success: Loaded game settings from " + GameManagerScript.settingsPath + @"\Settings.txt" + "!");
         }
     }
 }

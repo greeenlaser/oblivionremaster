@@ -44,7 +44,7 @@ public class UI_Lockpicking : MonoBehaviour
     private float tumblerMoveSpeed;
     private float lockpickTimer;
     private float tumblerTimer;
-    private float[] slotPositions =
+    private readonly float[] slotPositions =
     {
         -360,
         -302,
@@ -433,11 +433,11 @@ public class UI_Lockpicking : MonoBehaviour
     {
         if (LockStatusScript.GetComponent<Manager_Door>() != null)
         {
-            Debug.Log("Successfully unlocked " + LockStatusScript.GetComponent<Manager_Door>().doorName + "!");
+            Debug.Log("Info: Unlocked " + LockStatusScript.GetComponent<Manager_Door>().doorName + ".");
         }
         else if (LockStatusScript.GetComponent<UI_Inventory>() != null)
         {
-            Debug.Log("Successfully unlocked " + LockStatusScript.GetComponent<UI_Inventory>().containerName + "!");
+            Debug.Log("Info: Unlocked " + LockStatusScript.GetComponent<UI_Inventory>().containerName + ".");
         }
 
         LockStatusScript.isUnlocked = true;

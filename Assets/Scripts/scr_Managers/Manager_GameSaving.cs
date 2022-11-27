@@ -120,7 +120,7 @@ public class Manager_GameSaving : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Error: Did not find game save path!");
+            Debug.LogError("Error: Did not find game save path!");
         }
     }
     //shows a few details of the game save
@@ -221,7 +221,7 @@ public class Manager_GameSaving : MonoBehaviour
 
             ShowGameSaves();
 
-            Debug.Log("Successfully deleted save " + saveName.Replace(".txt", "") + ".");
+            Debug.Log("Success: Deleted save " + saveName.Replace(".txt", "") + "!");
         }
         else
         {
@@ -234,7 +234,7 @@ public class Manager_GameSaving : MonoBehaviour
     {
         if (PlayerStatsScript.currentHealth == 0)
         {
-            Debug.LogWarning("Error: Cannot save while player is dead!");
+            Debug.LogWarning("Requirements not met: Cannot save while player is dead!");
         }
         else
         {
@@ -544,7 +544,7 @@ public class Manager_GameSaving : MonoBehaviour
             }
         }
 
-        Debug.Log("Successfully saved game to " + SaveFilePath + "!");
+        Debug.Log("Success: Saved game to " + SaveFilePath + "!");
     }
 
     //creates a load file where the game scene
@@ -567,7 +567,7 @@ public class Manager_GameSaving : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("Error: Cannot load game because no saves were found at " + GameManagerScript.savePath + "!");
+                Debug.LogWarning("Requirements not met: Cannot load game because no saves were found at " + GameManagerScript.savePath + "!");
             }
         }
         //load custom save
@@ -591,7 +591,7 @@ public class Manager_GameSaving : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("Error: Cannot load game because no saves were found at " + GameManagerScript.savePath + "!");
+                Debug.LogWarning("Requirements not met: Cannot load game because no saves were found at " + GameManagerScript.savePath + "!");
             }
         }
 
@@ -609,7 +609,7 @@ public class Manager_GameSaving : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Error: Did not find save from " + GameManagerScript.savePath + ". Save name is invalid or not found!");
+            Debug.LogError("Error: Did not find save from " + GameManagerScript.savePath + ". Save name is invalid or not found!");
         }
     }
     //find the correct save file to load from the load file
@@ -642,7 +642,7 @@ public class Manager_GameSaving : MonoBehaviour
             }
             else
             {
-                Debug.Log("Started new game.");
+                Debug.Log("Info: Started new game.");
                 LocationsScript.ResetAllLocations();
 
                 //apply default date
@@ -702,13 +702,13 @@ public class Manager_GameSaving : MonoBehaviour
                             }
                             else
                             {
-                                Debug.LogError("Error: Days since restart value in game save " + saveFileName + " is out of range! Resetting to default value.");
+                                Debug.LogError("Incorrect value: Days since restart value in game save " + saveFileName + " is out of range! Resetting to default value.");
                                 DateAndTimeScript.daysSinceLastRestart = 3;
                             }
                         }
                         else
                         {
-                            Debug.LogError("Error: Days since restart value in game save " + saveFileName + " is invalid! Resetting to default value.");
+                            Debug.LogError("Incorrect value: Days since restart value in game save " + saveFileName + " is invalid! Resetting to default value.");
                             DateAndTimeScript.daysSinceLastRestart = 3;
                         }
                     }
@@ -727,13 +727,13 @@ public class Manager_GameSaving : MonoBehaviour
                             }
                             else
                             {
-                                Debug.LogError("Error: Time and date minute value in game save " + saveFileName + " is out of range! Resetting to default value.");
+                                Debug.LogError("Incorrect value: Time and date minute value in game save " + saveFileName + " is out of range! Resetting to default value.");
                                 min = 0;
                             }
                         }
                         else
                         {
-                            Debug.LogError("Error: Time and date minute value in game save " + saveFileName + " is invalid! Resetting to default value.");
+                            Debug.LogError("Incorrect value: Time and date minute value in game save " + saveFileName + " is invalid! Resetting to default value.");
                             min = 0;
                         }
 
@@ -749,13 +749,13 @@ public class Manager_GameSaving : MonoBehaviour
                             }
                             else
                             {
-                                Debug.LogError("Error: Time and date hour value in game save " + saveFileName + " is out of range! Resetting to default value.");
+                                Debug.LogError("Incorrect value: Time and date hour value in game save " + saveFileName + " is out of range! Resetting to default value.");
                                 hr = 12;
                             }
                         }
                         else
                         {
-                            Debug.LogError("Error: Time and date hour value in game save " + saveFileName + " is invalid! Resetting to default value.");
+                            Debug.LogError("Incorrect value: Time and date hour value in game save " + saveFileName + " is invalid! Resetting to default value.");
                             hr = 12;
                         }
 
@@ -788,13 +788,13 @@ public class Manager_GameSaving : MonoBehaviour
                             }
                             else
                             {
-                                Debug.LogError("Error: Time and date month value in game save " + saveFileName + " is invalid! Resetting to default value.");
+                                Debug.LogError("Incorrect value: Time and date month value in game save " + saveFileName + " is invalid! Resetting to default value.");
                                 month = "Last Seed";
                             }
                         }
                         else
                         {
-                            Debug.LogError("Error: Time and date month value in game save " + saveFileName + " is invalid! Resetting to default value.");
+                            Debug.LogError("Incorrect value: Time and date month value in game save " + saveFileName + " is invalid! Resetting to default value.");
                             month = "Last Seed";
                         }
 
@@ -833,13 +833,13 @@ public class Manager_GameSaving : MonoBehaviour
                             }
                             else
                             {
-                                Debug.LogError("Error: Time and date day value in game save " + saveFileName + " is out of range! Resetting to default value.");
+                                Debug.LogError("Incorrect value: Time and date day value in game save " + saveFileName + " is out of range! Resetting to default value.");
                                 date = "27 Morndas";
                             }
                         }
                         else
                         {
-                            Debug.LogError("Error: Time and date day value in game save " + saveFileName + " is invalid! Resetting to default value.");
+                            Debug.LogError("Incorrect value: Time and date day value in game save " + saveFileName + " is invalid! Resetting to default value.");
                             date = "27 Morndas";
                         }
 
@@ -863,7 +863,7 @@ public class Manager_GameSaving : MonoBehaviour
                         }
                         else
                         {
-                            Debug.LogError("Error: One or more player position values in game save " + saveFileName + " are invalid! Resetting to default values.");
+                            Debug.LogError("Incorrect value: One or more player position values in game save " + saveFileName + " are invalid! Resetting to default values.");
                             thePlayer.transform.position = Vector3.zero;
                         }
                     }
@@ -884,7 +884,7 @@ public class Manager_GameSaving : MonoBehaviour
                         }
                         else
                         {
-                            Debug.LogError("Error: One or more player rotation values in game save " + saveFileName + " are invalid! Resetting to default values.");
+                            Debug.LogError("Incorrect value: One or more player rotation values in game save " + saveFileName + " are invalid! Resetting to default values.");
                             thePlayer.transform.rotation = Quaternion.Euler(Vector3.zero);
                         }
                     }
@@ -905,7 +905,7 @@ public class Manager_GameSaving : MonoBehaviour
                         }
                         else
                         {
-                            Debug.LogError("Error: One or more player camera rotation values in game save " + saveFileName + " are invalid! Resetting to default values.");
+                            Debug.LogError("Incorrect value: One or more player camera rotation values in game save " + saveFileName + " are invalid! Resetting to default values.");
                             thePlayer.GetComponentInChildren<Camera>().transform.rotation = Quaternion.Euler(Vector3.zero);
                         }
                     }
@@ -928,13 +928,13 @@ public class Manager_GameSaving : MonoBehaviour
                             }
                             else
                             {
-                                Debug.LogError("Error: Level required points value in game save " + saveFileName + " is out of range! Resetting to default value.");
+                                Debug.LogError("Incorrect value: Level required points value in game save " + saveFileName + " is out of range! Resetting to default value.");
                                 PlayerStatsScript.level_PointsToNextLevel = PlayerStatsScript.level * 500;
                             }
                         }
                         else
                         {
-                            Debug.LogError("Error: Level value in game save " + saveFileName + " is out of range! Resetting to default value.");
+                            Debug.LogError("Incorrect value: Level value in game save " + saveFileName + " is out of range! Resetting to default value.");
                             PlayerStatsScript.level = 1;
                         }
                     }
@@ -955,14 +955,14 @@ public class Manager_GameSaving : MonoBehaviour
                         }
                         else
                         {
-                            Debug.LogError("Error: " + type + " value in game save " + saveFileName + " is invalid! Resetting to default value.");
+                            Debug.LogError("Incorrect value: " + type + " value in game save " + saveFileName + " is invalid! Resetting to default value.");
                             insertedValue = 100;
                         }
                         
                         if (insertedValue < 1
                             || insertedValue > 1000000)
                         {
-                            Debug.LogError("Error: " + type + " value in game save " + saveFileName + " is out of range! Resetting to default value.");
+                            Debug.LogError("Incorrect value: " + type + " value in game save " + saveFileName + " is out of range! Resetting to default value.");
                             insertedValue = 100;
                         }
 
@@ -1022,7 +1022,7 @@ public class Manager_GameSaving : MonoBehaviour
                             }
                             else
                             {
-                                Debug.LogError("Error: Max inventory space value in game save " + saveFileName + " is out of range! Setting to inventory space value.");
+                                Debug.LogError("Incorrect value: Max inventory space value in game save " + saveFileName + " is out of range! Setting to inventory space value.");
                             }
                         }
                     }
@@ -1054,12 +1054,12 @@ public class Manager_GameSaving : MonoBehaviour
                                 || insertedValue > 10)
                             {
                                 insertedValue = 1;
-                                Debug.LogError("Error: " + type + " attribute level in game save " + saveFileName + " is out of range! Resetting to default value.");
+                                Debug.LogError("Incorrect value: " + type + " attribute level in game save " + saveFileName + " is out of range! Resetting to default value.");
                             }
                         }
                         else
                         {
-                            Debug.LogError("Error: " + type + " attribute level in game save " + saveFileName + " is invalid! Resetting to default value.");
+                            Debug.LogError("Incorrect value: " + type + " attribute level in game save " + saveFileName + " is invalid! Resetting to default value.");
                             insertedValue = 1;
                         }
 
@@ -1107,12 +1107,12 @@ public class Manager_GameSaving : MonoBehaviour
                                 || insertedSkillLevel > 10)
                             {
                                 insertedSkillLevel = 1;
-                                Debug.LogError("Error: " + type + " skill level in game save " + saveFileName + " is out of range! Resetting to default value.");
+                                Debug.LogError("Incorrect value: " + type + " skill level in game save " + saveFileName + " is out of range! Resetting to default value.");
                             }
                         }
                         else
                         {
-                            Debug.LogError("Error: " + type + " skill level in game save " + saveFileName + " is invalid! Resetting to default value.");
+                            Debug.LogError("Incorrect value: " + type + " skill level in game save " + saveFileName + " is invalid! Resetting to default value.");
                             insertedSkillLevel = 1;
                         }
 
@@ -1144,12 +1144,12 @@ public class Manager_GameSaving : MonoBehaviour
                                 || insertedSkillpoints > PlayerStatsScript.Skills[type] * 150)
                             {
                                 insertedSkillpoints = 1;
-                                Debug.LogError("Error: " + type + " skill points value in game save " + saveFileName + " is out of range! Resetting to default value.");
+                                Debug.LogError("Incorrect value: " + type + " skill points value in game save " + saveFileName + " is out of range! Resetting to default value.");
                             }
                         }
                         else
                         {
-                            Debug.LogError("Error: " + type + " skill points value in game save " + saveFileName + " is invalid! Resetting to default value.");
+                            Debug.LogError("Incorrect value: " + type + " skill points value in game save " + saveFileName + " is invalid! Resetting to default value.");
                             insertedSkillpoints = PlayerStatsScript.Skills[type] * 150;
                         }
 
@@ -1296,7 +1296,7 @@ public class Manager_GameSaving : MonoBehaviour
             PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar);
             PlayerStatsScript.UpdateBar(PlayerStatsScript.magickaBar);
 
-            Debug.Log("Successfully loaded save file " + saveFileName.Replace(".txt", "") + " from " + GameManagerScript.savePath + "!");
+            Debug.Log("Success: Loaded save file " + saveFileName.Replace(".txt", "") + " from " + GameManagerScript.savePath + "!");
         }
     }
 

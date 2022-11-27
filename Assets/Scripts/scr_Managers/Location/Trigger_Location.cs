@@ -91,7 +91,7 @@ public class Trigger_Location : MonoBehaviour
             if (!wasDiscovered)
             {
                 AnnouncementScript.CreateAnnouncement("Discovered " + cellName + "!");
-                Debug.Log("Discovered " + cellName + "!");
+                Debug.Log("Info: Discovered " + cellName + ".");
 
                 wasDiscovered = true;
             }

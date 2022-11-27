@@ -179,7 +179,7 @@ public class GameManager : MonoBehaviour
                 //using a text editor to write text to the game graphics file
                 using StreamWriter dateFile = File.CreateText(datefilepath);
 
-                dateFile.WriteLine("WARNING: This file is not meant to be edited! This is used to confirm the creation date of the game.");
+                dateFile.WriteLine("Info: This file is used for changing the time of the build date that this build was created on.");
                 dateFile.WriteLine("");
 
                 now = DateTime.Now;
