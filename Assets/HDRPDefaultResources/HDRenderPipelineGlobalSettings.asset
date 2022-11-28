@@ -85,52 +85,17 @@ MonoBehaviour:
   shaderVariantLogLevel: 0
   lensAttenuationMode: 0
   diffusionProfileSettingsList:
-  - {fileID: 11400000, guid: 10e59cd4bba73954bb63a5a023e333cc, type: 2}
-  - {fileID: 11400000, guid: ee61ac102baf78545a92ca59c4e7a3c1, type: 2}
+  - {fileID: 11400000, guid: a57cedc57c4195048b84eb9286ebf863, type: 2}
+  - {fileID: 11400000, guid: 479c6d8fc282d1346901dea37c8e0c26, type: 2}
   rendererListCulling: 0
   DLSSProjectId: 000000
   useDLSSCustomProjectId: 0
-  supportProbeVolumes: 1
+  supportProbeVolumes: 0
   supportRuntimeDebugDisplay: 0
   apvScenesData:
-    serializedBounds:
-    - sceneGUID: 9fc0d4010bbf28b4594072e72b8655ab
-      bounds:
-        m_Center: {x: 0, y: 0, z: 0}
-        m_Extent: {x: 81, y: 81, z: 81}
-    serializedHasVolumes:
-    - sceneGUID: 9fc0d4010bbf28b4594072e72b8655ab
-      hasProbeVolumes: 0
-    serializedProfiles:
-    - sceneGUID: 9fc0d4010bbf28b4594072e72b8655ab
-      profile: {fileID: 11400000, guid: 12c512790f113ed4dbcd60a0055ab369, type: 2}
-    serializedBakeSettings:
-    - sceneGUID: 9fc0d4010bbf28b4594072e72b8655ab
-      settings:
-        dilationSettings:
-          enableDilation: 1
-          dilationDistance: 1
-          dilationValidityThreshold: 0.25
-          dilationIterations: 1
-          squaredDistWeighting: 1
-        virtualOffsetSettings:
-          useVirtualOffset: 1
-          outOfGeoOffset: 0.01
-          searchMultiplier: 0.2
-    serializedBakingSets:
-    - name: Default
-      sceneGUIDs:
-      - 9fc0d4010bbf28b4594072e72b8655ab
-      settings:
-        dilationSettings:
-          enableDilation: 1
-          dilationDistance: 1
-          dilationValidityThreshold: 0.25
-          dilationIterations: 1
-          squaredDistWeighting: 1
-        virtualOffsetSettings:
-          useVirtualOffset: 1
-          outOfGeoOffset: 0.01
-          searchMultiplier: 0.2
-      profile: {fileID: 11400000, guid: 12c512790f113ed4dbcd60a0055ab369, type: 2}
+    serializedBounds: []
+    serializedHasVolumes: []
+    serializedProfiles: []
+    serializedBakeSettings: []
+    serializedBakingSets: []
   m_Version: 3
