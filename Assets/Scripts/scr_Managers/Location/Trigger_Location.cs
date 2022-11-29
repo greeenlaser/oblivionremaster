@@ -93,6 +93,8 @@ public class Trigger_Location : MonoBehaviour
                 AnnouncementScript.CreateAnnouncement("Discovered " + cellName + "!");
                 Debug.Log("Info: Discovered " + cellName + ".");
 
+                ResetCell();
+
                 wasDiscovered = true;
             }
         }

@@ -78,6 +78,8 @@ public class Manager_UIReuse : MonoBehaviour
     public GameObject par_DebugMenu;
     public TMP_Text txt_GameVersion;
     public TMP_Text txt_FPS;
+    public TMP_Text txt_Date;
+    public TMP_Text txt_Time;
 
     //private variables
     private int currentScene;

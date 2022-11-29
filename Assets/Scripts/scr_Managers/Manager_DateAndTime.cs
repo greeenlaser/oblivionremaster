@@ -11,7 +11,6 @@ public class Manager_DateAndTime : MonoBehaviour
     [SerializeField] private GameObject par_SunLookAt;
 
     //public but hidden variables
-    [HideInInspector] public int daysSinceLastRestart = 3;
     [HideInInspector] public int minute;
     [HideInInspector] public int hour;
     [HideInInspector] public string dayName;
@@ -30,7 +29,6 @@ public class Manager_DateAndTime : MonoBehaviour
     private int tenMinuteCounter = 10;
     private float clockTimer = 2;
     private string fullTime;
-    private Manager_Locations LocationsScript;
 
     private void Awake()
     {
@@ -46,8 +44,6 @@ public class Manager_DateAndTime : MonoBehaviour
         Months["Frostfall"] = 31;
         Months["Sun's Dusk"] = 30;
         Months["Evening Star"] = 31;
-
-        LocationsScript = GetComponent<Manager_Locations>();
     }
 
     private void Update()
@@ -73,7 +69,6 @@ public class Manager_DateAndTime : MonoBehaviour
             tenMinuteCounter--;
             if (tenMinuteCounter == 0)
             {
-                Debug.Log("Info: Time is " + hour + ":00.");
                 SetSunPosition();
             }
 
@@ -146,17 +141,12 @@ public class Manager_DateAndTime : MonoBehaviour
         }
 
         fullTime = minute + ":" + hour + ", " + dayName + " of " + monthName + " in the 3rd era 433";
+        Debug.Log("time is " + hour + ":" + minute + " at " + dayName + " in " + monthName);
     }
 
     //updates day name, day number and month
     private void UpdateDayAndMonth()
     {
-        daysSinceLastRestart--;
-        if (daysSinceLastRestart == 0)
-        {
-            LocationsScript.ResetAllLocations();
-        }
-
         string[] dayNameSplit = dayName.Split(" ");
 
         int dayDate = int.Parse(dayNameSplit[0]);

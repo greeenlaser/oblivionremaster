@@ -336,7 +336,6 @@ public class Manager_GameSaving : MonoBehaviour
         saveFile.WriteLine("");
 
         saveFile.WriteLine("---GLOBAL VALUES---");
-        saveFile.WriteLine("DaysSinceReset: " + DateAndTimeScript.daysSinceLastRestart);
         saveFile.WriteLine("TimeAndDate: " + DateAndTimeScript.minute + "," 
                                            + DateAndTimeScript.hour + ","
                                            + DateAndTimeScript.dayName + "," 
@@ -643,7 +642,6 @@ public class Manager_GameSaving : MonoBehaviour
             else
             {
                 Debug.Log("Info: Started new game.");
-                LocationsScript.ResetAllLocations();
 
                 //apply default date
                 DateAndTimeScript.SetDateAndTime(0,
@@ -689,31 +687,8 @@ public class Manager_GameSaving : MonoBehaviour
                     string[] values = valueSplit[1].Split(',');
                     string type = valueSplit[0];
 
-                    //set reset time
-                    if (type == "DaysSinceReset")
-                    {
-                        bool isInt = int.TryParse(values[0], out _);
-                        if (isInt)
-                        {
-                            if (int.Parse(values[0]) >= 0
-                                && int.Parse(values[0]) <= 3)
-                            {
-                                DateAndTimeScript.daysSinceLastRestart = int.Parse(values[0]);
-                            }
-                            else
-                            {
-                                Debug.LogError("Incorrect value: Days since restart value in game save " + saveFileName + " is out of range! Resetting to default value.");
-                                DateAndTimeScript.daysSinceLastRestart = 3;
-                            }
-                        }
-                        else
-                        {
-                            Debug.LogError("Incorrect value: Days since restart value in game save " + saveFileName + " is invalid! Resetting to default value.");
-                            DateAndTimeScript.daysSinceLastRestart = 3;
-                        }
-                    }
                     //load time
-                    else if (type == "TimeAndDate")
+                    if (type == "TimeAndDate")
                     {
                         //minute
                         int min = 0;
