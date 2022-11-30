@@ -451,95 +451,99 @@ public class Manager_GameSaving : MonoBehaviour
             saveFile.WriteLine("");
             saveFile.WriteLine("---" + LocationScript.cellName + " cell data---");
             saveFile.WriteLine("Cell_" + LocationScript.cellName + "_DiscoverStatus: " + LocationScript.wasDiscovered);
-            saveFile.WriteLine("");
 
-            saveFile.WriteLine("-" + LocationScript.cellName + " containers-");
-            int foundContainerCount = 0;
-            //get each container in this location
-            foreach (GameObject container in LocationScript.containers)
+            if (LocationScript.wasDiscovered)
             {
-                UI_Inventory ContainerScript = container.GetComponent<UI_Inventory>();
-
-                saveFile.WriteLine("-" + ContainerScript.containerName + " items-");
-
-                if (container.GetComponent<Env_LockStatus>().lockedAtRestart)
+                saveFile.WriteLine("Cell_" + LocationScript.cellName + "_RestartTimer: " + Mathf.Floor(LocationScript.restartTimer));
+                saveFile.WriteLine("");
+                saveFile.WriteLine("-" + LocationScript.cellName + " containers-");
+                int foundContainerCount = 0;
+                //get each container in this location
+                foreach (GameObject container in LocationScript.containers)
                 {
-                    Env_LockStatus LockStatusScript = container.GetComponent<Env_LockStatus>();
-                    string lockStatus = LockStatusScript.isUnlocked + ", " +
-                                        LockStatusScript.tumbler1Unlocked + ", " +
-                                        LockStatusScript.tumbler2Unlocked + ", " +
-                                        LockStatusScript.tumbler3Unlocked + ", " +
-                                        LockStatusScript.tumbler4Unlocked + ", " +
-                                        LockStatusScript.tumbler5Unlocked + ", " +
-                                        LockStatusScript.tumbler1Weight + ", " +
-                                        LockStatusScript.tumbler2Weight + ", " +
-                                        LockStatusScript.tumbler3Weight + ", " +
-                                        LockStatusScript.tumbler4Weight + ", " +
-                                        LockStatusScript.tumbler5Weight;
+                    UI_Inventory ContainerScript = container.GetComponent<UI_Inventory>();
 
-                    saveFile.WriteLine("Cell_" + ContainerScript.containerName + "_LockStatus: " + lockStatus);
+                    saveFile.WriteLine("-" + ContainerScript.containerName + " items-");
+
+                    if (container.GetComponent<Env_LockStatus>().lockedAtRestart)
+                    {
+                        Env_LockStatus LockStatusScript = container.GetComponent<Env_LockStatus>();
+                        string lockStatus = LockStatusScript.isUnlocked + ", " +
+                                            LockStatusScript.tumbler1Unlocked + ", " +
+                                            LockStatusScript.tumbler2Unlocked + ", " +
+                                            LockStatusScript.tumbler3Unlocked + ", " +
+                                            LockStatusScript.tumbler4Unlocked + ", " +
+                                            LockStatusScript.tumbler5Unlocked + ", " +
+                                            LockStatusScript.tumbler1Weight + ", " +
+                                            LockStatusScript.tumbler2Weight + ", " +
+                                            LockStatusScript.tumbler3Weight + ", " +
+                                            LockStatusScript.tumbler4Weight + ", " +
+                                            LockStatusScript.tumbler5Weight;
+
+                        saveFile.WriteLine("Cell_" + ContainerScript.containerName + "_LockStatus: " + lockStatus);
+                    }
+                    else
+                    {
+                        saveFile.WriteLine("Cell_" + ContainerScript.containerName + " is not a lockable container.");
+                    }
+
+                    int foundItemCount = 0;
+                    foreach (GameObject item in ContainerScript.containerItems)
+                    {
+                        Env_Item itemScript = item.GetComponent<Env_Item>();
+                        string itemName = itemScript.itemName;
+                        int theItemCount = itemScript.itemCount;
+
+                        saveFile.WriteLine("Cell_" + ContainerScript.containerName + "_" + itemName + ": " + theItemCount);
+                        foundItemCount++;
+                    }
+                    if (foundItemCount == 0)
+                    {
+                        saveFile.WriteLine("Cell_" + ContainerScript.containerName + " has no items.");
+                    }
+                    foundContainerCount++;
                 }
-                else
+                if (foundContainerCount == 0)
                 {
-                    saveFile.WriteLine("Cell_" + ContainerScript.containerName + " is not a lockable container.");
+                    saveFile.WriteLine("Cell_" + LocationScript.cellName + " has no containers.");
                 }
 
-                int foundItemCount = 0;
-                foreach (GameObject item in ContainerScript.containerItems)
+                saveFile.WriteLine("-" + LocationScript.cellName + " doors-");
+                int foundDoorCount = 0;
+                foreach (GameObject door in LocationScript.doors)
                 {
-                    Env_Item itemScript = item.GetComponent<Env_Item>();
-                    string itemName = itemScript.itemName;
-                    int theItemCount = itemScript.itemCount;
+                    Manager_Door DoorManagerScript = door.GetComponent<Manager_Door>();
 
-                    saveFile.WriteLine("Cell_" + ContainerScript.containerName + "_" + itemName + ": " + theItemCount);
-                    foundItemCount++;
+                    saveFile.WriteLine("-" + DoorManagerScript.doorName + " status-");
+
+                    Env_LockStatus LockStatusScript = door.GetComponent<Env_LockStatus>();
+                    if (DoorManagerScript.doorType != Manager_Door.DoorType.gate
+                        && DoorManagerScript.GetComponent<Env_LockStatus>().lockedAtRestart)
+                    {
+                        string lockStatus = LockStatusScript.isUnlocked + ", " +
+                                            LockStatusScript.tumbler1Unlocked + ", " +
+                                            LockStatusScript.tumbler2Unlocked + ", " +
+                                            LockStatusScript.tumbler3Unlocked + ", " +
+                                            LockStatusScript.tumbler4Unlocked + ", " +
+                                            LockStatusScript.tumbler5Unlocked + ", " +
+                                            LockStatusScript.tumbler1Weight + ", " +
+                                            LockStatusScript.tumbler2Weight + ", " +
+                                            LockStatusScript.tumbler3Weight + ", " +
+                                            LockStatusScript.tumbler4Weight + ", " +
+                                            LockStatusScript.tumbler5Weight;
+                        saveFile.WriteLine("Cell_" + DoorManagerScript.doorName + "_LockStatus: " + lockStatus);
+                    }
+                    else
+                    {
+                        saveFile.WriteLine("Cell_" + DoorManagerScript.doorName + " is not a lockable door/gate.");
+                    }
+                    saveFile.WriteLine("Cell_" + DoorManagerScript.doorName + "_OpenStatus: " + DoorManagerScript.isDoorOpen.ToString());
+                    foundDoorCount++;
                 }
-                if (foundItemCount == 0)
+                if (foundDoorCount == 0)
                 {
-                    saveFile.WriteLine("Cell_" + ContainerScript.containerName + " has no items.");
+                    saveFile.WriteLine("Cell_" + LocationScript.cellName + " has no doors.");
                 }
-                foundContainerCount++;
-            }
-            if (foundContainerCount == 0)
-            {
-                saveFile.WriteLine("Cell_" + LocationScript.cellName + " has no containers.");
-            }
-
-            saveFile.WriteLine("-" + LocationScript.cellName + " doors-");
-            int foundDoorCount = 0;
-            foreach (GameObject door in LocationScript.doors)
-            {
-                Manager_Door DoorManagerScript = door.GetComponent<Manager_Door>();
-
-                saveFile.WriteLine("-" + DoorManagerScript.doorName + " status-");
-
-                Env_LockStatus LockStatusScript = door.GetComponent<Env_LockStatus>();
-                if (DoorManagerScript.doorType != Manager_Door.DoorType.gate
-                    && DoorManagerScript.GetComponent<Env_LockStatus>().lockedAtRestart)
-                {
-                    string lockStatus = LockStatusScript.isUnlocked + ", " +
-                                        LockStatusScript.tumbler1Unlocked + ", " +
-                                        LockStatusScript.tumbler2Unlocked + ", " +
-                                        LockStatusScript.tumbler3Unlocked + ", " +
-                                        LockStatusScript.tumbler4Unlocked + ", " +
-                                        LockStatusScript.tumbler5Unlocked + ", " +
-                                        LockStatusScript.tumbler1Weight + ", " +
-                                        LockStatusScript.tumbler2Weight + ", " +
-                                        LockStatusScript.tumbler3Weight + ", " +
-                                        LockStatusScript.tumbler4Weight + ", " +
-                                        LockStatusScript.tumbler5Weight;
-                    saveFile.WriteLine("Cell_" + DoorManagerScript.doorName + "_LockStatus: " + lockStatus);
-                }
-                else
-                {
-                    saveFile.WriteLine("Cell_" + DoorManagerScript.doorName + " is not a lockable door/gate.");
-                }
-                saveFile.WriteLine("Cell_" + DoorManagerScript.doorName + "_OpenStatus: " + DoorManagerScript.isDoorOpen.ToString());
-                foundDoorCount++;
-            }
-            if (foundDoorCount == 0)
-            {
-                saveFile.WriteLine("Cell_" + LocationScript.cellName + " has no doors.");
             }
         }
 
@@ -1186,6 +1190,31 @@ public class Manager_GameSaving : MonoBehaviour
                             }
                             else
                             {
+                                //load restart timer for cell
+                                if (type.Contains(cellName + "_RestartTimer"))
+                                {
+                                    bool isFloat = float.TryParse(values[0], out _);
+                                    if (isFloat)
+                                    {
+                                        float value = float.Parse(values[0]);
+                                        if (value <= 8640
+                                            && value >= 1)
+                                        {
+                                            LocationScript.restartTimer = float.Parse(values[0]);
+                                        }
+                                        else
+                                        {
+                                            Debug.LogError("Incorrect value: Restart timer value in game save " + saveFileName + " is out of range! Resetting to default value.");
+                                            LocationScript.restartTimer = 8640;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Debug.LogError("Incorrect value: Restart timer value in game save " + saveFileName + " is invalid! Resetting to default value.");
+                                        LocationScript.restartTimer = 8640;
+                                    }
+                                }
+
                                 //load each container and its lock status
                                 foreach (GameObject container in LocationScript.containers)
                                 {

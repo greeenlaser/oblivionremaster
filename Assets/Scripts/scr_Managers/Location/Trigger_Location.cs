@@ -28,8 +28,10 @@ public class Trigger_Location : MonoBehaviour
 
     //public but hidden variables
     [HideInInspector] public bool wasDiscovered;
+    [HideInInspector] public float restartTimer;
 
     //private variables
+    private bool isInCell;
     private Vector3 undiscoveredStartScale;
     private Vector3 discoveredStartScale;
     private Manager_Locations LocationManagerScript;
@@ -48,9 +50,26 @@ public class Trigger_Location : MonoBehaviour
 
     private void Update()
     {
+        //each cell has its own restart timer where it waits for 3 in-gane days before it is reset
+        if (wasDiscovered
+            && !isInCell)
+        {
+            restartTimer -= Time.deltaTime;
+            if (restartTimer <= 0)
+            {
+                ResetCell();
+            }
+        }
+
+        //in enable range
         if (Vector3.Distance(thePlayer.transform.position, transform.position) <= maxDistanceToEnable
             && Vector3.Distance(thePlayer.transform.position, transform.position) > maxDistanceToDiscover)
         {
+            if (isInCell)
+            {
+                isInCell = false;
+            }
+
             if (!wasDiscovered)
             {
                 if (location_discovered.activeInHierarchy)
@@ -78,8 +97,15 @@ public class Trigger_Location : MonoBehaviour
                 location_discovered.transform.localScale = discoveredStartScale * distance / 3;
             }
         }
+        //in discover range
         else if (Vector3.Distance(thePlayer.transform.position, transform.position) <= maxDistanceToEnable)
         {
+            //player is only actually inside the cell if it is within the enable range
+            if (!isInCell)
+            {
+                isInCell = true;
+            }
+
             if (location_discovered.activeInHierarchy)
             {
                 location_discovered.SetActive(false);
@@ -98,8 +124,14 @@ public class Trigger_Location : MonoBehaviour
                 wasDiscovered = true;
             }
         }
+        //out of range
         else
         {
+            if (isInCell)
+            {
+                isInCell = false;
+            }
+
             if (location.activeInHierarchy)
             {
                 location.SetActive(false);
@@ -148,5 +180,8 @@ public class Trigger_Location : MonoBehaviour
                 LockStatusScript.SetTumblerStatuses();
             }
         }
+
+        //8640 real life seconds seconds aka 3 in-game days until next cell reset
+        restartTimer = 8640;
     }
 }
