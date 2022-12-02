@@ -249,12 +249,13 @@ public class Manager_KeyBindings : MonoBehaviour
             }
 
             //assigns default general key bindings
+            KeyBindings["PickUpOrInteract"] = KeyCode.E;
+            KeyBindings["ToggleItemWheel"] = KeyCode.Q;
+            KeyBindings["TogglePlayerMenu"] = KeyCode.Tab;
             KeyBindings["Save"] = KeyCode.F5;
             KeyBindings["Load"] = KeyCode.F9;
             KeyBindings["TogglePauseMenu"] = KeyCode.Escape;
             KeyBindings["ToggleConsole"] = KeyCode.PageUp;
-            KeyBindings["TogglePlayerMenu"] = KeyCode.Tab;
-            KeyBindings["PickUpOrInteract"] = KeyCode.E;
 
             //assigns default movement key bindings
             KeyBindings["WalkForwards"] = KeyCode.W;
@@ -270,7 +271,7 @@ public class Manager_KeyBindings : MonoBehaviour
             KeyBindings["CastSpell"] = KeyCode.C;
             KeyBindings["MainAttack"] = KeyCode.Mouse0;
             KeyBindings["SideAttack"] = KeyCode.Mouse1;
-            KeyBindings["DropEquippedWeapon"] = KeyCode.R;
+            KeyBindings["EquipUnequipWeapon"] = KeyCode.R;
 
             if (currentScene == 1)
             {
@@ -308,12 +309,13 @@ public class Manager_KeyBindings : MonoBehaviour
         keyBindingsFile.WriteLine("");
 
         keyBindingsFile.WriteLine("---GENERAL KEYBINDS---");
+        keyBindingsFile.WriteLine("PickUpOrInteract: " + KeyBindings["PickUpOrInteract"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("ToggleItemWheel: " + KeyBindings["ToggleItemWheel"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("TogglePlayerMenu: " + KeyBindings["TogglePlayerMenu"].ToString().Replace("KeyCode.", ""));
         keyBindingsFile.WriteLine("Save: " + KeyBindings["Save"].ToString().Replace("KeyCode.", ""));
         keyBindingsFile.WriteLine("Load: " + KeyBindings["Load"].ToString().Replace("KeyCode.", ""));
         keyBindingsFile.WriteLine("TogglePauseMenu: " + KeyBindings["TogglePauseMenu"].ToString().Replace("KeyCode.", ""));
         keyBindingsFile.WriteLine("ToggleConsole: " + KeyBindings["ToggleConsole"].ToString().Replace("KeyCode.", ""));
-        keyBindingsFile.WriteLine("TogglePlayerMenu: " + KeyBindings["TogglePlayerMenu"].ToString().Replace("KeyCode.", ""));
-        keyBindingsFile.WriteLine("PickUpOrInteract: " + KeyBindings["PickUpOrInteract"].ToString().Replace("KeyCode.", ""));
         keyBindingsFile.WriteLine("");
 
         keyBindingsFile.WriteLine("---MOVEMENT KEYBINDS---");
@@ -331,7 +333,7 @@ public class Manager_KeyBindings : MonoBehaviour
         keyBindingsFile.WriteLine("CastSpell: " + KeyBindings["CastSpell"].ToString().Replace("KeyCode.", ""));
         keyBindingsFile.WriteLine("MainAttack: " + KeyBindings["MainAttack"].ToString().Replace("KeyCode.", ""));
         keyBindingsFile.WriteLine("SideAttack: " + KeyBindings["SideAttack"].ToString().Replace("KeyCode.", ""));
-        keyBindingsFile.WriteLine("DropEquippedWeapon: " + KeyBindings["DropEquippedWeapon"].ToString().Replace("KeyCode.", ""));
+        keyBindingsFile.WriteLine("EquipUnequipWeapon: " + KeyBindings["EquipUnequipWeapon"].ToString().Replace("KeyCode.", ""));
 
         Debug.Log("Success: Saved " + KeyBindings.Count + " key bindings!");
     }
@@ -365,12 +367,13 @@ public class Manager_KeyBindings : MonoBehaviour
                     if (foundCorrectKeycode)
                     {
                         //load general key bindings
-                        if (type == "Save"
+                        if (type == "PickUpOrInteract"
+                            || type == "ToggleItemWheel"
+                            || type == "TogglePlayerMenu"
+                            || type == "Save"
                             || type == "Load"
                             || type == "TogglePauseMenu"
-                            || type == "ToggleConsole"
-                            || type == "TogglePlayerMenu"
-                            || type == "PickUpOrInteract")
+                            || type == "ToggleConsole")
                         {
                             KeyBindings[type] = (KeyCode)Enum.Parse(typeof(KeyCode), value);
                         }
@@ -390,7 +393,7 @@ public class Manager_KeyBindings : MonoBehaviour
                         else if (type == "CastSpell"
                                  || type == "MainAttack"
                                  || type == "SideAttack"
-                                 || type == "DropEquippedWeapon")
+                                 || type == "EquipUnequipWeapon")
                         {
                             KeyBindings[type] = (KeyCode)Enum.Parse(typeof(KeyCode), value);
                         }

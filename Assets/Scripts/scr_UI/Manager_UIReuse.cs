@@ -15,6 +15,7 @@ public class Manager_UIReuse : MonoBehaviour
     public GameObject inventoryContent;
     public TMP_Text txt_InventoryCount;
     public Button btn_ItemTemplateButton;
+    public RawImage img_EquippedWeapon;
     [HideInInspector] public List<Button> inventoryButtons = new();
 
     [Header("Selected item stats UI")]

@@ -50,6 +50,7 @@ public class Player_Raycast : MonoBehaviour
                 && !PauseMenuScript.isConfirmationUIOpen
                 && !PauseMenuScript.isKeyAssignUIOpen
                 && !PauseMenuScript.isLockpickUIOpen
+                && !PauseMenuScript.isItemWheelOpen
                 && PlayerStatsScript.currentHealth > 0)
             {
                 //all other layers except this one
@@ -62,7 +63,8 @@ public class Player_Raycast : MonoBehaviour
                                     IgnoredLayermask,
                                     QueryTriggerInteraction.Ignore))
                 {
-                    if (hitTarget.transform.GetComponent<Env_Item>() != null                   //item
+                    if ((hitTarget.transform.GetComponent<Env_Item>() != null
+                        && !hitTarget.transform.GetComponent<Env_Item>().isEquipped)           //item
                         || hitTarget.transform.GetComponent<UI_Inventory>() != null            //container
                         || (hitTarget.transform.GetComponent<Env_Door>() != null               //door, gates are not allowed to be opened directly
                         && hitTarget.transform.GetComponent<Env_Door>().DoorManagerScript.doorType  
@@ -99,6 +101,7 @@ public class Player_Raycast : MonoBehaviour
             && !PauseMenuScript.isConfirmationUIOpen
             && !PauseMenuScript.isKeyAssignUIOpen
             && !PauseMenuScript.isLockpickUIOpen
+            && !PauseMenuScript.isItemWheelOpen
             && PlayerStatsScript.currentHealth > 0)
         {
             //timer is used to "restart" loop
@@ -123,7 +126,8 @@ public class Player_Raycast : MonoBehaviour
             if (KeyBindingsScript.GetKeyDown("PickUpOrInteract"))
             {
                 //hit item
-                if (target.GetComponent<Env_Item>() != null)
+                if (target.GetComponent<Env_Item>() != null
+                    && !target.GetComponent<Env_Item>().isEquipped)
                 {
                     PlayerInventoryScript.TakeItem(target, null);
                 }

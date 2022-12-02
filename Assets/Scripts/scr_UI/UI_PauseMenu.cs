@@ -32,6 +32,7 @@ public class UI_PauseMenu : MonoBehaviour
     [HideInInspector] public bool isConfirmationUIOpen;
     [HideInInspector] public bool isKeyAssignUIOpen;
     [HideInInspector] public bool isLockpickUIOpen;
+    [HideInInspector] public bool isItemWheelOpen;
 
     //private variables
     private Player_Movement PlayerMovementScript;
@@ -101,7 +102,8 @@ public class UI_PauseMenu : MonoBehaviour
         if (!isConsoleOpen
             && !isPlayerMenuOpen
             && !isKeyAssignUIOpen
-            && !isLockpickUIOpen)
+            && !isLockpickUIOpen
+            && !isItemWheelOpen)
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;

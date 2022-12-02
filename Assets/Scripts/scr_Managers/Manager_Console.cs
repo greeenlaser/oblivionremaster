@@ -32,7 +32,9 @@ public class Manager_Console : MonoBehaviour
     private readonly List<string> insertedCommands = new();
     private readonly char[] letters = new char[]
     {
-        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k' , 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 
+        'j', 'k' , 'l', 'm', 'n', 'o', 'p', 'q', 'r', 
+        's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
     };
 
     //target selection
@@ -2108,7 +2110,8 @@ public class Manager_Console : MonoBehaviour
 
             if (targetPlayerItem != null)
             {
-                if (!targetPlayerItem.GetComponent<Env_Item>().isProtected)
+                if (!targetPlayerItem.GetComponent<Env_Item>().isProtected
+                    && !targetPlayerItem.GetComponent<Env_Item>().isEquipped)
                 {
                     if (itemCount >= 1
                         && itemCount <= targetPlayerItem.GetComponent<Env_Item>().itemCount)
@@ -2148,7 +2151,7 @@ public class Manager_Console : MonoBehaviour
                 }
                 else
                 {
-                    CreateNewConsoleLine("Error: Cannot remove protected items from player inventory!", "CONSOLE_ERROR_MESSAGE");
+                    CreateNewConsoleLine("Error: Cannot remove protected or equipped items from player inventory!", "CONSOLE_ERROR_MESSAGE");
                 }
             }
             else

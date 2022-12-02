@@ -30,7 +30,15 @@ public class Env_ObjectPickup : MonoBehaviour
 
     private void Awake()
     {
-        distanceToGround = GetComponent<Collider>().bounds.extents.y;
+        if (GetComponent<Collider>() != null)
+        {
+            distanceToGround = GetComponent<Collider>().bounds.extents.y;
+        }
+        else if (GetComponentInChildren<MeshCollider>() != null)
+        {
+            distanceToGround = GetComponentInChildren<MeshCollider>().bounds.extents.y;
+        }
+
         rb = GetComponent<Rigidbody>();
 
         ItemScript = GetComponent<Env_Item>();

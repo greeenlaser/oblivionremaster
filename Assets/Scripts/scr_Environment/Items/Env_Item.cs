@@ -11,7 +11,8 @@ public class Env_Item : MonoBehaviour
     public int itemValue = 0;
     [Range(0, 100)]
     public int itemWeight = 0;
-    [Min(1)] public int itemCount;
+    [Range(1, 1000000)]
+    public int itemCount;
     public ItemType itemType = ItemType.misc;
     public enum ItemType
     {
@@ -34,6 +35,7 @@ public class Env_Item : MonoBehaviour
     }
 
     //public but hidden variables
+    [HideInInspector] public bool isEquipped;
     [HideInInspector] public bool droppedObject;
 
     private void Awake()
