@@ -20,6 +20,7 @@ public class Manager_ItemWheel : MonoBehaviour
     private UI_Inventory PlayerInventoryScript;
     private UI_PlayerMenu PlayerMenuScipt;
     private Manager_KeyBindings KeyBindingsScript;
+    private UI_LoadingScreen LoadingScreenScript;
     private UI_PauseMenu PauseMenuScript;
 
     //private variables
@@ -33,21 +34,20 @@ public class Manager_ItemWheel : MonoBehaviour
         PlayerInventoryScript = thePlayer.GetComponent<UI_Inventory>();
         PlayerMenuScipt = GetComponent<UI_PlayerMenu>();
         KeyBindingsScript = GetComponent<Manager_KeyBindings>();
+        LoadingScreenScript = GetComponent<UI_LoadingScreen>();
         PauseMenuScript = GetComponent<UI_PauseMenu>();
     }
 
     private void Update()
     {
-        //can only open item wheel if game isnt paused
-        //or if game is paused and player menu is open 
-        if (!PauseMenuScript.isPaused
-            || (PauseMenuScript.isPaused
-            && PlayerMenuScipt.isPlayerInventoryOpen))
+        //open/close item wheel
+        if (PauseMenuScript.isPlayerMenuOpen
+            && PlayerMenuScipt.isPlayerInventoryOpen)
         {
             PauseMenuScript.isItemWheelOpen = KeyBindingsScript.GetKey("ToggleItemWheel");
 
             if (PauseMenuScript.isItemWheelOpen
-                && !calledItemWheelShowOnce) 
+                && !calledItemWheelShowOnce)
             {
                 if (!PauseMenuScript.isPaused)
                 {
@@ -75,52 +75,65 @@ public class Manager_ItemWheel : MonoBehaviour
 
                 HideItemWheel();
             }
-
-            //switch to item in slot
-            if (!PauseMenuScript.isItemWheelOpen
-                && !PauseMenuScript.isPaused)
+        }
+        //switch item wheel assigned items
+        else if (!LoadingScreenScript.par_LoadingUI.activeInHierarchy
+                 && !PauseMenuScript.isPaused
+                 && !PauseMenuScript.isConsoleOpen)
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                if (KeyBindingsScript.GetKey("Alpha1")
-                    && slotScripts[0].assignedItem != null)
-                {
-                    EquipFromSlot(1);
-                }
-                else if (KeyBindingsScript.GetKey("Alpha2")
-                         && slotScripts[1].assignedItem != null)
-                {
-                    EquipFromSlot(2);
-                }
-                else if (KeyBindingsScript.GetKey("Alpha3")
-                         && slotScripts[2].assignedItem != null)
-                {
-                    EquipFromSlot(3);
-                }
-                else if (KeyBindingsScript.GetKey("Alpha4")
-                         && slotScripts[3].assignedItem != null)
-                {
-                    EquipFromSlot(4);
-                }
-                else if (KeyBindingsScript.GetKey("Alpha5")
-                         && slotScripts[4].assignedItem != null)
-                {
-                    EquipFromSlot(5);
-                }
-                else if (KeyBindingsScript.GetKey("Alpha6")
-                         && slotScripts[5].assignedItem != null)
-                {
-                    EquipFromSlot(6);
-                }
-                else if (KeyBindingsScript.GetKey("Alpha7")
-                         && slotScripts[6].assignedItem != null)
-                {
-                    EquipFromSlot(7);
-                }
-                else if (KeyBindingsScript.GetKey("Alpha8")
-                         && slotScripts[7].assignedItem != null)
-                {
-                    EquipFromSlot(8);
-                }
+                EquipFromSlot(0);
             }
+            else if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                EquipFromSlot(1);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                EquipFromSlot(2);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha4))
+            {
+                EquipFromSlot(3);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha5))
+            {
+                EquipFromSlot(4);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha6))
+            {
+                EquipFromSlot(5);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha7))
+            {
+                EquipFromSlot(6);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha8))
+            {
+                EquipFromSlot(7);
+            }
+        }
+        //force-closes item wheel if player inventory is not open
+        else if (!LoadingScreenScript.par_LoadingUI.activeInHierarchy
+                 && par_ItemWheel.activeInHierarchy
+                 && !PauseMenuScript.isPaused
+                 && !PlayerMenuScipt.isPlayerInventoryOpen)
+        {
+            if (!PauseMenuScript.isPlayerMenuOpen)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+
+                Time.timeScale = 1;
+
+                PlayerMovementScript.canMove = true;
+                PlayerCameraScript.isCamEnabled = true;
+
+                PauseMenuScript.isPaused = false;
+            }
+
+            HideItemWheel();
         }
     }
 
@@ -150,18 +163,19 @@ public class Manager_ItemWheel : MonoBehaviour
             && !item.GetComponent<Item_Weapon>().isAiming
             && !item.GetComponent<Item_Weapon>().isReloading)
         {
+            //remove this weapon from any previously assigned slots
             foreach (Slot_ItemWheel slotScript in slotScripts)
             {
                 if (slotScript.assignedItem == item)
                 {
+                    slotScript.img_SlotImage.texture = slotScript.defaultTexture;
                     slotScript.assignedItem = null;
                 }
-                break;
             }
-            slotScripts[slot].assignedItem = item;
             slotScripts[slot].img_SlotImage.texture = item.GetComponent<Item_Weapon>().img_ItemLogo;
+            slotScripts[slot].assignedItem = item;
 
-            Debug.Log("Info: Assigned " + item.name.Replace("_", " ") + " to slot " + slot + ".");
+            Debug.Log("Info: Assigned " + item.name.Replace("_", " ") + " to slot " + (slot + 1) + ".");
         }
         else
         {
@@ -172,8 +186,6 @@ public class Manager_ItemWheel : MonoBehaviour
     //equip an item from a slot
     private void EquipFromSlot(int slot)
     {
-        Debug.Log("equipping item at slot " + slot + "...");
-
         if (slotScripts[slot].assignedItem != null)
         {
             //switch to weapon
@@ -194,10 +206,6 @@ public class Manager_ItemWheel : MonoBehaviour
                     Debug.LogWarning("Warning: Cannot unequip " + PlayerInventoryScript.equippedWeapon.GetComponent<Env_Item>().itemName.Replace("_", " ") + " through item wheel because it is in use!");
                 }
             }
-        }
-        else
-        {
-            Debug.LogWarning("Warning: No item assigned to slot " + slot + 1 + "!");
         }
     }
 }

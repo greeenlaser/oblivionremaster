@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 public class UI_LoadingScreen : MonoBehaviour
 {
     [Header("Loading screen UI")]
-    [SerializeField] private GameObject par_LoadingUI;
+    public GameObject par_LoadingUI;
     [SerializeField] private RawImage loadingImage;
     [SerializeField] private TMP_Text txt_Tip;
     [SerializeField] private Slider loadingSlider; 

@@ -141,7 +141,7 @@ public class Manager_DateAndTime : MonoBehaviour
         }
 
         fullTime = minute + ":" + hour + ", " + dayName + " of " + monthName + " in the 3rd era 433";
-        Debug.Log("time is " + hour + ":" + minute + " at " + dayName + " in " + monthName);
+        Debug.Log("Info: Time is " + hour + ":" + minute + ", " + dayName + " of " + monthName + " in the 3rd era 433.");
     }
 
     //updates day name, day number and month

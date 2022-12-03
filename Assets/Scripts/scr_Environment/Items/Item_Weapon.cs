@@ -57,7 +57,7 @@ public class Item_Weapon : MonoBehaviour
     private bool lightSwing;
     private bool heavySwing;
     private float swingTimer;
-    private readonly float swingSpeed = 100;
+    private readonly float swingSpeed = 150;
     private readonly float timeToHeavyAttack = 0.2f;
 
     //scripts

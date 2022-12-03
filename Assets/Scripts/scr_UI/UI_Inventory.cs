@@ -32,6 +32,7 @@ public class UI_Inventory : MonoBehaviour
     [HideInInspector] public string currentlyOpenedInventory;
     [HideInInspector] public GameObject heldObject;
     [HideInInspector] public GameObject equippedWeapon;
+    [HideInInspector] public GameObject lastEquippedWeapon;
     [HideInInspector] public List<GameObject> playerItems = new();
     [HideInInspector] public List<GameObject> containerItems = new();
     [HideInInspector] public Env_LockStatus LockStatusScript;
@@ -45,6 +46,7 @@ public class UI_Inventory : MonoBehaviour
     private UI_PauseMenu PauseMenuScript;
     private UI_Confirmation ConfirmationScript;
     private Manager_Announcements AnnouncementScript;
+    private Manager_KeyBindings KeyBindingsScript;
     private Manager_UIReuse UIReuseScript;
 
     private void Awake()
@@ -67,7 +69,30 @@ public class UI_Inventory : MonoBehaviour
         ItemWheelScript = par_Managers.GetComponent<Manager_ItemWheel>();
         PauseMenuScript = par_Managers.GetComponent<UI_PauseMenu>();
         AnnouncementScript = par_Managers.GetComponent<Manager_Announcements>();
+        KeyBindingsScript = par_Managers.GetComponent<Manager_KeyBindings>();
         UIReuseScript = par_Managers.GetComponent<Manager_UIReuse>();
+    }
+
+    private void Update()
+    {
+        if (transform.name == "Player")
+        {
+            //update last equipped weapon if a new weapon was equipped
+            if (equippedWeapon != null
+                && lastEquippedWeapon != equippedWeapon)
+            {
+                lastEquippedWeapon = equippedWeapon;
+            }
+
+            //equip/unequip last equipped weapon
+            //if any weapons have been held in this game instance
+            if (KeyBindingsScript.GetKeyDown("EquipUnequipWeapon")
+                && lastEquippedWeapon != null
+                && !PauseMenuScript.isConsoleOpen)
+            {
+                UseItem(lastEquippedWeapon);
+            }
+        }
     }
 
     //used for only respawnable containers,
@@ -332,7 +357,7 @@ public class UI_Inventory : MonoBehaviour
                         newButton.GetComponentInChildren<TMP_Text>().text = buttonText;
 
                         newButton.GetComponent<Button>().onClick.AddListener(
-                            delegate { ShowSelectedItemInfo(item, null); });
+                            delegate { ShowSelectedItemInfo(item); });
                     }
                 }
             }
@@ -377,7 +402,7 @@ public class UI_Inventory : MonoBehaviour
                             newButton.GetComponentInChildren<TMP_Text>().text = buttonText;
 
                             newButton.GetComponent<Button>().onClick.AddListener(
-                                delegate { ShowSelectedItemInfo(item, null); });
+                                delegate { ShowSelectedItemInfo(item); });
                         }
                     }
                 }
@@ -434,7 +459,7 @@ public class UI_Inventory : MonoBehaviour
                             newButton.GetComponentInChildren<TMP_Text>().text = buttonText;
 
                             newButton.GetComponent<Button>().onClick.AddListener(
-                                delegate { ShowSelectedItemInfo(item, newButton.GetComponent<Button>()); });
+                                delegate { ShowSelectedItemInfo(item); });
                         }
                     }
                 }
@@ -443,18 +468,11 @@ public class UI_Inventory : MonoBehaviour
     }
 
     //show selected item details and interactable buttons in target inventory
-    public void ShowSelectedItemInfo(GameObject targetItem, Button btn)
+    public void ShowSelectedItemInfo(GameObject targetItem)
     {
         UIReuseScript.CloseSelectedItemInfo();
 
         Env_Item itemScript = targetItem.GetComponent<Env_Item>();
-
-        //force-adds an extra script if in player inventory
-        //to confirm which button cursor is currently hovering over
-        if (btn != null)
-        {
-            btn.AddComponent<UI_CurrentlySelectedItem>();
-        }
 
         UIReuseScript.par_ItemStats.SetActive(true);
         UIReuseScript.txt_ItemName.text = itemScript.itemName.Replace('_', ' ');
@@ -577,15 +595,6 @@ public class UI_Inventory : MonoBehaviour
     {
         if (targetItem.GetComponent<Item_Weapon>() != null)
         {
-            if (equippedWeapon != null)
-            {
-                Debug.Log(equippedWeapon.GetComponent<Item_Weapon>().isCallingMainAttack + ", " +
-                          equippedWeapon.GetComponent<Item_Weapon>().isUsing + ", " +
-                          equippedWeapon.GetComponent<Item_Weapon>().isBlocking + ", " +
-                          equippedWeapon.GetComponent<Item_Weapon>().isAiming + ", " +
-                          equippedWeapon.GetComponent<Item_Weapon>().isReloading);
-            }
-
             if (equippedWeapon == null
                 || (equippedWeapon != null
                 && !equippedWeapon.GetComponent<Item_Weapon>().isCallingMainAttack
@@ -596,10 +605,6 @@ public class UI_Inventory : MonoBehaviour
             {
                 if (!targetItem.GetComponent<Env_Item>().isEquipped)
                 {
-                    UIReuseScript.btn_Interact.GetComponentInChildren<TMP_Text>().text = "Unequip";
-
-                    targetItem.GetComponent<Env_Item>().isEquipped = true;
-
                     if (equippedWeapon != null)
                     {
                         equippedWeapon.GetComponent<Env_Item>().isEquipped = false;
@@ -607,6 +612,8 @@ public class UI_Inventory : MonoBehaviour
                         equippedWeapon.GetComponent<Rigidbody>().isKinematic = false;
                         targetItem.GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.Interpolate;
                     }
+
+                    targetItem.GetComponent<Env_Item>().isEquipped = true;
 
                     equippedWeapon = targetItem;
 
@@ -620,25 +627,35 @@ public class UI_Inventory : MonoBehaviour
 
                     UIReuseScript.img_EquippedWeapon.texture = targetItem.GetComponent<Item_Weapon>().img_ItemLogo;
 
+                    UIReuseScript.btn_Interact.GetComponentInChildren<TMP_Text>().text = "Unequip";
+
                     Debug.Log("Info: Equipped " + targetItem.GetComponent<Env_Item>().itemName.Replace("_", " ") + ".");
                 }
                 else
                 {
-                    UIReuseScript.btn_Interact.GetComponentInChildren<TMP_Text>().text = "Equip";
-
                     equippedWeapon.GetComponent<Env_Item>().isEquipped = false;
+
                     equippedWeapon.SetActive(false);
                     equippedWeapon.GetComponent<Rigidbody>().isKinematic = false;
                     targetItem.GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.Interpolate;
 
                     UIReuseScript.img_EquippedWeapon.texture = null;
 
+                    UIReuseScript.btn_Interact.GetComponentInChildren<TMP_Text>().text = "Equip";
+
                     Debug.Log("Info: Unequipped " + targetItem.GetComponent<Env_Item>().itemName.Replace("_", " ") + ".");
                 }
             }
             else
             {
-                UIReuseScript.btn_Interact.interactable = false;
+                if (PlayerMenuScript.isPlayerInventoryOpen)
+                {
+                    UIReuseScript.btn_Interact.interactable = false;
+                }
+                else
+                {
+                    Debug.LogWarning("Warning: Cannot unequip " + PlayerInventoryScript.equippedWeapon.GetComponent<Env_Item>().itemName.Replace("_", " ") + " with EquipUnequipWeapon key because it is in use!");
+                }
             }
         }
         else

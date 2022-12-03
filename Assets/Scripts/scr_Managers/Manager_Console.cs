@@ -105,7 +105,6 @@ public class Manager_Console : MonoBehaviour
             }
         }
 
-        //open console
         if (!UIReuseScript.par_Console.activeInHierarchy)
         {
             if ((currentScene == 0
@@ -120,13 +119,12 @@ public class Manager_Console : MonoBehaviour
                 OpenConsole();
             }
         }
-        //close console
         else if (UIReuseScript.par_Console.activeInHierarchy)
         {
             if ((currentScene == 0
-                && !isConsoleOpen)
-                || currentScene == 1
-                && !PauseMenuScript.isConsoleOpen)
+                 && !isConsoleOpen)
+                 || currentScene == 1
+                 && !PauseMenuScript.isConsoleOpen)
             {
                 if (currentScene == 1)
                 {
@@ -303,13 +301,15 @@ public class Manager_Console : MonoBehaviour
                 //toggle godmode
                 else if (separatedWords[0] == "tgm"
                          && separatedWords.Count == 1
+                         && currentScene == 1
                          && PlayerStatsScript.currentHealth > 0)
                 {
                     Command_ToggleGodMode();
                 }
                 //toggle noclip
                 else if (separatedWords[0] == "tnc"
-                         && separatedWords.Count == 1)
+                         && separatedWords.Count == 1
+                         && currentScene == 1)
                 {
                     Command_ToggleNoclip();
                 }
@@ -331,7 +331,6 @@ public class Manager_Console : MonoBehaviour
                          && separatedWords.Count == 2
                          && currentScene == 1
                          && PlayerStatsScript.currentHealth > 0)
-                //&& PlayerHealthScript.isPlayerAlive)
                 {
                     Command_SaveWithName();
                 }
@@ -384,9 +383,9 @@ public class Manager_Console : MonoBehaviour
                 }
 
                 //restart game from the beginning
-                else if (separatedWords[0] == "restart"
-                         && separatedWords.Count == 1)
-                         //&& PlayerHealthScript.isPlayerAlive)
+                else if (separatedWords[0] == "restart" 
+                         && separatedWords.Count == 1 
+                         && currentScene == 1)
                 {
                     Command_Restart();
                 }
@@ -411,7 +410,8 @@ public class Manager_Console : MonoBehaviour
                 {
                     //teleport player
                     if (separatedWords[1] == "tp"
-                        && separatedWords.Count == 5)
+                        && separatedWords.Count == 5
+                        && PlayerStatsScript.currentHealth > 0)
                     {
                         Command_TeleportPlayer();
                     }
@@ -497,8 +497,7 @@ public class Manager_Console : MonoBehaviour
                     }
                     //show all item stats
                     else if (separatedWords[1] == "shis"
-                             && separatedWords.Count == 4
-                             && PlayerStatsScript.currentHealth > 0)
+                             && separatedWords.Count == 4)
                     {
                         Command_ShowItemStats();
                     }
@@ -515,7 +514,7 @@ public class Manager_Console : MonoBehaviour
                         insertedCommands.Add(input);
                         currentSelectedInsertedCommand = insertedCommands.Count - 1;
 
-                        CreateNewConsoleLine("Error: Unknown or incorrect command or command is disabled (either player is dead or this command is not allowed in this scene)! Type help to list all commands.", "CONSOLE_ERROR_MESSAGE");
+                        CreateNewConsoleLine("Error: Unknown or invalid command or this command is not allowed in this scene or while player is dead! Type help to list all commands.", "CONSOLE_ERROR_MESSAGE");
                     }
                 }
 
@@ -550,7 +549,7 @@ public class Manager_Console : MonoBehaviour
                         insertedCommands.Add(input);
                         currentSelectedInsertedCommand = insertedCommands.Count - 1;
 
-                        CreateNewConsoleLine("Error: Unknown or incorrect command or command is disabled (either player is dead or this command is not allowed in this scene)! Type help to list all commands.", "CONSOLE_ERROR_MESSAGE");
+                        CreateNewConsoleLine("Error: Unknown or invalid command or this command is not allowed in this scene or while player is dead! Type help to list all commands.", "CONSOLE_ERROR_MESSAGE");
                     }
                 }
 
@@ -559,7 +558,7 @@ public class Manager_Console : MonoBehaviour
                     insertedCommands.Add(input);
                     currentSelectedInsertedCommand = insertedCommands.Count - 1;
 
-                    CreateNewConsoleLine("Error: Unknown or incorrect command or command is disabled (either player is dead or this command is not allowed in this scene)! Type help to list all commands.", "CONSOLE_ERROR_MESSAGE");
+                    CreateNewConsoleLine("Error: Unknown or invalid command or this command is not allowed in this scene or while player is dead! Type help to list all commands.", "CONSOLE_ERROR_MESSAGE");
                 }
             }
         }

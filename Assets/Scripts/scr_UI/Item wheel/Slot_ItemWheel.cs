@@ -14,6 +14,7 @@ public class Slot_ItemWheel : MonoBehaviour, IPointerClickHandler
     [HideInInspector] public int slot;
     [HideInInspector] public GameObject assignedItem;
     [HideInInspector] public RawImage img_SlotImage;
+    [HideInInspector] public Texture defaultTexture;
 
     //scripts
     private UI_Inventory PlayerInventoryScript;
@@ -21,8 +22,9 @@ public class Slot_ItemWheel : MonoBehaviour, IPointerClickHandler
 
     private void Awake()
     {
-        slot = int.Parse(name.Replace("Slot", ""));
+        slot = int.Parse(name.Replace("Slot", "")) -1;
         img_SlotImage = GetComponent<RawImage>();
+        defaultTexture = img_SlotImage.texture;
 
         PlayerInventoryScript = thePlayer.GetComponent<UI_Inventory>();
         ItemWheelScript = par_Managers.GetComponent<Manager_ItemWheel>();
@@ -32,12 +34,9 @@ public class Slot_ItemWheel : MonoBehaviour, IPointerClickHandler
     {
         foreach (GameObject item in PlayerInventoryScript.playerItems)
         {
-            Debug.Log(item.name + ", " + ItemWheelScript.assignableItemName + "...");
-
-            if (item.name == ItemWheelScript.assignableItemName)
-            {
-                assignedItem = item;
-                ItemWheelScript.AssignToSlot(assignedItem, slot);
+            if (item.name == ItemWheelScript.assignableItemName.Replace(" ", "_"))
+            { 
+                ItemWheelScript.AssignToSlot(item, slot);
                 break;
             }
         }
