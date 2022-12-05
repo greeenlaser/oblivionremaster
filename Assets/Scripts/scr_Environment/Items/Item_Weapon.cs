@@ -1,15 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Item_Weapon : MonoBehaviour
 {
-    [Range(0, 10000)]
     [Header("General")]
     public int baseDamage;
     [Range(0, 100)]
-    public int weaponHealth;
+    public int maxWeaponHealth;
     public EquipType equipType;
     public enum EquipType
     {
@@ -27,17 +25,9 @@ public class Item_Weapon : MonoBehaviour
         crossbow
     }
     public Texture img_ItemLogo;
-    public Transform pos_WeaponHold;
-
-    [Header("Melee weapon variables")]
-    [Range(0, 1)]
-    [SerializeField] private float swingRotationOrigin;
-    [Range(0, 1)]
-    [SerializeField] private float swingRotationTarget;
-
-    [Header("Scripts")]
-    [SerializeField] private GameObject thePlayer;
-    [SerializeField] private GameObject par_Managers;
+    public GameObject templateAnimatedWeapon;
+    [SerializeField] private float animationLength;
+    [SerializeField] private Vector3 forcedRotation;
 
     //public but hidden variables
     [HideInInspector] public bool isCallingMainAttack;
@@ -45,33 +35,34 @@ public class Item_Weapon : MonoBehaviour
     [HideInInspector] public bool isAiming;
     [HideInInspector] public bool isBlocking;
     [HideInInspector] public bool isReloading;
-
-    //private variables
-    private bool calledResetOnce;
-    private float step;
-
-    //swing
-    private bool swingStart;
-    private bool returnWeapon;
-    private bool swingEnd;
-    private bool lightSwing;
-    private bool heavySwing;
-    private float swingTimer;
-    private readonly float swingSpeed = 150;
-    private readonly float timeToHeavyAttack = 0.2f;
+    [HideInInspector] public float weaponHealth;
+    [HideInInspector] public GameObject instantiatedWeapon;
 
     //scripts
+    private GameObject thePlayer;
+    private GameObject par_Managers;
     private Player_Stats PlayerStatsScript;
     private UI_PlayerMenu PlayerMenuScript;
     private Manager_KeyBindings KeyBindingsScript;
     private UI_PauseMenu PauseMenuScript;
 
+    //private variables
+    private bool calledResetOnce;
+    private readonly float timeToHeavyAttack = 0.2f;
+    private float swingTimer;
+    private Animator weaponAnimator;
+
     private void Awake()
     {
+        thePlayer = GameObject.Find("Player");
+        par_Managers = GameObject.Find("par_Managers");
+
         PlayerStatsScript = thePlayer.GetComponent<Player_Stats>();
         PlayerMenuScript = par_Managers.GetComponent<UI_PlayerMenu>();
         KeyBindingsScript = par_Managers.GetComponent<Manager_KeyBindings>();
         PauseMenuScript = par_Managers.GetComponent<UI_PauseMenu>();
+
+        weaponHealth = maxWeaponHealth;
     }
 
     private void Update()
@@ -81,6 +72,16 @@ public class Item_Weapon : MonoBehaviour
             && PlayerStatsScript.currentHealth > 0
             && GetComponent<Env_Item>().isEquipped)
         {
+            if (instantiatedWeapon != null
+                && weaponAnimator == null)
+            {
+                weaponAnimator = instantiatedWeapon.GetComponentInChildren<Animator>();
+            }
+            if (instantiatedWeapon.transform.localRotation != Quaternion.Euler(forcedRotation))
+            {
+                instantiatedWeapon.transform.localRotation = Quaternion.Euler(forcedRotation);
+            }
+
             //all melee weapons
             if (weaponType == WeaponType.sword
                 || weaponType == WeaponType.mace
@@ -96,38 +97,20 @@ public class Item_Weapon : MonoBehaviour
                             calledResetOnce = false;
                         }
 
-                        isCallingMainAttack = KeyBindingsScript.GetKey("MainAttack");
+                        isCallingMainAttack = Input.GetKey(KeyCode.Mouse0);
                         if (isCallingMainAttack)
                         {
                             swingTimer += Time.deltaTime;
                             if (swingTimer >= timeToHeavyAttack)
                             {
-                                heavySwing = true;
-                                isUsing = true;
-                                isCallingMainAttack = false;
+                                StartCoroutine(SwingWeapon("swing_Heavy"));
                             }
                         }
-                        else
+                        else if (!isCallingMainAttack
+                                 && swingTimer > 0)
                         {
-                            if (swingTimer > 0)
-                            {
-                                lightSwing = true;
-                                isUsing = true;
-                            }
+                            StartCoroutine(SwingWeapon("swing_Light"));
                         }
-                    }
-                    else
-                    {
-                        if (lightSwing)
-                        {
-                            step = swingSpeed * Time.deltaTime;
-                        }
-                        else if (heavySwing)
-                        {
-                            step = swingSpeed * 1.5f * Time.deltaTime;
-                        }
-
-                        MeleeAttackAnimation();
                     }
                 }
                 //can only block with singlehanded melee weapons
@@ -154,51 +137,18 @@ public class Item_Weapon : MonoBehaviour
         }
     }
 
-    //melee weapon swing animation
-    private void MeleeAttackAnimation()
+    //swing the weapon
+    private IEnumerator SwingWeapon(string state)
     {
-        float weaponRotation = pos_WeaponHold.transform.localRotation.z;
+        isUsing = true;
 
-        //check if weapon can rotate towards target rotation
-        if (!swingStart
-            && !returnWeapon
-            && !swingEnd)
-        {
-            swingStart = true;
-        }
+        weaponAnimator.Play(state, 0, 0.0f);
 
-        //start rotating weapon towards target rotation
-        if (swingStart)
-        {
-            pos_WeaponHold.Rotate(new Vector3(0, 0, 1) * step);
+        yield return new WaitForSeconds(animationLength);
 
-            if (weaponRotation >= swingRotationTarget)
-            {
-                returnWeapon = true;
-            }
-        }
-
-        //check if weapon can rotate towards original rotation
-        if (swingStart
-            && returnWeapon
-            && !swingEnd)
-        {
-            swingStart = false;
-            returnWeapon = false;
-            swingEnd = true;
-        }
-
-        //return weapon rotation to original rotation
-        if (swingEnd)
-        {
-            pos_WeaponHold.Rotate(new Vector3(0, 0, -1) * step);
-
-            if (weaponRotation <= swingRotationOrigin)
-            {
-                ResetWeaponState();
-            }
-        }
+        ResetWeaponState();
     }
+
     //block with the melee weapon
     private void Block()
     {
@@ -239,19 +189,11 @@ public class Item_Weapon : MonoBehaviour
         isBlocking = false;
         isReloading = false;
 
-        swingStart = false;
-        returnWeapon = false;
-        swingEnd = false;
-        lightSwing = false;
-        heavySwing = false;
-
         swingTimer = 0;
 
         if (!calledResetOnce)
         {
             calledResetOnce = true;
         }
-
-        transform.localRotation = Quaternion.Euler(Vector3.zero);
     }
 }

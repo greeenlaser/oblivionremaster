@@ -9,6 +9,7 @@ public class UI_Inventory : MonoBehaviour
 {
     [Header("General assignables")]
     public GameObject par_PlayerItems;
+    [SerializeField] private Transform pos_EquippedWeapon; 
     [SerializeField] private GameObject thePlayer;
     [SerializeField] private GameObject par_Managers;
 
@@ -597,7 +598,6 @@ public class UI_Inventory : MonoBehaviour
         {
             if (equippedWeapon == null
                 || (equippedWeapon != null
-                && !equippedWeapon.GetComponent<Item_Weapon>().isCallingMainAttack
                 && !equippedWeapon.GetComponent<Item_Weapon>().isUsing
                 && !equippedWeapon.GetComponent<Item_Weapon>().isBlocking
                 && !equippedWeapon.GetComponent<Item_Weapon>().isAiming
@@ -609,21 +609,28 @@ public class UI_Inventory : MonoBehaviour
                     {
                         equippedWeapon.GetComponent<Env_Item>().isEquipped = false;
                         equippedWeapon.SetActive(false);
+                        foreach (Transform child in equippedWeapon.transform)
+                        {
+                            child.GetComponent<MeshRenderer>().enabled = true;
+                        }
                         equippedWeapon.GetComponent<Rigidbody>().isKinematic = false;
-                        targetItem.GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.Interpolate;
+                        Destroy(equippedWeapon.GetComponent<Item_Weapon>().instantiatedWeapon);
                     }
 
-                    targetItem.GetComponent<Env_Item>().isEquipped = true;
-
+                    GameObject animatedWeapon = Instantiate(targetItem.GetComponent<Item_Weapon>().templateAnimatedWeapon,
+                                                            pos_EquippedWeapon.position,
+                                                            Quaternion.identity,
+                                                            pos_EquippedWeapon);
                     equippedWeapon = targetItem;
+                    equippedWeapon.SetActive(true);
+                    foreach (Transform child in equippedWeapon.transform)
+                    {
+                        child.GetComponent<MeshRenderer>().enabled = false;
+                    }
+                    equippedWeapon.GetComponent<Rigidbody>().isKinematic = true;
+                    equippedWeapon.GetComponent<Item_Weapon>().instantiatedWeapon = animatedWeapon;
 
-                    targetItem.GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.None;
-                    targetItem.GetComponent<Rigidbody>().isKinematic = true;
-                    targetItem.SetActive(true);
-
-                    targetItem.transform.parent = targetItem.GetComponent<Item_Weapon>().pos_WeaponHold;
-                    targetItem.transform.position = targetItem.GetComponent<Item_Weapon>().pos_WeaponHold.position;
-                    targetItem.transform.localRotation = Quaternion.Euler(Vector3.zero);
+                    targetItem.GetComponent<Env_Item>().isEquipped = true;
 
                     UIReuseScript.img_EquippedWeapon.texture = targetItem.GetComponent<Item_Weapon>().img_ItemLogo;
 
@@ -634,10 +641,13 @@ public class UI_Inventory : MonoBehaviour
                 else
                 {
                     equippedWeapon.GetComponent<Env_Item>().isEquipped = false;
-
                     equippedWeapon.SetActive(false);
+                    foreach (Transform child in equippedWeapon.transform)
+                    {
+                        child.GetComponent<MeshRenderer>().enabled = true;
+                    }
                     equippedWeapon.GetComponent<Rigidbody>().isKinematic = false;
-                    targetItem.GetComponent<Rigidbody>().interpolation = RigidbodyInterpolation.Interpolate;
+                    Destroy(equippedWeapon.GetComponent<Item_Weapon>().instantiatedWeapon);
 
                     UIReuseScript.img_EquippedWeapon.texture = null;
 

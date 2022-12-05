@@ -157,7 +157,6 @@ public class Manager_ItemWheel : MonoBehaviour
     {
         //can only switch weapon to other slot if it is not in use
         if (item.GetComponent<Item_Weapon>() != null
-            && !item.GetComponent<Item_Weapon>().isCallingMainAttack
             && !item.GetComponent<Item_Weapon>().isUsing
             && !item.GetComponent<Item_Weapon>().isBlocking
             && !item.GetComponent<Item_Weapon>().isAiming
@@ -193,7 +192,6 @@ public class Manager_ItemWheel : MonoBehaviour
             {
                 if (PlayerInventoryScript.equippedWeapon == null
                     || (PlayerInventoryScript.equippedWeapon != null
-                    && !PlayerInventoryScript.equippedWeapon.GetComponent<Item_Weapon>().isCallingMainAttack
                     && !PlayerInventoryScript.equippedWeapon.GetComponent<Item_Weapon>().isUsing
                     && !PlayerInventoryScript.equippedWeapon.GetComponent<Item_Weapon>().isBlocking
                     && !PlayerInventoryScript.equippedWeapon.GetComponent<Item_Weapon>().isAiming

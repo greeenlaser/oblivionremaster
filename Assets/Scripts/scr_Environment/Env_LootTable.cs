@@ -34,7 +34,7 @@ public class Env_LootTable : MonoBehaviour
 
         foreach (GameObject item in spawnableItems)
         {
-            foreach (Transform templateItem in PlayerMenuScript.par_TemplateItems.transform)
+            foreach (GameObject templateItem in PlayerMenuScript.templateItems)
             {
                 if (templateItem.name == item.name)
                 {
@@ -79,7 +79,7 @@ public class Env_LootTable : MonoBehaviour
 
                     if (chanceToSpawn >= 50)
                     {
-                        GameObject realItem = Instantiate(templateItem.gameObject,
+                        GameObject realItem = Instantiate(templateItem,
                                                           TargetInventory.par_ContainerItems.transform.position,
                                                           Quaternion.identity,
                                                           TargetInventory.par_ContainerItems.transform);

@@ -21,7 +21,6 @@ public class UI_PlayerMenu : MonoBehaviour
     public Button btn_ReusedButton4;
     public Button btn_ReusedButton5;
     public GameObject par_DroppedItems;
-    public GameObject par_TemplateItems;
     public List<GameObject> templateItems = new();
 
     [Header("Scripts")]

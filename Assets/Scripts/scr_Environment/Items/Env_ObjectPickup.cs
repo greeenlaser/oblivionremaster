@@ -11,10 +11,6 @@ public class Env_ObjectPickup : MonoBehaviour
     [Range(1f, 10f)]
     public float speedLimit = 5;
 
-    [Header("Assignables")]
-    [SerializeField] private GameObject thePlayer;
-    [SerializeField] private GameObject par_Managers;
-
     //public but hidden variables
     [HideInInspector] public bool isHolding;
 
@@ -27,6 +23,7 @@ public class Env_ObjectPickup : MonoBehaviour
     private Env_Item ItemScript;
     private UI_Inventory PlayerInventoryScript;
     private Player_Raycast PlayerRaycastScript;
+    private GameObject thePlayer;
 
     private void Awake()
     {
@@ -42,6 +39,8 @@ public class Env_ObjectPickup : MonoBehaviour
         rb = GetComponent<Rigidbody>();
 
         ItemScript = GetComponent<Env_Item>();
+
+        thePlayer = GameObject.Find("Player");
 
         PlayerInventoryScript = thePlayer.GetComponent<UI_Inventory>();
         PlayerRaycastScript = thePlayer.GetComponentInChildren<Player_Raycast>();
