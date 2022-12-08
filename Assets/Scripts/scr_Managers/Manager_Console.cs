@@ -2045,7 +2045,21 @@ public class Manager_Console : MonoBehaviour
                                                                  PlayerInventoryScript.par_PlayerItems.transform);
                                 newItem.SetActive(false);
                                 newItem.name = targetTemplateItem.name;
-                                newItem.GetComponent<Env_Item>().itemCount = itemCount;
+
+                                Env_Item NewItemScript = newItem.GetComponent<Env_Item>();
+                                NewItemScript.itemCount = itemCount;
+                                if (NewItemScript.itemType == Env_Item.ItemType.weapon
+                                    || NewItemScript.itemType == Env_Item.ItemType.armor
+                                    || NewItemScript.itemType == Env_Item.ItemType.shield)
+                                {
+                                    NewItemScript.itemCurrentDurability = NewItemScript.itemMaxDurability;
+
+                                    if (NewItemScript.itemType == Env_Item.ItemType.weapon)
+                                    {
+                                        newItem.GetComponent<Item_Weapon>().damage_Current = newItem.GetComponent<Item_Weapon>().damage_Default;
+                                    }
+                                }
+                                
 
                                 PlayerInventoryScript.playerItems.Add(newItem);
                                 PlayerStatsScript.invSpace += totalTakenSpace;
@@ -2197,13 +2211,24 @@ public class Manager_Console : MonoBehaviour
         else
         {
             Env_Item ItemScript = targetPlayerItem.GetComponent<Env_Item>();
-            CreateNewConsoleLine("isProtected (not editable): " + ItemScript.isProtected + "", "CONSOLE_INFO_MESSAGE");
-            CreateNewConsoleLine("isStackable (not editable): " + ItemScript.isStackable + "", "CONSOLE_INFO_MESSAGE");
-            CreateNewConsoleLine("value: " + ItemScript.itemValue + "", "CONSOLE_INFO_MESSAGE");
-            CreateNewConsoleLine("weight: " + ItemScript.itemWeight + "", "CONSOLE_INFO_MESSAGE");
-            CreateNewConsoleLine("count: " + ItemScript.itemCount + "", "CONSOLE_INFO_MESSAGE");
-            CreateNewConsoleLine("type (not editable): " + ItemScript.itemType.ToString() + "", "CONSOLE_INFO_MESSAGE");
-            CreateNewConsoleLine("quality (not editable): " + ItemScript.itemQuality.ToString() + "", "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("isProtected: " + ItemScript.isProtected, "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("isStackable: " + ItemScript.isStackable, "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("type: " + ItemScript.itemType.ToString(), "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("quality: " + ItemScript.itemQuality.ToString(), "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("value: " + ItemScript.itemValue, "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("weight: " + ItemScript.itemWeight, "CONSOLE_INFO_MESSAGE");
+            CreateNewConsoleLine("count: " + ItemScript.itemCount, "CONSOLE_INFO_MESSAGE");
+            if (ItemScript.itemType == Env_Item.ItemType.weapon
+                || ItemScript.itemType == Env_Item.ItemType.armor
+                || ItemScript.itemType == Env_Item.ItemType.shield)
+            {
+                CreateNewConsoleLine("durability: " + ItemScript.itemCurrentDurability + "/" + ItemScript.itemMaxDurability, "CONSOLE_INFO_MESSAGE");
+
+                if (ItemScript.itemType == Env_Item.ItemType.weapon)
+                {
+                    CreateNewConsoleLine("damage: " + targetPlayerItem.GetComponent<Item_Weapon>().damage_Current, "CONSOLE_INFO_MESSAGE");
+                }
+            }
         }
     }
     //set item stat
@@ -2244,7 +2269,15 @@ public class Manager_Console : MonoBehaviour
 
             if (separatedWords[4] != "value"
                 && separatedWords[4] != "weight"
-                && separatedWords[4] != "count")
+                && separatedWords[4] != "count"
+                && (separatedWords[4] != "damage"
+                || (separatedWords[4] == "damage"
+                && ItemScript.itemType != Env_Item.ItemType.weapon))
+                && (separatedWords[4] != "durability"
+                || (separatedWords[4] == "durability"
+                && ItemScript.itemType != Env_Item.ItemType.weapon
+                && ItemScript.itemType != Env_Item.ItemType.armor
+                && ItemScript.itemType != Env_Item.ItemType.shield)))
             {
                 CreateNewConsoleLine("Error: Stat name " + separatedWords[4] + " is invalid or not editable! Type player shis " + separatedWords[1] + " to list all stats for this item.", "CONSOLE_ERROR_MESSAGE");
             }
@@ -2311,12 +2344,38 @@ public class Manager_Console : MonoBehaviour
                             }
                             else
                             {
-                                CreateNewConsoleLine("Error: Item count must be between 0 and 1000000!", "CONSOLE_ERROR_MESSAGE");
+                                CreateNewConsoleLine("Error: Item count must be between 1 and 1000000!", "CONSOLE_ERROR_MESSAGE");
                             }
                         }
                         else
                         {
                             CreateNewConsoleLine("Error: Cannot edit non-stackable item count!", "CONSOLE_ERROR_MESSAGE");
+                        }
+                    }
+                    else if (separatedWords[4] == "damage")
+                    {
+                        if (statValue >= 0
+                            && statValue <= 1000000)
+                        {
+                            targetPlayerItem.GetComponent<Item_Weapon>().damage_Current = statValue;
+                            CreateNewConsoleLine("Successfully set " + separatedWords[2] + " damage to " + statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                        }
+                        else
+                        {
+                            CreateNewConsoleLine("Error: Item damage must be between 0 and 1000000!", "CONSOLE_ERROR_MESSAGE");
+                        }
+                    }
+                    else if (separatedWords[4] == "durability")
+                    {
+                        if (statValue >= 0
+                            && statValue <= ItemScript.itemMaxDurability)
+                        {
+                            ItemScript.itemCurrentDurability = statValue;
+                            CreateNewConsoleLine("Successfully set " + separatedWords[2] + " duraiblity to " + statValue + "!", "CONSOLE_SUCCESS_MESSAGE");
+                        }
+                        else
+                        {
+                            CreateNewConsoleLine("Error: Item durability must be between 0 and item max durability!", "CONSOLE_ERROR_MESSAGE");
                         }
                     }
                 }
@@ -2429,6 +2488,10 @@ public class Manager_Console : MonoBehaviour
             || output.Contains("Error"))
         {
             resultMessage = "UNITY_ERROR_MESSAGE] [" + unusedStackString + "] [" + type + "]";
+        }
+        else if (output.Contains("Incorrect value"))
+        {
+            resultMessage = "LOADED_DATA_ERROR";
         }
         else
         {

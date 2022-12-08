@@ -96,27 +96,27 @@ public class Player_Stats : MonoBehaviour
         Attributes["Luck"] = 1;
 
         //assign default skill levels   //assign default skill point requirements
-        Skills["Blade"] = 5; SkillPoints["Blade"] = 750;
-        Skills["Blunt"] = 5; SkillPoints["Blunt"] = 750;
-        Skills["HandToHand"] = 5; SkillPoints["HandToHand"] = 750;
-        Skills["Armorer"] = 5; SkillPoints["Armorer"] = 750;
-        Skills["Block"] = 5; SkillPoints["Block"] = 750;
-        Skills["HeavyArmor"] = 5; SkillPoints["HeavyArmor"] = 750;
-        Skills["Athletics"] = 5; SkillPoints["Athletics"] = 750;
-        Skills["Alteration"] = 5; SkillPoints["Alteration"] = 750;
-        Skills["Destruction"] = 5; SkillPoints["Destruction"] = 750;
-        Skills["Restoration"] = 5; SkillPoints["Restoration"] = 750;
-        Skills["Alchemy"] = 5; SkillPoints["Alchemy"] = 750;
-        Skills["Conjuration"] = 5; SkillPoints["Conjuration"] = 750;
-        Skills["Mysticism"] = 5; SkillPoints["Mysticism"] = 750;
-        Skills["Illusion"] = 5; SkillPoints["Illusion"] = 750;
-        Skills["Security"] = 5; SkillPoints["Security"] = 750;
-        Skills["Sneak"] = 5; SkillPoints["Sneak"] = 750;
-        Skills["Marksman"] = 5; SkillPoints["Marksman"] = 750;
-        Skills["Acrobatics"] = 5; SkillPoints["Acrobatics"] = 750;
-        Skills["LightArmor"] = 5; SkillPoints["LightArmor"] = 750;
-        Skills["Mercantile"] = 5; SkillPoints["Mercantile"] = 750;
-        Skills["Speechcraft"] = 5; SkillPoints["Speechcraft"] = 750;
+        Skills["Blade"] = 5;            SkillPoints["Blade"] = 750;
+        Skills["Blunt"] = 5;            SkillPoints["Blunt"] = 750;
+        Skills["HandToHand"] = 5;       SkillPoints["HandToHand"] = 750;
+        Skills["Armorer"] = 5;          SkillPoints["Armorer"] = 750;
+        Skills["Block"] = 5;            SkillPoints["Block"] = 750;
+        Skills["HeavyArmor"] = 5;       SkillPoints["HeavyArmor"] = 750;
+        Skills["Athletics"] = 5;        SkillPoints["Athletics"] = 750;
+        Skills["Alteration"] = 5;       SkillPoints["Alteration"] = 750;
+        Skills["Destruction"] = 5;      SkillPoints["Destruction"] = 750;
+        Skills["Restoration"] = 5;      SkillPoints["Restoration"] = 750;
+        Skills["Alchemy"] = 5;          SkillPoints["Alchemy"] = 750;
+        Skills["Conjuration"] = 5;      SkillPoints["Conjuration"] = 750;
+        Skills["Mysticism"] = 5;        SkillPoints["Mysticism"] = 750;
+        Skills["Illusion"] = 5;         SkillPoints["Illusion"] = 750;
+        Skills["Security"] = 5;         SkillPoints["Security"] = 750;
+        Skills["Sneak"] = 5;            SkillPoints["Sneak"] = 750;
+        Skills["Marksman"] = 5;         SkillPoints["Marksman"] = 750;
+        Skills["Acrobatics"] = 5;       SkillPoints["Acrobatics"] = 750;
+        Skills["LightArmor"] = 5;       SkillPoints["LightArmor"] = 750;
+        Skills["Mercantile"] = 5;       SkillPoints["Mercantile"] = 750;
+        Skills["Speechcraft"] = 5;      SkillPoints["Speechcraft"] = 750;
     }
 
     //update players health/stamina/magicka bar UI

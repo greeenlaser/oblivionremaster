@@ -435,7 +435,25 @@ public class Manager_GameSaving : MonoBehaviour
         foreach (GameObject item in PlayerInventoryScript.playerItems)
         {
             Env_Item ItemScript = item.GetComponent<Env_Item>();
-            saveFile.WriteLine(item.name + ": " + ItemScript.itemCount);
+            string itemName = ItemScript.itemName;
+            int theItemCount = ItemScript.itemCount;
+            string output = itemName + ": " + theItemCount;
+
+            if (ItemScript.itemType == Env_Item.ItemType.weapon
+                || ItemScript.itemType == Env_Item.ItemType.armor
+                || ItemScript.itemType == Env_Item.ItemType.shield)
+            {
+                int durability = ItemScript.itemCurrentDurability;
+                output += ", " + durability;
+
+                if (ItemScript.itemType == Env_Item.ItemType.weapon)
+                {
+                    int damage = item.GetComponent<Item_Weapon>().damage_Current;
+                    output += ", " + damage;
+                }
+            }
+
+            saveFile.WriteLine(output); itemCount++;
             itemCount++;
         }
         if (itemCount == 0)
@@ -493,8 +511,23 @@ public class Manager_GameSaving : MonoBehaviour
                         Env_Item itemScript = item.GetComponent<Env_Item>();
                         string itemName = itemScript.itemName;
                         int theItemCount = itemScript.itemCount;
+                        string output = "Cell_" + ContainerScript.containerName + "_" + itemName + ": " + theItemCount;
 
-                        saveFile.WriteLine("Cell_" + ContainerScript.containerName + "_" + itemName + ": " + theItemCount);
+                        if (itemScript.itemType == Env_Item.ItemType.weapon
+                            || itemScript.itemType == Env_Item.ItemType.armor
+                            || itemScript.itemType == Env_Item.ItemType.shield)
+                        {
+                            int durability = itemScript.itemCurrentDurability;
+                            output += ", " + durability;
+
+                            if (itemScript.itemType == Env_Item.ItemType.weapon)
+                            {
+                                int damage = item.GetComponent<Item_Weapon>().damage_Current;
+                                output += ", " + damage;
+                            }
+                        }
+
+                        saveFile.WriteLine(output);
                         foundItemCount++;
                     }
                     if (foundItemCount == 0)
@@ -1154,6 +1187,7 @@ public class Manager_GameSaving : MonoBehaviour
                     //load player items
                     else if (templateItemNames.Contains(type))
                     {
+                        //checking if item exists
                         GameObject templateItem = null;
                         foreach (GameObject item in PlayerMenuScript.templateItems)
                         {
@@ -1164,16 +1198,106 @@ public class Manager_GameSaving : MonoBehaviour
                             }
                         }
 
-                        GameObject spawnedItem = Instantiate(templateItem,
-                                                             PlayerInventoryScript.par_PlayerItems.transform.position,
-                                                             Quaternion.identity,
-                                                             PlayerInventoryScript.par_PlayerItems.transform);
-                        spawnedItem.SetActive(false);
-                        spawnedItem.name = templateItem.name;
-                        spawnedItem.GetComponent<Env_Item>().itemCount = int.Parse(values[0]);
+                        if (templateItem == null)
+                        {
+                            Debug.LogError("Incorrect value: Item with name " + type + " in game save " + saveFileName + " does not exist in the game! Ignoring this item.");
+                        }
+                        else
+                        {
+                            GameObject spawnedItem = Instantiate(templateItem,
+                                                                 PlayerInventoryScript.par_PlayerItems.transform.position,
+                                                                 Quaternion.identity,
+                                                                 PlayerInventoryScript.par_PlayerItems.transform);
+                            spawnedItem.SetActive(false);
+                            spawnedItem.name = templateItem.name;
 
-                        PlayerInventoryScript.playerItems.Add(spawnedItem);
-                        PlayerStatsScript.invSpace += spawnedItem.GetComponent<Env_Item>().itemCount * spawnedItem.GetComponent<Env_Item>().itemWeight;
+                            //checking if saved item count is valid
+                            Env_Item targetItemScript = spawnedItem.GetComponent<Env_Item>();
+                            bool isInt = int.TryParse(values[0], out _);
+                            if (!isInt
+                                || (isInt
+                                && !templateItem.GetComponent<Env_Item>().isStackable
+                                && int.Parse(values[0]) > 1))
+                            {
+                                Debug.LogError("Incorrect value: Item count for " + spawnedItem.name + " in game save " + saveFileName + " is invalid or this item is not stackable and its count cannot go over 1! Resetting to 1.");
+                                targetItemScript.itemCount = 1;
+
+                                PlayerInventoryScript.playerItems.Add(spawnedItem);
+                                PlayerStatsScript.invSpace += targetItemScript.itemCount;
+                            }
+                            else
+                            {
+                                int count = int.Parse(values[0]);
+                                if (count < 1
+                                    || count >= 1000001)
+                                {
+                                    Debug.LogError("Incorrect value: Item count for " + spawnedItem.name + " in game save " + saveFileName + " is out of range! Resetting to 1.");
+                                    targetItemScript.itemCount = 1;
+
+                                    PlayerInventoryScript.playerItems.Add(spawnedItem);
+                                    PlayerStatsScript.invSpace += targetItemScript.itemCount;
+                                }
+                                else
+                                {
+                                    targetItemScript.itemCount = int.Parse(values[0]);
+
+                                    PlayerInventoryScript.playerItems.Add(spawnedItem);
+                                    PlayerStatsScript.invSpace += targetItemScript.itemCount * targetItemScript.itemWeight;
+                                }
+                            }
+
+                            if (targetItemScript.itemType == Env_Item.ItemType.weapon
+                                || targetItemScript.itemType == Env_Item.ItemType.armor
+                                || targetItemScript.itemType == Env_Item.ItemType.shield)
+                            {
+                                //checking if weapon/armor/shield current durability value is valid
+                                bool isInt2 = int.TryParse(values[1], out _);
+                                if (!isInt2)
+                                {
+                                    Debug.LogError("Incorrect value: Item durability for " + spawnedItem.name + " in game save " + saveFileName + " is invalid! Resetting to max durability.");
+                                    targetItemScript.itemCurrentDurability = targetItemScript.itemMaxDurability;
+                                }
+                                else
+                                {
+                                    int value = int.Parse(values[1]);
+                                    if (value < 0
+                                        || value > targetItemScript.itemMaxDurability)
+                                    {
+                                        Debug.LogError("Incorrect value: Item durability for " + spawnedItem.name + " in game save " + saveFileName + " is out of range! Resetting to max durability.");
+                                        targetItemScript.itemCurrentDurability = targetItemScript.itemMaxDurability;
+                                    }
+                                    else
+                                    {
+                                        targetItemScript.itemCurrentDurability = value;
+                                    }
+                                }
+
+                                //checking if weapon damage value is valid
+                                if (targetItemScript.itemType == Env_Item.ItemType.weapon)
+                                {
+                                    bool isInt3 = int.TryParse(values[2], out _);
+                                    if (!isInt3)
+                                    {
+                                        Debug.LogError("Incorrect value: Item damage for " + spawnedItem.name + " in game save " + saveFileName + " is invalid! Resetting to default value.");
+                                        templateItem.GetComponent<Item_Weapon>().damage_Current = templateItem.GetComponent<Item_Weapon>().damage_Default;
+                                    }
+                                    else
+                                    {
+                                        int value = int.Parse(values[2]);
+                                        if (value < 0
+                                            || value >= 1000001)
+                                        {
+                                            Debug.LogError("Incorrect value: Item durability for " + spawnedItem.name + " in game save " + saveFileName + " is out of range! Resetting to default value.");
+                                            templateItem.GetComponent<Item_Weapon>().damage_Current = templateItem.GetComponent<Item_Weapon>().damage_Default;
+                                        }
+                                        else
+                                        {
+                                            templateItem.GetComponent<Item_Weapon>().damage_Current = value;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     //load locations, container lock states and container items
@@ -1242,22 +1366,109 @@ public class Manager_GameSaving : MonoBehaviour
                                         }
                                         else
                                         {
+                                            //checking if item exists
+                                            GameObject templateItem = null;
                                             foreach (GameObject item in PlayerMenuScript.templateItems)
                                             {
-                                                if (type.Contains(item.name))
+                                                if (item.name == type)
                                                 {
-                                                    int itemCount = int.Parse(values[0]);
-
-                                                    GameObject spawnedItem = Instantiate(item,
-                                                                                         ContainerScript.par_ContainerItems.transform.position,
-                                                                                         Quaternion.identity,
-                                                                                         ContainerScript.par_ContainerItems.transform);
-                                                    Env_Item SpawnedItemScript = spawnedItem.GetComponent<Env_Item>();
-                                                    spawnedItem.name = SpawnedItemScript.itemName;
-                                                    SpawnedItemScript.itemCount = itemCount;
-                                                    ContainerScript.containerItems.Add(spawnedItem);
-
+                                                    templateItem = item;
                                                     break;
+                                                }
+                                            }
+
+                                            if (templateItem == null)
+                                            {
+                                                Debug.LogError("Incorrect value: Item with name " + type + " in game save " + saveFileName + " in container " + cellName + "_" + containerName + " does not exist in the game! Ignoring this item.");
+                                            }
+                                            else
+                                            {
+                                                GameObject spawnedItem = Instantiate(templateItem,
+                                                                                     ContainerScript.par_ContainerItems.transform.position,
+                                                                                     Quaternion.identity,
+                                                                                     ContainerScript.par_ContainerItems.transform);
+                                                spawnedItem.SetActive(false);
+                                                spawnedItem.name = templateItem.name;
+
+                                                //checking if saved item count is valid
+                                                Env_Item targetItemScript = spawnedItem.GetComponent<Env_Item>();
+                                                bool isInt = int.TryParse(values[0], out _);
+                                                if (!isInt
+                                                    || (isInt
+                                                    && !templateItem.GetComponent<Env_Item>().isStackable))
+                                                {
+                                                    Debug.LogError("Incorrect value: Item count for " + spawnedItem.name + " in game save " + saveFileName + " in container " + cellName + "_" + containerName + " is invalid or this item is not stackable and its count cannot go over 1! Resetting to 1.");
+                                                    targetItemScript.itemCount = 1;
+
+                                                    ContainerScript.containerItems.Add(spawnedItem);
+                                                }
+                                                else
+                                                {
+                                                    int count = int.Parse(values[0]);
+                                                    if (count < 1
+                                                        || count >= 1000001)
+                                                    {
+                                                        Debug.LogError("Incorrect value: Item count for " + spawnedItem.name + " in game save " + saveFileName + " in container " + cellName + "_" + containerName + " is out of range! Resetting to 1.");
+                                                        targetItemScript.itemCount = 1;
+
+                                                        ContainerScript.containerItems.Add(spawnedItem);
+                                                    }
+                                                    else
+                                                    {
+                                                        targetItemScript.itemCount = int.Parse(values[0]);
+
+                                                        ContainerScript.containerItems.Add(spawnedItem);
+                                                    }
+                                                }
+
+                                                //checking if weapon/armor/shield current durability value is valid
+                                                bool isInt2 = int.TryParse(values[1], out _);
+                                                if (!isInt2
+                                                    && (targetItemScript.itemType == Env_Item.ItemType.weapon
+                                                    || targetItemScript.itemType == Env_Item.ItemType.armor
+                                                    || targetItemScript.itemType == Env_Item.ItemType.shield))
+                                                {
+                                                    Debug.LogError("Incorrect value: Item durability for " + spawnedItem.name + " in game save " + saveFileName + " in container " + cellName + "_" + containerName + " is invalid! Resetting to max durability.");
+                                                    targetItemScript.itemCurrentDurability = targetItemScript.itemMaxDurability;
+                                                }
+                                                else
+                                                {
+                                                    int value = int.Parse(values[1]);
+                                                    if (value < 0
+                                                        || value > targetItemScript.itemMaxDurability)
+                                                    {
+                                                        Debug.LogError("Incorrect value: Item durability for " + spawnedItem.name + " in game save " + saveFileName + " in container " + cellName + "_" + containerName + " is out of range! Resetting to max durability.");
+                                                        targetItemScript.itemCurrentDurability = targetItemScript.itemMaxDurability;
+                                                    }
+                                                    else
+                                                    {
+                                                        targetItemScript.itemCurrentDurability = value;
+                                                    }
+                                                }
+
+                                                //checking if weapon damage value is valid
+                                                if (targetItemScript.itemType == Env_Item.ItemType.weapon)
+                                                {
+                                                    bool isInt3 = int.TryParse(values[2], out _);
+                                                    if (!isInt3)
+                                                    {
+                                                        Debug.LogError("Incorrect value: Item damage for " + spawnedItem.name + " in game save " + saveFileName + " is invalid! Resetting to default value.");
+                                                        templateItem.GetComponent<Item_Weapon>().damage_Current = templateItem.GetComponent<Item_Weapon>().damage_Default;
+                                                    }
+                                                    else
+                                                    {
+                                                        int value = int.Parse(values[2]);
+                                                        if (value < 0
+                                                            || value >= 1000001)
+                                                        {
+                                                            Debug.LogError("Incorrect value: Item durability for " + spawnedItem.name + " in game save " + saveFileName + " is out of range! Resetting to default value.");
+                                                            templateItem.GetComponent<Item_Weapon>().damage_Current = templateItem.GetComponent<Item_Weapon>().damage_Default;
+                                                        }
+                                                        else
+                                                        {
+                                                            templateItem.GetComponent<Item_Weapon>().damage_Current = value;
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }

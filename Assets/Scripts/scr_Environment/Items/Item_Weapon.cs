@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class Item_Weapon : MonoBehaviour
 {
+    [Header("Default values")]
+    public int damage_Default;
+
     [Header("General")]
-    public int baseDamage;
-    [Range(0, 100)]
-    public int maxWeaponHealth;
     public EquipType equipType;
     public enum EquipType
     {
@@ -26,7 +26,6 @@ public class Item_Weapon : MonoBehaviour
     }
     public Texture img_ItemLogo;
     public GameObject templateAnimatedWeapon;
-    [SerializeField] private float animationLength;
     [SerializeField] private Vector3 forcedRotation;
 
     //public but hidden variables
@@ -35,22 +34,26 @@ public class Item_Weapon : MonoBehaviour
     [HideInInspector] public bool isAiming;
     [HideInInspector] public bool isBlocking;
     [HideInInspector] public bool isReloading;
-    [HideInInspector] public float weaponHealth;
+    [HideInInspector] public bool isCasting;
     [HideInInspector] public GameObject instantiatedWeapon;
+    [HideInInspector] public Anim_Weapon WeaponAnimationScript;
+    [HideInInspector] public Animator weaponAnimator;
+
+    //current values
+    [HideInInspector] public int damage_Current;
 
     //scripts
-    private GameObject thePlayer;
-    private GameObject par_Managers;
     private Player_Stats PlayerStatsScript;
     private UI_PlayerMenu PlayerMenuScript;
     private Manager_KeyBindings KeyBindingsScript;
     private UI_PauseMenu PauseMenuScript;
 
     //private variables
+    private GameObject thePlayer;
+    private GameObject par_Managers;
     private bool calledResetOnce;
     private readonly float timeToHeavyAttack = 0.2f;
     private float swingTimer;
-    private Animator weaponAnimator;
 
     private void Awake()
     {
@@ -61,8 +64,6 @@ public class Item_Weapon : MonoBehaviour
         PlayerMenuScript = par_Managers.GetComponent<UI_PlayerMenu>();
         KeyBindingsScript = par_Managers.GetComponent<Manager_KeyBindings>();
         PauseMenuScript = par_Managers.GetComponent<UI_PauseMenu>();
-
-        weaponHealth = maxWeaponHealth;
     }
 
     private void Update()
@@ -72,11 +73,6 @@ public class Item_Weapon : MonoBehaviour
             && PlayerStatsScript.currentHealth > 0
             && GetComponent<Env_Item>().isEquipped)
         {
-            if (instantiatedWeapon != null
-                && weaponAnimator == null)
-            {
-                weaponAnimator = instantiatedWeapon.GetComponentInChildren<Animator>();
-            }
             if (instantiatedWeapon.transform.localRotation != Quaternion.Euler(forcedRotation))
             {
                 instantiatedWeapon.transform.localRotation = Quaternion.Euler(forcedRotation);
@@ -103,13 +99,13 @@ public class Item_Weapon : MonoBehaviour
                             swingTimer += Time.deltaTime;
                             if (swingTimer >= timeToHeavyAttack)
                             {
-                                StartCoroutine(SwingWeapon("swing_Heavy"));
+                                WeaponAnimationScript.StartAnimation("swing_Heavy", 2);
                             }
                         }
                         else if (!isCallingMainAttack
                                  && swingTimer > 0)
                         {
-                            StartCoroutine(SwingWeapon("swing_Light"));
+                            WeaponAnimationScript.StartAnimation("swing_Light", 2);
                         }
                     }
                 }
@@ -126,33 +122,16 @@ public class Item_Weapon : MonoBehaviour
                             calledResetOnce = false;
                         }
 
-                        Block();
+                        WeaponAnimationScript.StartAnimation("block", 0.5f);
                     }
                     else
                     {
+                        WeaponAnimationScript.StartAnimation("unblock", 0.5f);
                         ResetWeaponState();
                     }
                 }
             }
         }
-    }
-
-    //swing the weapon
-    private IEnumerator SwingWeapon(string state)
-    {
-        isUsing = true;
-
-        weaponAnimator.Play(state, 0, 0.0f);
-
-        yield return new WaitForSeconds(animationLength);
-
-        ResetWeaponState();
-    }
-
-    //block with the melee weapon
-    private void Block()
-    {
-        
     }
 
     /*

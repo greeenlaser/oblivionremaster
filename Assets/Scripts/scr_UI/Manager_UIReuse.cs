@@ -23,12 +23,23 @@ public class Manager_UIReuse : MonoBehaviour
     public Button btn_Interact;
     public Button btn_Drop;
     public Button btn_CloseSelectedItemInfo;
+    public Button btn_ShowExtraStats;
     public TMP_Text txt_ItemName;
     public TMP_Text txt_ItemDescription;
     public TMP_Text txt_ItemType;
     public TMP_Text txt_ItemValue;
     public TMP_Text txt_ItemWeight;
     public TMP_Text txt_ItemCount;
+    public TMP_Text txt_WeaponDamage;
+
+    [Header("Repair UI")]
+    public GameObject par_RepairUI;
+    public Button btn_Repair;
+    public TMP_Text txt_Durability;
+    public TMP_Text txt_RepairHammerCount;
+
+    [Header("Extra stats")]
+    public GameObject par_ExtraStats;
 
     [Header("Key assign UI")]
     public GameObject par_KeyAssign;
@@ -128,11 +139,20 @@ public class Manager_UIReuse : MonoBehaviour
     //clears and closes the selected item info in inventory
     public void CloseSelectedItemInfo()
     {
+        //close selected item UI
         btn_Interact.onClick.RemoveAllListeners();
         btn_Interact.gameObject.SetActive(false);
         btn_Drop.onClick.RemoveAllListeners();
         btn_Drop.gameObject.SetActive(false);
         par_ItemStats.SetActive(false);
+        btn_ShowExtraStats.onClick.RemoveAllListeners();
+
+        //close repair UI
+        par_RepairUI.SetActive(false);
+        btn_Repair.onClick.RemoveAllListeners();
+
+        //close extra stats UI
+        par_ExtraStats.SetActive(false);
     }
 
     //reset all confirmation UI elements

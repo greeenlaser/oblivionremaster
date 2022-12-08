@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Unity.VisualScripting;
 
 public class UI_Inventory : MonoBehaviour
 {
@@ -32,11 +31,15 @@ public class UI_Inventory : MonoBehaviour
     [HideInInspector] public bool tumbler5Unlocked;
     [HideInInspector] public string currentlyOpenedInventory;
     [HideInInspector] public GameObject heldObject;
-    [HideInInspector] public GameObject equippedWeapon;
-    [HideInInspector] public GameObject lastEquippedWeapon;
     [HideInInspector] public List<GameObject> playerItems = new();
     [HideInInspector] public List<GameObject> containerItems = new();
     [HideInInspector] public Env_LockStatus LockStatusScript;
+
+    //weapon
+    public GameObject equippedWeapon;
+    [HideInInspector] public GameObject lastEquippedWeapon;
+    [HideInInspector] public bool isWeaponUnsheathed;
+    [HideInInspector] public bool isSheathingUnsheathingWeapon;
 
     //scripts
     private UI_Inventory PlayerInventoryScript;
@@ -52,10 +55,7 @@ public class UI_Inventory : MonoBehaviour
 
     private void Awake()
     {
-        if (gameObject.GetComponent<Player_Movement>() == null)
-        {
-            PlayerInventoryScript = thePlayer.GetComponent<UI_Inventory>();
-        }
+        PlayerInventoryScript = thePlayer.GetComponent<UI_Inventory>();
         if (containerType == ContainerType.respawnable)
         {
             LockpickingScript = par_Managers.GetComponent<UI_Lockpicking>();
@@ -89,9 +89,24 @@ public class UI_Inventory : MonoBehaviour
             //if any weapons have been held in this game instance
             if (KeyBindingsScript.GetKeyDown("EquipUnequipWeapon")
                 && lastEquippedWeapon != null
-                && !PauseMenuScript.isConsoleOpen)
+                && !PauseMenuScript.isConsoleOpen
+                && !isSheathingUnsheathingWeapon
+                && !equippedWeapon.GetComponent<Item_Weapon>().isCallingMainAttack
+                && !equippedWeapon.GetComponent<Item_Weapon>().isUsing
+                && !equippedWeapon.GetComponent<Item_Weapon>().isBlocking
+                && !equippedWeapon.GetComponent<Item_Weapon>().isAiming
+                && !equippedWeapon.GetComponent<Item_Weapon>().isAiming
+                && !equippedWeapon.GetComponent<Item_Weapon>().isReloading
+                && !equippedWeapon.GetComponent<Item_Weapon>().isCasting)
             {
-                UseItem(lastEquippedWeapon);
+                if (!isWeaponUnsheathed)
+                {
+                    equippedWeapon.GetComponent<Item_Weapon>().instantiatedWeapon.GetComponent<Anim_Weapon>().StartAnimation("unsheath", 2);
+                }
+                else
+                {
+                    equippedWeapon.GetComponent<Item_Weapon>().instantiatedWeapon.GetComponent<Anim_Weapon>().StartAnimation("sheath", 2);
+                }
             }
         }
     }
@@ -482,6 +497,14 @@ public class UI_Inventory : MonoBehaviour
         UIReuseScript.txt_ItemValue.text = "Value: " + itemScript.itemValue.ToString();
         UIReuseScript.txt_ItemWeight.text = "Weight: " + itemScript.itemWeight.ToString();
         UIReuseScript.txt_ItemCount.text = "Count: " + itemScript.itemCount.ToString();
+        if (itemScript.itemType != Env_Item.ItemType.weapon)
+        {
+            UIReuseScript.txt_WeaponDamage.text = "";
+        }
+        else
+        {
+            UIReuseScript.txt_WeaponDamage.text = "Damage: " + targetItem.GetComponent<Item_Weapon>().damage_Current;
+        }
 
         //take method is used when player is taking an item from the world
         if (PlayerMenuScript.targetContainer == null
@@ -558,6 +581,15 @@ public class UI_Inventory : MonoBehaviour
             {
                 UIReuseScript.btn_Drop.interactable = false;
             }
+
+            if (itemScript.itemType == Env_Item.ItemType.weapon
+                || itemScript.itemType == Env_Item.ItemType.armor
+                || itemScript.itemType == Env_Item.ItemType.shield)
+            {
+                ShowRepairInfo(targetItem);
+            }
+
+            UIReuseScript.btn_ShowExtraStats.onClick.AddListener(ShowExtraStats);
         }
 
         //take and place methods are used when player is taking from or placing to container
@@ -588,7 +620,78 @@ public class UI_Inventory : MonoBehaviour
                     UIReuseScript.btn_Interact.interactable = false;
                 }
             }
+
+            UIReuseScript.btn_ShowExtraStats.onClick.AddListener(ShowExtraStats);
         }
+    }
+
+    //enables the repair UI automatically along with the
+    //item stat UI if the selected item is repairable
+    public void ShowRepairInfo(GameObject targetItem)
+    {
+        UIReuseScript.par_RepairUI.SetActive(true);
+        UIReuseScript.txt_Durability.text = "Durability: " + 
+            targetItem.GetComponent<Env_Item>().itemCurrentDurability.ToString() + "/" +
+            targetItem.GetComponent<Env_Item>().itemMaxDurability.ToString();
+        UIReuseScript.txt_RepairHammerCount.text = "Repair hammers: 0";
+        UIReuseScript.btn_Repair.interactable = false;
+
+        foreach (GameObject item in PlayerInventoryScript.playerItems)
+        {
+            if (item.name == "Repair_hammer")
+            {
+                if (targetItem.GetComponent<Env_Item>().itemCurrentDurability 
+                    < targetItem.GetComponent<Env_Item>().itemMaxDurability)
+                {
+                    UIReuseScript.txt_RepairHammerCount.text = "Repair hammers: " + item.GetComponent<Env_Item>().itemCount.ToString();
+
+                    UIReuseScript.btn_Repair.interactable = true;
+                    UIReuseScript.btn_Repair.onClick.AddListener(delegate { RepairSelectedItem(targetItem, item); });
+                }
+                break;
+            }
+        }
+    }
+    //repair selected item with an existing repair hammer
+    public void RepairSelectedItem(GameObject targetItem, GameObject repairHammer)
+    {
+        int armorerLevel = PlayerStatsScript.Skills["Armorer"];
+        int maxChance = 100 / armorerLevel;
+        int chanceToBreak = Random.Range(0, maxChance);
+
+        if (chanceToBreak >= maxChance / 2)
+        {
+            if (repairHammer.GetComponent<Env_Item>().itemCount == 1)
+            {
+                UIReuseScript.txt_RepairHammerCount.text = "Repair hammers: 0";
+                UIReuseScript.btn_Repair.interactable = false;
+
+                Destroy(repairHammer);
+
+                PauseMenuScript.UnpauseGame();
+                RemoveDuplicates();
+                PauseMenuScript.PauseWithoutUI();
+            }
+            else
+            {
+                repairHammer.GetComponent<Env_Item>().itemCount--;
+                UIReuseScript.txt_RepairHammerCount.text = "Repair hammers: " + repairHammer.GetComponent<Env_Item>().itemCount.ToString();
+            }
+        }
+        targetItem.GetComponent<Env_Item>().itemCurrentDurability += armorerLevel;
+        if (targetItem.GetComponent<Env_Item>().itemCurrentDurability 
+            > targetItem.GetComponent<Env_Item>().itemMaxDurability)
+        {
+            targetItem.GetComponent<Env_Item>().itemCurrentDurability = targetItem.GetComponent<Env_Item>().itemMaxDurability;
+        }
+        UIReuseScript.txt_Durability.text = targetItem.GetComponent<Env_Item>().itemCurrentDurability.ToString();
+    }
+
+    //show the extra stats UI if the
+    //arrow pointing right button was pressed
+    public void ShowExtraStats()
+    {
+        UIReuseScript.par_ExtraStats.SetActive(true);
     }
 
     //equip/use selected item in player inventory
@@ -628,15 +731,18 @@ public class UI_Inventory : MonoBehaviour
                         child.GetComponent<MeshRenderer>().enabled = false;
                     }
                     equippedWeapon.GetComponent<Rigidbody>().isKinematic = true;
-                    equippedWeapon.GetComponent<Item_Weapon>().instantiatedWeapon = animatedWeapon;
+                    equippedWeapon.GetComponent<Item_Weapon>().instantiatedWeapon 
+                        = animatedWeapon;
+                    equippedWeapon.GetComponent<Item_Weapon>().WeaponAnimationScript 
+                        = animatedWeapon.GetComponent<Anim_Weapon>();
+                    equippedWeapon.GetComponent<Item_Weapon>().weaponAnimator 
+                        = equippedWeapon.GetComponent<Item_Weapon>().instantiatedWeapon.GetComponent<Animator>();
 
                     targetItem.GetComponent<Env_Item>().isEquipped = true;
 
                     UIReuseScript.img_EquippedWeapon.texture = targetItem.GetComponent<Item_Weapon>().img_ItemLogo;
 
                     UIReuseScript.btn_Interact.GetComponentInChildren<TMP_Text>().text = "Unequip";
-
-                    Debug.Log("Info: Equipped " + targetItem.GetComponent<Env_Item>().itemName.Replace("_", " ") + ".");
                 }
                 else
                 {
@@ -652,8 +758,6 @@ public class UI_Inventory : MonoBehaviour
                     UIReuseScript.img_EquippedWeapon.texture = null;
 
                     UIReuseScript.btn_Interact.GetComponentInChildren<TMP_Text>().text = "Equip";
-
-                    Debug.Log("Info: Unequipped " + targetItem.GetComponent<Env_Item>().itemName.Replace("_", " ") + ".");
                 }
             }
             else
