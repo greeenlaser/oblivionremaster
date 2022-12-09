@@ -11,8 +11,8 @@ public class UI_LoadingScreen : MonoBehaviour
     public GameObject par_LoadingUI;
     [SerializeField] private RawImage loadingImage;
     [SerializeField] private TMP_Text txt_Tip;
-    [SerializeField] private Slider loadingSlider; 
-    public Button btn_Continue;
+    public TMP_Text txt_PressToContinue;
+    [SerializeField] private Slider loadingSlider;
     [SerializeField] private List<Texture> loadingImages = new();
     [SerializeField] private List<string> tips = new();
 
@@ -39,8 +39,16 @@ public class UI_LoadingScreen : MonoBehaviour
             PauseMenuScript = GetComponent<UI_PauseMenu>();
             PlayerMovementScript = thePlayer.GetComponent<Player_Movement>();
             PlayerCameraScript = thePlayer.GetComponentInChildren<Player_Camera>();
+        }
+    }
 
-            btn_Continue.onClick.AddListener(CloseLoadingScreen);
+    private void Update()
+    {
+        //press space to close loading screen
+        if (txt_PressToContinue.gameObject.activeInHierarchy
+            && Input.GetKeyDown(KeyCode.Space))
+        {
+            CloseLoadingScreen();
         }
     }
 
@@ -54,7 +62,7 @@ public class UI_LoadingScreen : MonoBehaviour
         txt_Tip.text = tips[Random.Range(0, tips.Count)];
 
         par_LoadingUI.SetActive(true);
-        btn_Continue.gameObject.SetActive(false);
+        txt_PressToContinue.gameObject.SetActive(false);
     }
     public void CloseLoadingScreen()
     {

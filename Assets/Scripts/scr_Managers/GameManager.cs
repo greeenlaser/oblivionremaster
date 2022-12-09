@@ -109,7 +109,7 @@ public class GameManager : MonoBehaviour
 
             LoadingScreenScript.UpdateLoadingScreenBar(100);
 
-            LoadingScreenScript.btn_Continue.gameObject.SetActive(true);
+            LoadingScreenScript.txt_PressToContinue.gameObject.SetActive(true);
         }
     }
 
