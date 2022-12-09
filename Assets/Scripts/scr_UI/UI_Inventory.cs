@@ -373,7 +373,7 @@ public class UI_Inventory : MonoBehaviour
                         newButton.GetComponentInChildren<TMP_Text>().text = buttonText;
 
                         newButton.GetComponent<Button>().onClick.AddListener(
-                            delegate { ShowSelectedItemInfo(item); });
+                            delegate { ShowSelectedItemInfo(item, newButton.GetComponent<Button>()); });
                     }
                 }
             }
@@ -418,7 +418,7 @@ public class UI_Inventory : MonoBehaviour
                             newButton.GetComponentInChildren<TMP_Text>().text = buttonText;
 
                             newButton.GetComponent<Button>().onClick.AddListener(
-                                delegate { ShowSelectedItemInfo(item); });
+                                delegate { ShowSelectedItemInfo(item, newButton.GetComponent<Button>()); });
                         }
                     }
                 }
@@ -475,7 +475,7 @@ public class UI_Inventory : MonoBehaviour
                             newButton.GetComponentInChildren<TMP_Text>().text = buttonText;
 
                             newButton.GetComponent<Button>().onClick.AddListener(
-                                delegate { ShowSelectedItemInfo(item); });
+                                delegate { ShowSelectedItemInfo(item, newButton.GetComponent<Button>()); });
                         }
                     }
                 }
@@ -484,8 +484,18 @@ public class UI_Inventory : MonoBehaviour
     }
 
     //show selected item details and interactable buttons in target inventory
-    public void ShowSelectedItemInfo(GameObject targetItem)
+    public void ShowSelectedItemInfo(GameObject targetItem, Button targetButton)
     {
+        targetButton.interactable = false;
+        foreach (Button btn in UIReuseScript.inventoryButtons)
+        {
+            if (btn != targetButton
+                && btn.interactable == false)
+            {
+                btn.interactable = true;
+            }
+        }
+
         UIReuseScript.CloseSelectedItemInfo();
 
         Env_Item itemScript = targetItem.GetComponent<Env_Item>();
