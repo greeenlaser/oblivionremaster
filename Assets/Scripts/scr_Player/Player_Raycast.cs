@@ -65,7 +65,8 @@ public class Player_Raycast : MonoBehaviour
                 {
                     if ((hitTarget.transform.GetComponent<Env_Item>() != null
                         && !hitTarget.transform.GetComponent<Env_Item>().isEquipped)           //item
-                        || hitTarget.transform.GetComponent<UI_Inventory>() != null            //container
+                        || (hitTarget.transform.GetComponent<UI_Inventory>() != null
+                        && hitTarget.transform.name != "Player")                               //container
                         || (hitTarget.transform.GetComponent<Env_Door>() != null               //door, gates are not allowed to be opened directly
                         && hitTarget.transform.GetComponent<Env_Door>().DoorManagerScript.doorType  
                         != Manager_Door.DoorType.gate)
@@ -75,6 +76,8 @@ public class Player_Raycast : MonoBehaviour
                         {
                             target = hitTarget.transform.gameObject;
                         }
+
+                        Debug.Log("looking at " + target.name + "...");
 
                         timer = 0;
                         canInteract = true;
