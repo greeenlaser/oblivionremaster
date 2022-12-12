@@ -8,20 +8,22 @@ public class UI_Inventory : MonoBehaviour
 {
     [Header("General assignables")]
     public GameObject par_PlayerItems;
-    [SerializeField] private Transform pos_EquippedWeapon; 
-    [SerializeField] private GameObject thePlayer;
-    [SerializeField] private GameObject par_Managers;
+    [SerializeField] private Transform pos_EquippedWeapon;
+    public ContainerType containerType = ContainerType.player;
+    public enum ContainerType
+    {
+        player,
+        container,
+        altar_of_enchanting,
+    }
 
     [Header("Container assignables")]
     public GameObject par_ContainerItems;
     public string containerName;
-    public ContainerType containerType = ContainerType.player;
-    public enum ContainerType
-    {
-        respawnable,
-        store,
-        player
-    }
+
+    [Header("Scripts")]
+    [SerializeField] private GameObject thePlayer;
+    [SerializeField] private GameObject par_Managers;
 
     //public but hidden variables
     [HideInInspector] public bool tumbler1Unlocked;
@@ -36,7 +38,7 @@ public class UI_Inventory : MonoBehaviour
     [HideInInspector] public Env_LockStatus LockStatusScript;
 
     //weapon
-    public GameObject equippedWeapon;
+    [HideInInspector] public GameObject equippedWeapon;
     [HideInInspector] public GameObject lastEquippedWeapon;
     [HideInInspector] public bool isWeaponUnsheathed;
     [HideInInspector] public bool isSheathingUnsheathingWeapon;
@@ -56,7 +58,7 @@ public class UI_Inventory : MonoBehaviour
     private void Awake()
     {
         PlayerInventoryScript = thePlayer.GetComponent<UI_Inventory>();
-        if (containerType == ContainerType.respawnable)
+        if (containerType == ContainerType.container)
         {
             LockpickingScript = par_Managers.GetComponent<UI_Lockpicking>();
         }
@@ -122,7 +124,7 @@ public class UI_Inventory : MonoBehaviour
             PauseMenuScript.isPlayerMenuOpen = true;
         }
         else if (!LockStatusScript.isUnlocked
-                 && containerType == ContainerType.respawnable)
+                 && containerType == ContainerType.container)
         {
             if (!LockStatusScript.needsKey)
             {

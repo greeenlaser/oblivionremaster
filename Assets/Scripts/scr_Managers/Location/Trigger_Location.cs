@@ -157,8 +157,7 @@ public class Trigger_Location : MonoBehaviour
             }
 
             UI_Inventory inventory = container.GetComponent<UI_Inventory>();
-            if (inventory.containerType == UI_Inventory.ContainerType.respawnable
-                || inventory.containerType == UI_Inventory.ContainerType.store)
+            if (inventory.containerType == UI_Inventory.ContainerType.container)
             {
                 foreach (GameObject lootTable in LocationManagerScript.lootTables)
                 {

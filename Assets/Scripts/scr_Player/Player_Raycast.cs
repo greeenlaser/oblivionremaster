@@ -66,7 +66,11 @@ public class Player_Raycast : MonoBehaviour
                     if ((hitTarget.transform.GetComponent<Env_Item>() != null
                         && !hitTarget.transform.GetComponent<Env_Item>().isEquipped)           //item
                         || (hitTarget.transform.GetComponent<UI_Inventory>() != null
-                        && hitTarget.transform.name != "Player")                               //container
+                        && hitTarget.transform.GetComponent<UI_Inventory>().containerType
+                        == UI_Inventory.ContainerType.container)                               //container
+                        || (hitTarget.transform.GetComponent<UI_Inventory>() != null
+                        && hitTarget.transform.GetComponent<UI_Inventory>().containerType
+                        == UI_Inventory.ContainerType.altar_of_enchanting)                     //altar of enchanting
                         || (hitTarget.transform.GetComponent<Env_Door>() != null               //door, gates are not allowed to be opened directly
                         && hitTarget.transform.GetComponent<Env_Door>().DoorManagerScript.doorType  
                         != Manager_Door.DoorType.gate)
@@ -136,7 +140,17 @@ public class Player_Raycast : MonoBehaviour
                 }
                 
                 //hit container
-                else if (target.GetComponent<UI_Inventory>() != null)
+                else if (target.GetComponent<UI_Inventory>() != null
+                         && target.GetComponent<UI_Inventory>().containerType
+                         == UI_Inventory.ContainerType.container)
+                {
+                    target.GetComponent<UI_Inventory>().CheckIfLocked();
+                }
+
+                //hit altar of enchanting
+                else if (target.GetComponent<UI_Inventory>() != null
+                         && target.GetComponent<UI_Inventory>().containerType 
+                         == UI_Inventory.ContainerType.altar_of_enchanting)
                 {
                     target.GetComponent<UI_Inventory>().CheckIfLocked();
                 }

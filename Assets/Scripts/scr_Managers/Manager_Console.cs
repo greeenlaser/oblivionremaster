@@ -2402,7 +2402,7 @@ public class Manager_Console : MonoBehaviour
             //unlock respawnable container
             if (target.GetComponent<UI_Inventory>() 
                 && target.GetComponent<UI_Inventory>().containerType
-                == UI_Inventory.ContainerType.respawnable)
+                == UI_Inventory.ContainerType.container)
             {
                 if (!target.GetComponent<Env_LockStatus>().isUnlocked)
                 {
