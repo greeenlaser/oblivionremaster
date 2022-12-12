@@ -520,7 +520,7 @@ public class UI_Inventory : MonoBehaviour
 
         //take method is used when player is taking an item from the world
         if (PlayerMenuScript.targetContainer == null
-                 && !PlayerMenuScript.isPlayerInventoryOpen)
+            && !PlayerMenuScript.isPlayerInventoryOpen)
         {
             UIReuseScript.btn_Interact.gameObject.SetActive(true);
             UIReuseScript.btn_Interact.interactable = false;
@@ -532,7 +532,8 @@ public class UI_Inventory : MonoBehaviour
 
         //use and drop methods are used when player is not in container
         else if (PlayerMenuScript.targetContainer == null
-                 && PlayerMenuScript.isPlayerInventoryOpen)
+                 && PlayerMenuScript.isPlayerInventoryOpen
+                 && containerName != "Altar_of_enchanting")
         {
             UIReuseScript.btn_Interact.gameObject.SetActive(true);
             UIReuseScript.btn_Interact.interactable = false;
@@ -602,6 +603,33 @@ public class UI_Inventory : MonoBehaviour
             }
 
             UIReuseScript.btn_ShowExtraStats.onClick.AddListener(ShowExtraStats);
+        }
+
+        //enchant method is available if player has any soul gems
+        //and if this item is enchantable and is not yet enchanted
+        else if (PlayerMenuScript.targetContainer == null
+                 && PlayerMenuScript.isPlayerInventoryOpen
+                 && containerName == "Altar_of_enchanting")
+        {
+            bool hasSoulGems = false;
+            foreach (GameObject item in PlayerInventoryScript.playerItems)
+            {
+                if (item.name.Contains("soul_gem"))
+                {
+                    hasSoulGems = true;
+                    break;
+                }
+            }
+            if (hasSoulGems)
+            {
+                if (targetItem.GetComponent<Env_Item>().isEnchantable)
+                {
+                    UIReuseScript.btn_Interact.interactable = true;
+                    UIReuseScript.btn_Interact.GetComponentInChildren<TMP_Text>().text = "Enchant";
+                    UIReuseScript.btn_Interact.onClick.AddListener(
+                        delegate { EnchantItem(targetItem); });
+                }
+            }
         }
 
         //take and place methods are used when player is taking from or placing to container
@@ -697,6 +725,16 @@ public class UI_Inventory : MonoBehaviour
             targetItem.GetComponent<Env_Item>().itemCurrentDurability = targetItem.GetComponent<Env_Item>().itemMaxDurability;
         }
         UIReuseScript.txt_Durability.text = targetItem.GetComponent<Env_Item>().itemCurrentDurability.ToString();
+    }
+
+    //enchant selected item
+    public void EnchantItem(GameObject targetItem)
+    {
+        //TODO: create enchantment selection UI to allow player
+        //to select enchantment, enchantable item and soul gem like in skyrim
+
+        AnnouncementScript.CreateAnnouncement("Successfully enchanted " + targetItem.name.Replace("_", " ") + "!");
+        Debug.Log("Success: Enchanted " + targetItem.name.Replace("_", " ") + "!");
     }
 
     //show the extra stats UI if the

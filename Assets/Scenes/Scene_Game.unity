@@ -1261,11 +1261,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   par_PlayerItems: {fileID: 1961282194}
   pos_EquippedWeapon: {fileID: 984243442}
-  thePlayer: {fileID: 43975270}
-  par_Managers: {fileID: 919376840}
+  containerType: 0
   par_ContainerItems: {fileID: 0}
   containerName: 
-  containerType: 0
+  thePlayer: {fileID: 43975270}
+  par_Managers: {fileID: 919376840}
   tumbler1Unlocked: 0
   tumbler2Unlocked: 0
   tumbler3Unlocked: 0
@@ -20254,6 +20254,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 3db85d14005823b4b865c10659fa4218, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 3db85d14005823b4b865c10659fa4218, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -26137,11 +26141,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   par_PlayerItems: {fileID: 1961282194}
   pos_EquippedWeapon: {fileID: 0}
-  thePlayer: {fileID: 43975270}
-  par_Managers: {fileID: 919376840}
+  containerType: 2
   par_ContainerItems: {fileID: 399041869}
   containerName: player_container
-  containerType: 2
+  thePlayer: {fileID: 43975270}
+  par_Managers: {fileID: 919376840}
   tumbler1Unlocked: 0
   tumbler2Unlocked: 0
   tumbler3Unlocked: 0
@@ -27188,11 +27192,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   par_PlayerItems: {fileID: 1961282194}
   pos_EquippedWeapon: {fileID: 0}
-  thePlayer: {fileID: 43975270}
-  par_Managers: {fileID: 919376840}
+  containerType: 0
   par_ContainerItems: {fileID: 1299072198}
   containerName: dungeon_container
-  containerType: 0
+  thePlayer: {fileID: 43975270}
+  par_Managers: {fileID: 919376840}
   tumbler1Unlocked: 0
   tumbler2Unlocked: 0
   tumbler3Unlocked: 0
@@ -62099,6 +62103,10 @@ PrefabInstance:
     - target: {fileID: 6124153738607253678, guid: 7cbc804d914a141479398ca9e2635c29, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 6645113501793140073, guid: 7cbc804d914a141479398ca9e2635c29, type: 3}
+      propertyPath: containerName
+      value: Altar of enchanting
       objectReference: {fileID: 0}
     - target: {fileID: 6744139710816180593, guid: 7cbc804d914a141479398ca9e2635c29, type: 3}
       propertyPath: m_Layer

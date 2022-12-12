@@ -152,7 +152,7 @@ public class Player_Raycast : MonoBehaviour
                          && target.GetComponent<UI_Inventory>().containerType 
                          == UI_Inventory.ContainerType.altar_of_enchanting)
                 {
-                    target.GetComponent<UI_Inventory>().CheckIfLocked();
+                    target.GetComponent<UI_Inventory>().OpenInventory("inventory");
                 }
 
                 //hit door, gates are not allowed to be opened directly
