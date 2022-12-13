@@ -81,8 +81,6 @@ public class Player_Raycast : MonoBehaviour
                             target = hitTarget.transform.gameObject;
                         }
 
-                        Debug.Log("looking at " + target.name + "...");
-
                         timer = 0;
                         canInteract = true;
                     }
@@ -138,21 +136,15 @@ public class Player_Raycast : MonoBehaviour
                 {
                     PlayerInventoryScript.TakeItem(target, null);
                 }
-                
-                //hit container
+
+                //hit container or altar of enchanting
                 else if (target.GetComponent<UI_Inventory>() != null
-                         && target.GetComponent<UI_Inventory>().containerType
+                         && (target.GetComponent<UI_Inventory>().containerType
                          == UI_Inventory.ContainerType.container)
+                         || (target.GetComponent<UI_Inventory>().containerType
+                         == UI_Inventory.ContainerType.altar_of_enchanting))
                 {
                     target.GetComponent<UI_Inventory>().CheckIfLocked();
-                }
-
-                //hit altar of enchanting
-                else if (target.GetComponent<UI_Inventory>() != null
-                         && target.GetComponent<UI_Inventory>().containerType 
-                         == UI_Inventory.ContainerType.altar_of_enchanting)
-                {
-                    target.GetComponent<UI_Inventory>().OpenInventory("inventory");
                 }
 
                 //hit door, gates are not allowed to be opened directly

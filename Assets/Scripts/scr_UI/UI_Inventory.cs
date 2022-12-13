@@ -117,69 +117,76 @@ public class UI_Inventory : MonoBehaviour
     //checks if the target container is locked or not
     public void CheckIfLocked()
     {
-        if (LockStatusScript.isUnlocked)
+        //opens regular player inventory for altar of enchanting
+        if (containerType == ContainerType.altar_of_enchanting)
         {
-            PlayerMenuScript.targetContainer = gameObject;
-            PlayerMenuScript.isContainerOpen = true;
             PauseMenuScript.isPlayerMenuOpen = true;
         }
-        else if (!LockStatusScript.isUnlocked
-                 && containerType == ContainerType.container)
+        //opens container inventory
+        else
         {
-            if (!LockStatusScript.needsKey)
+            if (LockStatusScript.isUnlocked)
             {
-                bool hasLockpicks = false;
-                foreach (GameObject item in PlayerInventoryScript.playerItems)
-                {
-                    if (item.name == "Lockpick")
-                    {
-                        PauseMenuScript.isPlayerMenuOpen = true;
-                        hasLockpicks = true;
-
-                        LockpickingScript.LockStatusScript = LockStatusScript;
-                        LockpickingScript.OpenlockpickUI();
-
-                        break;
-                    }
-                }
-                if (!hasLockpicks)
-                {
-                    AnnouncementScript.CreateAnnouncement("Did not find lockpicks to unlock " + containerName + "!");
-                    Debug.LogWarning("Requirements not met: Did not find lockpicks to unlock " + containerName + "!");
-                }
+                PlayerMenuScript.targetContainer = gameObject;
+                PauseMenuScript.isPlayerMenuOpen = true;
             }
-            else
+            else if (!LockStatusScript.isUnlocked
+                     && containerType == ContainerType.container)
             {
-                bool foundKey = false;
-                foreach (GameObject item in PlayerInventoryScript.playerItems)
+                if (!LockStatusScript.needsKey)
                 {
-                    if (item == LockStatusScript.key)
+                    bool hasLockpicks = false;
+                    foreach (GameObject item in PlayerInventoryScript.playerItems)
                     {
-                        foundKey = true;
-                        break;
-                    }
-                }
+                        if (item.name == "Lockpick")
+                        {
+                            PauseMenuScript.isPlayerMenuOpen = true;
+                            hasLockpicks = true;
 
-                if (!foundKey)
-                {
-                    AnnouncementScript.CreateAnnouncement("Did not find right key to unlock " + containerName + "!");
-                    Debug.LogWarning("Requirements not met: Did not find right key to unlock " + containerName + "!");
+                            LockpickingScript.LockStatusScript = LockStatusScript;
+                            LockpickingScript.OpenlockpickUI();
+
+                            break;
+                        }
+                    }
+                    if (!hasLockpicks)
+                    {
+                        AnnouncementScript.CreateAnnouncement("Did not find lockpicks to unlock " + containerName + "!");
+                        Debug.LogWarning("Requirements not met: Did not find lockpicks to unlock " + containerName + "!");
+                    }
                 }
                 else
                 {
-                    PlayerInventoryScript.playerItems.Remove(LockStatusScript.key);
-                    foreach (Transform item in PlayerInventoryScript.par_PlayerItems.transform)
+                    bool foundKey = false;
+                    foreach (GameObject item in PlayerInventoryScript.playerItems)
                     {
-                        if (item.gameObject == LockStatusScript.key)
+                        if (item == LockStatusScript.key)
                         {
-                            Destroy(item.gameObject);
-                            LockStatusScript.isUnlocked = true;
-
-                            PlayerMenuScript.targetContainer = gameObject;
-                            PlayerMenuScript.isContainerOpen = true;
-                            PauseMenuScript.isPlayerMenuOpen = true;
-
+                            foundKey = true;
                             break;
+                        }
+                    }
+
+                    if (!foundKey)
+                    {
+                        AnnouncementScript.CreateAnnouncement("Did not find right key to unlock " + containerName + "!");
+                        Debug.LogWarning("Requirements not met: Did not find right key to unlock " + containerName + "!");
+                    }
+                    else
+                    {
+                        PlayerInventoryScript.playerItems.Remove(LockStatusScript.key);
+                        foreach (Transform item in PlayerInventoryScript.par_PlayerItems.transform)
+                        {
+                            if (item.gameObject == LockStatusScript.key)
+                            {
+                                Destroy(item.gameObject);
+                                LockStatusScript.isUnlocked = true;
+
+                                PlayerMenuScript.targetContainer = gameObject;
+                                PauseMenuScript.isPlayerMenuOpen = true;
+
+                                break;
+                            }
                         }
                     }
                 }
@@ -216,12 +223,10 @@ public class UI_Inventory : MonoBehaviour
                 PlayerMenuScript.btn_ShowInventoryUI.GetComponentInChildren<TMP_Text>().text = "Container inventory";
                 PlayerMenuScript.btn_ShowInventoryUI.onClick.RemoveAllListeners();
                 PlayerMenuScript.btn_ShowInventoryUI.onClick.AddListener(delegate { SwitchInventoryType("container_ContainerInventory"); });
-                PlayerMenuScript.btn_ShowInventoryUI.onClick.AddListener(delegate { RebuildInventory("allItems"); } );
 
                 PlayerMenuScript.btn_ShowMagickaUI.GetComponentInChildren<TMP_Text>().text = "Player inventory";
                 PlayerMenuScript.btn_ShowMagickaUI.onClick.RemoveAllListeners();
                 PlayerMenuScript.btn_ShowMagickaUI.onClick.AddListener(delegate { SwitchInventoryType("container_PlayerInventory"); });
-                PlayerMenuScript.btn_ShowMagickaUI.onClick.AddListener(delegate { RebuildInventory("allItems"); });
             }
         }
         //magic UI
@@ -256,6 +261,7 @@ public class UI_Inventory : MonoBehaviour
             PlayerMenuScript.isContainerOpen = false;
             PlayerMenuScript.isPlayerInventoryOpen = true;
         }
+        RebuildInventory("allItems");
     }
     //rebuilds the entire inventory UI for target inventory
     public void RebuildInventory(string targetInventory)
@@ -335,11 +341,32 @@ public class UI_Inventory : MonoBehaviour
         PlayerMenuScript.txt_PlayerMenuTitle.text = inventoryTitle;
 
         if (PlayerMenuScript.targetContainer == null
-            && PlayerMenuScript.isPlayerInventoryOpen)
+            && PlayerMenuScript.isPlayerInventoryOpen
+            && containerType == ContainerType.player)
         {
             int invSpace = PlayerStatsScript.invSpace;
             int maxInvSpace = PlayerStatsScript.maxInvSpace;
             UIReuseScript.txt_InventoryCount.text = invSpace + "/" + maxInvSpace;
+
+            //look for items that no longer exist in player inventory
+            //and remove them from item wheel
+            foreach (Slot_ItemWheel slotScript in ItemWheelScript.slotScripts)
+            {
+                bool slotHasSameItem = false;
+                foreach (GameObject item in playerItems)
+                {
+                    if (item != null
+                        && slotScript.assignedItem == item)
+                    {
+                        slotHasSameItem = true;
+                    }
+                }
+                if (!slotHasSameItem)
+                {
+                    slotScript.assignedItem = null;
+                    slotScript.img_SlotImage.texture = null;
+                }
+            }
 
             //create a new inventory button for each inventory item
             //depending on the selected inventory sort type
@@ -381,8 +408,8 @@ public class UI_Inventory : MonoBehaviour
             }
         }
         else if (PlayerMenuScript.targetContainer != null
-                 && (PlayerMenuScript.isContainerOpen
-                 || PlayerMenuScript.isPlayerInventoryOpen))
+                && (PlayerMenuScript.isContainerOpen
+                || PlayerMenuScript.isPlayerInventoryOpen))
         {
             int invSpace = PlayerStatsScript.invSpace;
             int maxInvSpace = PlayerStatsScript.maxInvSpace;
@@ -429,26 +456,6 @@ public class UI_Inventory : MonoBehaviour
             {
                 PlayerMenuScript.btn_ShowInventoryUI.interactable = true;
                 PlayerMenuScript.btn_ShowMagickaUI.interactable = false;
-
-                //look for items that no longer exist in player inventory
-                //and remove them from item wheel
-                foreach (Slot_ItemWheel slotScript in ItemWheelScript.slotScripts)
-                {
-                    bool slotHasSameItem = false;
-                    foreach (GameObject item in playerItems)
-                    {
-                        if (item != null
-                            && slotScript.assignedItem == item)
-                        {
-                            slotHasSameItem = true;
-                        }
-                    }
-                    if (!slotHasSameItem)
-                    {
-                        slotScript.assignedItem = null;
-                        slotScript.img_SlotImage.texture = null;
-                    }
-                }
 
                 //create a new inventory button for each inventory item
                 //depending on the selected inventory sort type
@@ -533,7 +540,7 @@ public class UI_Inventory : MonoBehaviour
         //use and drop methods are used when player is not in container
         else if (PlayerMenuScript.targetContainer == null
                  && PlayerMenuScript.isPlayerInventoryOpen
-                 && containerName != "Altar_of_enchanting")
+                 && containerType == ContainerType.player)
         {
             UIReuseScript.btn_Interact.gameObject.SetActive(true);
             UIReuseScript.btn_Interact.interactable = false;
@@ -609,7 +616,7 @@ public class UI_Inventory : MonoBehaviour
         //and if this item is enchantable and is not yet enchanted
         else if (PlayerMenuScript.targetContainer == null
                  && PlayerMenuScript.isPlayerInventoryOpen
-                 && containerName == "Altar_of_enchanting")
+                 && containerType == ContainerType.altar_of_enchanting)
         {
             bool hasSoulGems = false;
             foreach (GameObject item in PlayerInventoryScript.playerItems)
