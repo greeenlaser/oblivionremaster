@@ -29,6 +29,7 @@ public class UI_PlayerMenu : MonoBehaviour
     //public but hidden variables
     [HideInInspector] public bool isPlayerInventoryOpen;
     [HideInInspector] public bool isContainerOpen;
+    [HideInInspector] public bool isAltarOfEnchantingOpen;
     [HideInInspector] public GameObject targetContainer;
     [HideInInspector] public UI_Inventory PlayerInventoryScript;
 
@@ -81,7 +82,14 @@ public class UI_PlayerMenu : MonoBehaviour
 
         if (targetContainer == null)
         {
-            ShowInventoryUI();
+            if (!isAltarOfEnchantingOpen)
+            {
+                ShowInventoryUI();
+            }
+            else
+            {
+                ShowAltarOfEnchantingUI();
+            }
         }
         else if (targetContainer != null)
         {
@@ -92,19 +100,20 @@ public class UI_PlayerMenu : MonoBehaviour
     }
     public void ClosePlayerMenu()
     {
-        CloseAllUI();
+        ResetAllUI();
         par_PlayerMenuUI.SetActive(false);
 
         targetContainer = null;
         isPlayerInventoryOpen = false;
         isContainerOpen = false;
+        isAltarOfEnchantingOpen = false;
 
         PauseMenuScript.UnpauseGame();
     }
 
     public void ShowStatsUI()
     {
-        CloseAllUI();
+        ResetAllUI();
 
         par_StatsUI.SetActive(true);
         btn_ShowStatsUI.interactable = false;
@@ -121,7 +130,7 @@ public class UI_PlayerMenu : MonoBehaviour
     }
     public void ShowInventoryUI()
     {
-        CloseAllUI();
+        ResetAllUI();
 
         UIReuseScript.par_Inventory.SetActive(true);
         btn_ShowInventoryUI.interactable = false;
@@ -129,42 +138,39 @@ public class UI_PlayerMenu : MonoBehaviour
         isContainerOpen = false;
         isPlayerInventoryOpen = true;
 
-        PlayerInventoryScript.OpenInventory("inventory");
-
         btn_ReusedButton1.GetComponentInChildren<TMP_Text>().text = "All items";
         btn_ReusedButton2.GetComponentInChildren<TMP_Text>().text = "Weapons";
         btn_ReusedButton3.GetComponentInChildren<TMP_Text>().text = "Armor";
         btn_ReusedButton4.GetComponentInChildren<TMP_Text>().text = "Alchemy";
         btn_ReusedButton5.GetComponentInChildren<TMP_Text>().text = "Misc";
+
+        PlayerInventoryScript.OpenInventory("inventory");
     }
     public void ShowContainerUI()
     {
-        CloseAllUI();
+        ResetAllUI();
 
         UIReuseScript.par_Inventory.SetActive(true);
-
         btn_ShowStatsUI.gameObject.SetActive(false);
         btn_ShowQuestsAndMapsUI.gameObject.SetActive(false);
 
         isContainerOpen = true;
         isPlayerInventoryOpen = false;
 
-        PlayerInventoryScript.OpenInventory("container");
-
         btn_ReusedButton1.GetComponentInChildren<TMP_Text>().text = "All items";
         btn_ReusedButton2.GetComponentInChildren<TMP_Text>().text = "Weapons";
         btn_ReusedButton3.GetComponentInChildren<TMP_Text>().text = "Armor";
         btn_ReusedButton4.GetComponentInChildren<TMP_Text>().text = "Alchemy";
         btn_ReusedButton5.GetComponentInChildren<TMP_Text>().text = "Misc";
+
+        PlayerInventoryScript.OpenInventory("container");
     }
     public void ShowMagickaUI()
     {
-        CloseAllUI();
+        ResetAllUI();
 
         UIReuseScript.par_Inventory.SetActive(true);
         btn_ShowMagickaUI.interactable = false;
-
-        PlayerInventoryScript.OpenInventory("magic");
 
         isPlayerInventoryOpen = true;
 
@@ -173,10 +179,34 @@ public class UI_PlayerMenu : MonoBehaviour
         btn_ReusedButton3.GetComponentInChildren<TMP_Text>().text = "Touch";
         btn_ReusedButton4.GetComponentInChildren<TMP_Text>().text = "Self";
         btn_ReusedButton5.GetComponentInChildren<TMP_Text>().text = "Active";
+
+        PlayerInventoryScript.OpenInventory("magic");
+    }
+    public void ShowAltarOfEnchantingUI()
+    {
+        ResetAllUI();
+
+        UIReuseScript.par_Inventory.SetActive(true);
+        btn_ShowStatsUI.gameObject.SetActive(false);
+        btn_ShowInventoryUI.gameObject.SetActive(false);
+        btn_ShowMagickaUI.gameObject.SetActive(false);
+        btn_ShowQuestsAndMapsUI.gameObject.SetActive(false);
+
+        btn_ReusedButton1.transform.localPosition = new(-749.1f, -315, 0);
+        btn_ReusedButton2.transform.localPosition = new(-618.7f, -315, 0);
+        btn_ReusedButton3.transform.localPosition = new(-489, -315, 0);
+
+        btn_ReusedButton4.gameObject.SetActive(false);
+        btn_ReusedButton5.gameObject.SetActive(false);
+        btn_ReusedButton1.GetComponentInChildren<TMP_Text>().text = "All items";
+        btn_ReusedButton2.GetComponentInChildren<TMP_Text>().text = "Weapons";
+        btn_ReusedButton3.GetComponentInChildren<TMP_Text>().text = "Armor";
+
+        PlayerInventoryScript.OpenInventory("altar_of_enchanting");
     }
     public void ShowQuestsAndMapsUI()
     {
-        CloseAllUI();
+        ResetAllUI();
 
         par_QuestsAndMapsUI.SetActive(true);
         btn_ShowQuestsAndMapsUI.interactable = false;
@@ -192,7 +222,7 @@ public class UI_PlayerMenu : MonoBehaviour
         btn_ReusedButton5.GetComponentInChildren<TMP_Text>().text = "Completed quests";
     }
 
-    private void CloseAllUI()
+    private void ResetAllUI()
     {
         par_StatsUI.SetActive(false);
         btn_ShowStatsUI.gameObject.SetActive(true);
@@ -214,6 +244,13 @@ public class UI_PlayerMenu : MonoBehaviour
         par_QuestsAndMapsUI.SetActive(false);
         btn_ShowQuestsAndMapsUI.gameObject.SetActive(true);
         btn_ShowQuestsAndMapsUI.interactable = true;
+
+        btn_ReusedButton1.transform.localPosition = new(-879.1f, -315, 0);
+        btn_ReusedButton2.transform.localPosition = new(-748.7f, -315, 0);
+        btn_ReusedButton3.transform.localPosition = new(-619, -315, 0);
+
+        btn_ReusedButton4.gameObject.SetActive(true);
+        btn_ReusedButton5.gameObject.SetActive(true);
 
         btn_ReusedButton1.onClick.RemoveAllListeners();
         btn_ReusedButton1.interactable = true;

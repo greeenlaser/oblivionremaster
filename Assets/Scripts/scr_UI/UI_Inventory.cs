@@ -48,7 +48,6 @@ public class UI_Inventory : MonoBehaviour
     private UI_Lockpicking LockpickingScript;
     private Player_Stats PlayerStatsScript;
     private UI_PlayerMenu PlayerMenuScript;
-    private Manager_ItemWheel ItemWheelScript;
     private UI_PauseMenu PauseMenuScript;
     private UI_Confirmation ConfirmationScript;
     private Manager_Announcements AnnouncementScript;
@@ -69,7 +68,6 @@ public class UI_Inventory : MonoBehaviour
         PlayerStatsScript = GetComponent<Player_Stats>();
         PlayerMenuScript = par_Managers.GetComponent<UI_PlayerMenu>();
         ConfirmationScript = par_Managers.GetComponent<UI_Confirmation>();
-        ItemWheelScript = par_Managers.GetComponent<Manager_ItemWheel>();
         PauseMenuScript = par_Managers.GetComponent<UI_PauseMenu>();
         AnnouncementScript = par_Managers.GetComponent<Manager_Announcements>();
         KeyBindingsScript = par_Managers.GetComponent<Manager_KeyBindings>();
@@ -117,76 +115,67 @@ public class UI_Inventory : MonoBehaviour
     //checks if the target container is locked or not
     public void CheckIfLocked()
     {
-        //opens regular player inventory for altar of enchanting
-        if (containerType == ContainerType.altar_of_enchanting)
+        if (LockStatusScript.isUnlocked)
         {
+            PlayerMenuScript.targetContainer = gameObject;
             PauseMenuScript.isPlayerMenuOpen = true;
         }
-        //opens container inventory
-        else
+        else if (!LockStatusScript.isUnlocked
+                 && containerType == ContainerType.container)
         {
-            if (LockStatusScript.isUnlocked)
+            if (!LockStatusScript.needsKey)
             {
-                PlayerMenuScript.targetContainer = gameObject;
-                PauseMenuScript.isPlayerMenuOpen = true;
-            }
-            else if (!LockStatusScript.isUnlocked
-                     && containerType == ContainerType.container)
-            {
-                if (!LockStatusScript.needsKey)
+                bool hasLockpicks = false;
+                foreach (GameObject item in PlayerInventoryScript.playerItems)
                 {
-                    bool hasLockpicks = false;
-                    foreach (GameObject item in PlayerInventoryScript.playerItems)
+                    if (item.name == "Lockpick")
                     {
-                        if (item.name == "Lockpick")
-                        {
-                            PauseMenuScript.isPlayerMenuOpen = true;
-                            hasLockpicks = true;
+                        PauseMenuScript.isPlayerMenuOpen = true;
+                        hasLockpicks = true;
 
-                            LockpickingScript.LockStatusScript = LockStatusScript;
-                            LockpickingScript.OpenlockpickUI();
+                        LockpickingScript.LockStatusScript = LockStatusScript;
+                        LockpickingScript.OpenlockpickUI();
 
-                            break;
-                        }
+                        break;
                     }
-                    if (!hasLockpicks)
+                }
+                if (!hasLockpicks)
+                {
+                    AnnouncementScript.CreateAnnouncement("Did not find lockpicks to unlock " + containerName + "!");
+                    Debug.LogWarning("Requirements not met: Did not find lockpicks to unlock " + containerName + "!");
+                }
+            }
+            else
+            {
+                bool foundKey = false;
+                foreach (GameObject item in PlayerInventoryScript.playerItems)
+                {
+                    if (item == LockStatusScript.key)
                     {
-                        AnnouncementScript.CreateAnnouncement("Did not find lockpicks to unlock " + containerName + "!");
-                        Debug.LogWarning("Requirements not met: Did not find lockpicks to unlock " + containerName + "!");
+                        foundKey = true;
+                        break;
                     }
+                }
+
+                if (!foundKey)
+                {
+                    AnnouncementScript.CreateAnnouncement("Did not find right key to unlock " + containerName + "!");
+                    Debug.LogWarning("Requirements not met: Did not find right key to unlock " + containerName + "!");
                 }
                 else
                 {
-                    bool foundKey = false;
-                    foreach (GameObject item in PlayerInventoryScript.playerItems)
+                    PlayerInventoryScript.playerItems.Remove(LockStatusScript.key);
+                    foreach (Transform item in PlayerInventoryScript.par_PlayerItems.transform)
                     {
-                        if (item == LockStatusScript.key)
+                        if (item.gameObject == LockStatusScript.key)
                         {
-                            foundKey = true;
+                            Destroy(item.gameObject);
+                            LockStatusScript.isUnlocked = true;
+
+                            PlayerMenuScript.targetContainer = gameObject;
+                            PauseMenuScript.isPlayerMenuOpen = true;
+
                             break;
-                        }
-                    }
-
-                    if (!foundKey)
-                    {
-                        AnnouncementScript.CreateAnnouncement("Did not find right key to unlock " + containerName + "!");
-                        Debug.LogWarning("Requirements not met: Did not find right key to unlock " + containerName + "!");
-                    }
-                    else
-                    {
-                        PlayerInventoryScript.playerItems.Remove(LockStatusScript.key);
-                        foreach (Transform item in PlayerInventoryScript.par_PlayerItems.transform)
-                        {
-                            if (item.gameObject == LockStatusScript.key)
-                            {
-                                Destroy(item.gameObject);
-                                LockStatusScript.isUnlocked = true;
-
-                                PlayerMenuScript.targetContainer = gameObject;
-                                PauseMenuScript.isPlayerMenuOpen = true;
-
-                                break;
-                            }
                         }
                     }
                 }
@@ -209,24 +198,35 @@ public class UI_Inventory : MonoBehaviour
 
         //player or container inventory UI
         if (inventoryType == "inventory"
-            || inventoryType == "container")
+            || inventoryType == "container"
+            || inventoryType == "altar_of_enchanting")
         {
             RebuildInventory("allItems");
-            PlayerMenuScript.btn_ReusedButton1.onClick.AddListener(delegate { RebuildInventory("allItems"); });
-            PlayerMenuScript.btn_ReusedButton2.onClick.AddListener(delegate { RebuildInventory("weapon"); });
-            PlayerMenuScript.btn_ReusedButton3.onClick.AddListener(delegate { RebuildInventory("armor"); });
-            PlayerMenuScript.btn_ReusedButton4.onClick.AddListener(delegate { RebuildInventory("consumable"); });
-            PlayerMenuScript.btn_ReusedButton5.onClick.AddListener(delegate { RebuildInventory("misc"); });
-
-            if (inventoryType == "container")
+            if (inventoryType == "inventory"
+                || inventoryType == "container")
             {
-                PlayerMenuScript.btn_ShowInventoryUI.GetComponentInChildren<TMP_Text>().text = "Container inventory";
-                PlayerMenuScript.btn_ShowInventoryUI.onClick.RemoveAllListeners();
-                PlayerMenuScript.btn_ShowInventoryUI.onClick.AddListener(delegate { SwitchInventoryType("container_ContainerInventory"); });
+                PlayerMenuScript.btn_ReusedButton1.onClick.AddListener(delegate { RebuildInventory("allItems"); });
+                PlayerMenuScript.btn_ReusedButton2.onClick.AddListener(delegate { RebuildInventory("weapon"); });
+                PlayerMenuScript.btn_ReusedButton3.onClick.AddListener(delegate { RebuildInventory("armor"); });
+                PlayerMenuScript.btn_ReusedButton4.onClick.AddListener(delegate { RebuildInventory("consumable"); });
+                PlayerMenuScript.btn_ReusedButton5.onClick.AddListener(delegate { RebuildInventory("misc"); });
 
-                PlayerMenuScript.btn_ShowMagickaUI.GetComponentInChildren<TMP_Text>().text = "Player inventory";
-                PlayerMenuScript.btn_ShowMagickaUI.onClick.RemoveAllListeners();
-                PlayerMenuScript.btn_ShowMagickaUI.onClick.AddListener(delegate { SwitchInventoryType("container_PlayerInventory"); });
+                if (inventoryType == "container")
+                {
+                    PlayerMenuScript.btn_ShowInventoryUI.GetComponentInChildren<TMP_Text>().text = "Container inventory";
+                    PlayerMenuScript.btn_ShowInventoryUI.onClick.RemoveAllListeners();
+                    PlayerMenuScript.btn_ShowInventoryUI.onClick.AddListener(delegate { SwitchInventoryType("container_ContainerInventory"); });
+
+                    PlayerMenuScript.btn_ShowMagickaUI.GetComponentInChildren<TMP_Text>().text = "Player inventory";
+                    PlayerMenuScript.btn_ShowMagickaUI.onClick.RemoveAllListeners();
+                    PlayerMenuScript.btn_ShowMagickaUI.onClick.AddListener(delegate { SwitchInventoryType("container_PlayerInventory"); });
+                }
+            }
+            else if (inventoryType == "altar_of_enchanting")
+            {
+                PlayerMenuScript.btn_ReusedButton1.onClick.AddListener(delegate { RebuildInventory("allItems"); });
+                PlayerMenuScript.btn_ReusedButton2.onClick.AddListener(delegate { RebuildInventory("weapon"); });
+                PlayerMenuScript.btn_ReusedButton3.onClick.AddListener(delegate { RebuildInventory("armor"); });
             }
         }
         //magic UI
@@ -282,7 +282,15 @@ public class UI_Inventory : MonoBehaviour
         if (targetInventory == "allItems")
         {
             inventoryTitle = "All items";
-            PlayerMenuScript.btn_ReusedButton1.interactable = false;
+            if (containerType == ContainerType.player
+                || containerType == ContainerType.container)
+            {
+                PlayerMenuScript.btn_ReusedButton1.interactable = false;
+            }
+            else if (containerType == ContainerType.altar_of_enchanting)
+            {
+                PlayerMenuScript.btn_ReusedButton2.interactable = false;
+            }
         }
         else if (targetInventory == "allMagicka")
         {
@@ -294,7 +302,15 @@ public class UI_Inventory : MonoBehaviour
         else if (targetInventory == "weapon")
         {
             inventoryTitle = "All weapons";
-            PlayerMenuScript.btn_ReusedButton2.interactable = false;
+            if (containerType == ContainerType.player
+                || containerType == ContainerType.container)
+            {
+                PlayerMenuScript.btn_ReusedButton2.interactable = false;
+            }
+            else if (containerType == ContainerType.altar_of_enchanting)
+            {
+                PlayerMenuScript.btn_ReusedButton3.interactable = false;
+            }
         }
         else if (targetInventory == "target")
         {
@@ -306,7 +322,15 @@ public class UI_Inventory : MonoBehaviour
         else if (targetInventory == "armor")
         {
             inventoryTitle = "All armor";
-            PlayerMenuScript.btn_ReusedButton3.interactable = false;
+            if (containerType == ContainerType.player
+                || containerType == ContainerType.container)
+            {
+                PlayerMenuScript.btn_ReusedButton3.interactable = false;
+            }
+            else if (containerType == ContainerType.altar_of_enchanting)
+            {
+                PlayerMenuScript.btn_ReusedButton4.interactable = false;
+            }
         }
         else if (targetInventory == "touch")
         {
@@ -340,33 +364,12 @@ public class UI_Inventory : MonoBehaviour
 
         PlayerMenuScript.txt_PlayerMenuTitle.text = inventoryTitle;
 
-        if (PlayerMenuScript.targetContainer == null
-            && PlayerMenuScript.isPlayerInventoryOpen
-            && containerType == ContainerType.player)
+        //list all player inventory items
+        if (PlayerMenuScript.targetContainer == null)
         {
             int invSpace = PlayerStatsScript.invSpace;
             int maxInvSpace = PlayerStatsScript.maxInvSpace;
             UIReuseScript.txt_InventoryCount.text = invSpace + "/" + maxInvSpace;
-
-            //look for items that no longer exist in player inventory
-            //and remove them from item wheel
-            foreach (Slot_ItemWheel slotScript in ItemWheelScript.slotScripts)
-            {
-                bool slotHasSameItem = false;
-                foreach (GameObject item in playerItems)
-                {
-                    if (item != null
-                        && slotScript.assignedItem == item)
-                    {
-                        slotHasSameItem = true;
-                    }
-                }
-                if (!slotHasSameItem)
-                {
-                    slotScript.assignedItem = null;
-                    slotScript.img_SlotImage.texture = null;
-                }
-            }
 
             //create a new inventory button for each inventory item
             //depending on the selected inventory sort type
@@ -376,37 +379,70 @@ public class UI_Inventory : MonoBehaviour
                 {
                     Env_Item itemScript = item.GetComponent<Env_Item>();
 
-                    if ((targetInventory == "allItems"                           //list all regular items only
-                        && itemScript.itemType != Env_Item.ItemType.spell)
-                        || (targetInventory == "allSpells"                       //list all spells only
-                        && itemScript.itemType != Env_Item.ItemType.weapon
-                        && itemScript.itemType != Env_Item.ItemType.armor
-                        && itemScript.itemType != Env_Item.ItemType.shield
-                        && itemScript.itemType != Env_Item.ItemType.consumable
-                        && itemScript.itemType != Env_Item.ItemType.ammo
-                        && itemScript.itemType != Env_Item.ItemType.misc)
-                        || itemScript.itemType.ToString() == targetInventory)    //list specific item type
+                    if (PlayerMenuScript.isPlayerInventoryOpen)
                     {
-                        GameObject newButton = Instantiate(UIReuseScript.btn_ItemTemplateButton.gameObject,
-                                                           UIReuseScript.inventoryContent.transform.position,
-                                                           Quaternion.identity,
-                                                           UIReuseScript.inventoryContent.transform);
-                        
-                        UIReuseScript.inventoryButtons.Add(newButton.GetComponent<Button>());
-
-                        string buttonText = itemScript.itemName.Replace("_", " ");
-                        if (itemScript.itemCount > 1)
+                        if ((targetInventory == "allItems"                           //list all regular items only
+                            && itemScript.itemType != Env_Item.ItemType.spell)
+                            || (targetInventory == "allSpells"                       //list all spells only
+                            && itemScript.itemType != Env_Item.ItemType.weapon
+                            && itemScript.itemType != Env_Item.ItemType.armor
+                            && itemScript.itemType != Env_Item.ItemType.shield
+                            && itemScript.itemType != Env_Item.ItemType.consumable
+                            && itemScript.itemType != Env_Item.ItemType.ammo
+                            && itemScript.itemType != Env_Item.ItemType.misc)
+                            || itemScript.itemType.ToString() == targetInventory)    //list specific item type
                         {
-                            buttonText += " x" + itemScript.itemCount;
-                        }
-                        newButton.GetComponentInChildren<TMP_Text>().text = buttonText;
+                            GameObject newButton = Instantiate(UIReuseScript.btn_ItemTemplateButton.gameObject,
+                                                               UIReuseScript.inventoryContent.transform.position,
+                                                               Quaternion.identity,
+                                                               UIReuseScript.inventoryContent.transform);
 
-                        newButton.GetComponent<Button>().onClick.AddListener(
-                            delegate { ShowSelectedItemInfo(item, newButton.GetComponent<Button>()); });
+                            UIReuseScript.inventoryButtons.Add(newButton.GetComponent<Button>());
+
+                            string buttonText = itemScript.itemName.Replace("_", " ");
+                            if (itemScript.itemCount > 1)
+                            {
+                                buttonText += " x" + itemScript.itemCount;
+                            }
+                            newButton.GetComponentInChildren<TMP_Text>().text = buttonText;
+
+                            newButton.GetComponent<Button>().onClick.AddListener(
+                                delegate { ShowSelectedItemInfo(item, newButton.GetComponent<Button>()); });
+                        }
+                    }
+                    else if (PlayerMenuScript.isAltarOfEnchantingOpen)
+                    {
+                        if ((targetInventory == "allItems"                           //list all weapons and armor only
+                            && itemScript.itemType != Env_Item.ItemType.consumable
+                            && itemScript.itemType != Env_Item.ItemType.alchemyIngredient
+                            && itemScript.itemType != Env_Item.ItemType.ammo
+                            && itemScript.itemType != Env_Item.ItemType.misc
+                            && itemScript.itemType != Env_Item.ItemType.spell)
+                            || targetInventory == "armor"                            //list weapons
+                            || targetInventory == "weapon")                          //list armor
+                        {
+                            GameObject newButton = Instantiate(UIReuseScript.btn_ItemTemplateButton.gameObject,
+                                                               UIReuseScript.inventoryContent.transform.position,
+                                                               Quaternion.identity,
+                                                               UIReuseScript.inventoryContent.transform);
+
+                            UIReuseScript.inventoryButtons.Add(newButton.GetComponent<Button>());
+
+                            string buttonText = itemScript.itemName.Replace("_", " ");
+                            if (itemScript.itemCount > 1)
+                            {
+                                buttonText += " x" + itemScript.itemCount;
+                            }
+                            newButton.GetComponentInChildren<TMP_Text>().text = buttonText;
+
+                            newButton.GetComponent<Button>().onClick.AddListener(
+                                delegate { ShowSelectedItemInfo(item, newButton.GetComponent<Button>()); });
+                        }
                     }
                 }
             }
         }
+        //list all container items
         else if (PlayerMenuScript.targetContainer != null
                 && (PlayerMenuScript.isContainerOpen
                 || PlayerMenuScript.isPlayerInventoryOpen))

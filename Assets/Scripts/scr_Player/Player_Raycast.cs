@@ -22,17 +22,19 @@ public class Player_Raycast : MonoBehaviour
     private LayerMask IgnoredLayermask;
 
     //scripts
-    private UI_PauseMenu PauseMenuScript;
-    private Manager_KeyBindings KeyBindingsScript;
     private UI_Inventory PlayerInventoryScript;
     private Player_Stats PlayerStatsScript;
+    private UI_PauseMenu PauseMenuScript;
+    private Manager_KeyBindings KeyBindingsScript;
+    private UI_PlayerMenu PlayerMenuScript;
 
     private void Awake()
     {
-        PauseMenuScript = par_Managers.GetComponent<UI_PauseMenu>();
-        KeyBindingsScript = par_Managers.GetComponent<Manager_KeyBindings>();
         PlayerInventoryScript = transform.parent.GetComponent<UI_Inventory>();
         PlayerStatsScript = transform.parent.GetComponent<Player_Stats>();
+        PauseMenuScript = par_Managers.GetComponent<UI_PauseMenu>();
+        KeyBindingsScript = par_Managers.GetComponent<Manager_KeyBindings>();
+        PlayerMenuScript = par_Managers.GetComponent<UI_PlayerMenu>();
 
         IgnoredLayermask = LayerMask.NameToLayer("Player");
 
@@ -137,12 +139,19 @@ public class Player_Raycast : MonoBehaviour
                     PlayerInventoryScript.TakeItem(target, null);
                 }
 
-                //hit container or altar of enchanting
+                //hit container
                 else if (target.GetComponent<UI_Inventory>() != null
-                         && (target.GetComponent<UI_Inventory>().containerType
+                         && target.GetComponent<UI_Inventory>().containerType
+                         == UI_Inventory.ContainerType.altar_of_enchanting)
+                {
+                    PlayerMenuScript.isAltarOfEnchantingOpen = true;
+                    PauseMenuScript.isPlayerMenuOpen = true;
+                }
+
+                //hit altar of enchanting
+                else if (target.GetComponent<UI_Inventory>() != null
+                         && target.GetComponent<UI_Inventory>().containerType
                          == UI_Inventory.ContainerType.container)
-                         || (target.GetComponent<UI_Inventory>().containerType
-                         == UI_Inventory.ContainerType.altar_of_enchanting))
                 {
                     target.GetComponent<UI_Inventory>().CheckIfLocked();
                 }
