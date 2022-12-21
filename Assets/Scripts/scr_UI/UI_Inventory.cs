@@ -54,6 +54,11 @@ public class UI_Inventory : MonoBehaviour
     private Manager_KeyBindings KeyBindingsScript;
     private Manager_UIReuse UIReuseScript;
 
+    //private variables
+    private GameObject selectedEnchantableItem;
+    private GameObject selectedEnchantment;
+    private GameObject selectedSoulGem;
+
     private void Awake()
     {
         PlayerInventoryScript = thePlayer.GetComponent<UI_Inventory>();
@@ -239,6 +244,14 @@ public class UI_Inventory : MonoBehaviour
             PlayerMenuScript.btn_ReusedButton4.onClick.AddListener(delegate { RebuildInventory("self"); });
             PlayerMenuScript.btn_ReusedButton5.onClick.AddListener(delegate { RebuildInventory("active"); });
         }
+        else if (inventoryType == "allEnchantments")
+        {
+            RebuildInventory("allEnchantments");
+        }
+        else if (inventoryType == "allSoulGems")
+        {
+            RebuildInventory("allSoulGems");
+        }
     }
     public void CloseInventory()
     {
@@ -296,6 +309,14 @@ public class UI_Inventory : MonoBehaviour
         {
             inventoryTitle = "All spells";
             PlayerMenuScript.btn_ReusedButton1.interactable = false;
+        }
+        else if (targetInventory == "allEnchantments")
+        {
+            inventoryTitle = "All enchantments";
+        }
+        else if (targetInventory == "allSoulGems")
+        {
+            inventoryTitle = "All soul gems";
         }
 
         //reusable button 2
@@ -412,6 +433,7 @@ public class UI_Inventory : MonoBehaviour
                     }
                     else if (PlayerMenuScript.isAltarOfEnchantingOpen)
                     {
+                        //list all enchantable weapons
                         if ((targetInventory == "allItems"                           //list all weapons and armor only
                             && itemScript.itemType != Env_Item.ItemType.consumable
                             && itemScript.itemType != Env_Item.ItemType.alchemyIngredient
@@ -437,6 +459,20 @@ public class UI_Inventory : MonoBehaviour
 
                             newButton.GetComponent<Button>().onClick.AddListener(
                                 delegate { ShowSelectedItemInfo(item, newButton.GetComponent<Button>()); });
+                        }
+
+                        //list all enchantments
+                        else if (targetInventory == "allEnchantments"
+                                 && itemScript.itemType == Env_Item.ItemType.enchantment)
+                        {
+                            
+                        }
+
+                        //list all filled soul gems
+                        else if (targetInventory == "allSoulGems"
+                                 && item.name.Contains("soul_gem"))
+                        {
+
                         }
                     }
                 }
@@ -561,122 +597,131 @@ public class UI_Inventory : MonoBehaviour
             UIReuseScript.txt_WeaponDamage.text = "Damage: " + targetItem.GetComponent<Item_Weapon>().damage_Current;
         }
 
-        //take method is used when player is taking an item from the world
-        if (PlayerMenuScript.targetContainer == null
-            && !PlayerMenuScript.isPlayerInventoryOpen)
+        if (PlayerMenuScript.targetContainer == null)
         {
-            UIReuseScript.btn_Interact.gameObject.SetActive(true);
-            UIReuseScript.btn_Interact.interactable = false;
-            UIReuseScript.btn_Interact.GetComponentInChildren<TMP_Text>().text = "Take";
-            UIReuseScript.btn_Interact.onClick.AddListener(
-                delegate { TakeItem(targetItem,
-                                    null); });
-        }
-
-        //use and drop methods are used when player is not in container
-        else if (PlayerMenuScript.targetContainer == null
-                 && PlayerMenuScript.isPlayerInventoryOpen
-                 && containerType == ContainerType.player)
-        {
-            UIReuseScript.btn_Interact.gameObject.SetActive(true);
-            UIReuseScript.btn_Interact.interactable = false;
-            if (targetItem.GetComponent<Item_Weapon>() != null
-                || targetItem.GetComponent<Item_Armor>() != null
-                || targetItem.GetComponent<Item_Shield>() != null
-                || targetItem.GetComponent<Item_Spell>() != null
-                || targetItem.GetComponent<Item_Ammo>() != null)
+            //take method is used when player is taking an item from the world
+            if (!PlayerMenuScript.isPlayerInventoryOpen
+                && !PlayerMenuScript.isAltarOfEnchantingOpen)
             {
-                UIReuseScript.btn_Interact.interactable = true;
+                UIReuseScript.btn_Interact.gameObject.SetActive(true);
+                UIReuseScript.btn_Interact.interactable = false;
+                UIReuseScript.btn_Interact.GetComponentInChildren<TMP_Text>().text = "Take";
+                UIReuseScript.btn_Interact.onClick.AddListener(
+                    delegate { TakeItem(targetItem,
+                                        null); });
+            }
 
-                if (!targetItem.GetComponent<Env_Item>().isEquipped)
+            //use and drop methods are used when player is not in container
+            else if (PlayerMenuScript.isPlayerInventoryOpen
+                     && !PlayerMenuScript.isAltarOfEnchantingOpen)
+            {
+                UIReuseScript.btn_Interact.gameObject.SetActive(true);
+                UIReuseScript.btn_Interact.interactable = false;
+                if (targetItem.GetComponent<Item_Weapon>() != null
+                    || targetItem.GetComponent<Item_Armor>() != null
+                    || targetItem.GetComponent<Item_Shield>() != null
+                    || targetItem.GetComponent<Item_Spell>() != null
+                    || targetItem.GetComponent<Item_Ammo>() != null)
                 {
-                    UIReuseScript.btn_Interact.GetComponentInChildren<TMP_Text>().text = "Equip";
+                    UIReuseScript.btn_Interact.interactable = true;
+
+                    if (!targetItem.GetComponent<Env_Item>().isEquipped)
+                    {
+                        UIReuseScript.btn_Interact.GetComponentInChildren<TMP_Text>().text = "Equip";
+                    }
+                    else
+                    {
+                        UIReuseScript.btn_Interact.GetComponentInChildren<TMP_Text>().text = "Unequip";
+                    }
+
+                    UIReuseScript.btn_Interact.onClick.AddListener(
+                        delegate { UseItem(targetItem); });
+                }
+                else if (targetItem.GetComponent<Item_Consumable>() != null)
+                {
+                    UIReuseScript.btn_Interact.interactable = true;
+                    UIReuseScript.btn_Interact.GetComponentInChildren<TMP_Text>().text = "Consume";
+                    UIReuseScript.btn_Interact.onClick.AddListener(
+                        delegate { UseItem(targetItem); });
+                }
+                else if (targetItem.GetComponent<Item_Readable>() != null)
+                {
+                    UIReuseScript.btn_Interact.interactable = true;
+                    UIReuseScript.btn_Interact.GetComponentInChildren<TMP_Text>().text = "Read";
+                    UIReuseScript.btn_Interact.onClick.AddListener(
+                        delegate { UseItem(targetItem); });
+                }
+                else if (targetItem.GetComponent<Item_AlchemyTool>() != null)
+                {
+                    UIReuseScript.btn_Interact.interactable = true;
+                    UIReuseScript.btn_Interact.GetComponentInChildren<TMP_Text>().text = "Use";
+                    UIReuseScript.btn_Interact.onClick.AddListener(
+                        delegate { UseItem(targetItem); });
                 }
                 else
                 {
-                    UIReuseScript.btn_Interact.GetComponentInChildren<TMP_Text>().text = "Unequip";
+                    UIReuseScript.btn_Interact.gameObject.SetActive(false);
                 }
 
-                UIReuseScript.btn_Interact.onClick.AddListener(
-                    delegate { UseItem(targetItem); });
-            }
-            else if (targetItem.GetComponent<Item_Consumable>() != null)
-            {
-                UIReuseScript.btn_Interact.interactable = true;
-                UIReuseScript.btn_Interact.GetComponentInChildren<TMP_Text>().text = "Consume";
-                UIReuseScript.btn_Interact.onClick.AddListener(
-                    delegate { UseItem(targetItem); });
-            }
-            else if (targetItem.GetComponent<Item_Readable>() != null)
-            {
-                UIReuseScript.btn_Interact.interactable = true;
-                UIReuseScript.btn_Interact.GetComponentInChildren<TMP_Text>().text = "Read";
-                UIReuseScript.btn_Interact.onClick.AddListener(
-                    delegate { UseItem(targetItem); });
-            }
-            else if (targetItem.GetComponent<Item_AlchemyTool>() != null)
-            {
-                UIReuseScript.btn_Interact.interactable = true;
-                UIReuseScript.btn_Interact.GetComponentInChildren<TMP_Text>().text = "Use";
-                UIReuseScript.btn_Interact.onClick.AddListener(
-                    delegate { UseItem(targetItem); });
-            }
-            else
-            {
-                UIReuseScript.btn_Interact.gameObject.SetActive(false);
-            }
-
-            UIReuseScript.btn_Drop.gameObject.SetActive(true);
-            if (!itemScript.isProtected)
-            {
-                UIReuseScript.btn_Drop.interactable = true;
-                UIReuseScript.btn_Drop.onClick.AddListener(
-                    delegate { DropItem(targetItem); });
-            }
-            else
-            {
-                UIReuseScript.btn_Drop.interactable = false;
-            }
-
-            if (itemScript.itemType == Env_Item.ItemType.weapon
-                || itemScript.itemType == Env_Item.ItemType.armor
-                || itemScript.itemType == Env_Item.ItemType.shield)
-            {
-                ShowRepairInfo(targetItem);
-            }
-
-            UIReuseScript.btn_ShowExtraStats.onClick.AddListener(ShowExtraStats);
-        }
-
-        //enchant method is available if player has any soul gems
-        //and if this item is enchantable and is not yet enchanted
-        else if (PlayerMenuScript.targetContainer == null
-                 && PlayerMenuScript.isPlayerInventoryOpen
-                 && containerType == ContainerType.altar_of_enchanting)
-        {
-            bool hasSoulGems = false;
-            foreach (GameObject item in PlayerInventoryScript.playerItems)
-            {
-                if (item.name.Contains("soul_gem"))
+                UIReuseScript.btn_Drop.gameObject.SetActive(true);
+                if (!itemScript.isProtected)
                 {
-                    hasSoulGems = true;
-                    break;
+                    UIReuseScript.btn_Drop.interactable = true;
+                    UIReuseScript.btn_Drop.onClick.AddListener(
+                        delegate { DropItem(targetItem); });
                 }
+                else
+                {
+                    UIReuseScript.btn_Drop.interactable = false;
+                }
+
+                if (itemScript.itemType == Env_Item.ItemType.weapon
+                    || itemScript.itemType == Env_Item.ItemType.armor
+                    || itemScript.itemType == Env_Item.ItemType.shield)
+                {
+                    ShowRepairInfo(targetItem);
+                }
+
+                UIReuseScript.btn_ShowExtraStats.onClick.AddListener(ShowExtraStats);
             }
-            if (hasSoulGems)
+
+            //enchant method is available if player has any soul gems
+            //and if this item is enchantable and is not yet enchanted
+            else if (!PlayerMenuScript.isPlayerInventoryOpen
+                     && PlayerMenuScript.isAltarOfEnchantingOpen)
             {
-                if (targetItem.GetComponent<Env_Item>().isEnchantable)
+                bool hasSoulGems = false;
+                foreach (GameObject item in PlayerInventoryScript.playerItems)
+                {
+                    if (item.GetComponent<Env_Item>().itemName.Contains("soul_gem"))
+                    {
+                        hasSoulGems = true;
+                        break;
+                    }
+                }
+
+                UIReuseScript.btn_Interact.gameObject.SetActive(true);
+                UIReuseScript.btn_Interact.GetComponentInChildren<TMP_Text>().text = "Enchant";
+                if (hasSoulGems
+                    && targetItem.GetComponent<Env_Item>().isEnchantable)
                 {
                     UIReuseScript.btn_Interact.interactable = true;
-                    UIReuseScript.btn_Interact.GetComponentInChildren<TMP_Text>().text = "Enchant";
                     UIReuseScript.btn_Interact.onClick.AddListener(
-                        delegate { EnchantItem(targetItem); });
+                        delegate { EnchantItem(targetItem, "", null); } );
+                    UIReuseScript.btn_Interact.onClick.AddListener(
+                        PlayerMenuScript.ShowEnchantments);
                 }
+                else
+                {
+                    UIReuseScript.btn_Interact.interactable = false;
+                }
+
+                UIReuseScript.btn_ShowExtraStats.onClick.AddListener(ShowExtraStats);
             }
         }
 
         //take and place methods are used when player is taking from or placing to container
-        else if (PlayerMenuScript.targetContainer != null)
+        else
         {
             UIReuseScript.btn_Interact.gameObject.SetActive(true);
             UIReuseScript.btn_Interact.interactable = false;
@@ -706,7 +751,7 @@ public class UI_Inventory : MonoBehaviour
 
             UIReuseScript.btn_ShowExtraStats.onClick.AddListener(ShowExtraStats);
         }
-    }
+    } 
 
     //enables the repair UI automatically along with the
     //item stat UI if the selected item is repairable
@@ -770,14 +815,28 @@ public class UI_Inventory : MonoBehaviour
         UIReuseScript.txt_Durability.text = targetItem.GetComponent<Env_Item>().itemCurrentDurability.ToString();
     }
 
-    //enchant selected item
-    public void EnchantItem(GameObject targetItem)
+    //item is what item will be enchanted
+    //enchantment is what enchantment will be applied to enchantable item
+    //soulGem is what soul gem will be used to enchant enchantable item
+    public void EnchantItem(GameObject item,
+                            string enchantment,
+                            GameObject soulGem)
     {
-        //TODO: create enchantment selection UI to allow player
-        //to select enchantment, enchantable item and soul gem like in skyrim
+        //selected item
+        if (item != null)
+        {
 
-        AnnouncementScript.CreateAnnouncement("Successfully enchanted " + targetItem.name.Replace("_", " ") + "!");
-        Debug.Log("Success: Enchanted " + targetItem.name.Replace("_", " ") + "!");
+        }
+        //selected enchantment
+        if (enchantment != "")
+        {
+
+        }
+        //selected soul gem
+        if (soulGem != null)
+        {
+
+        }
     }
 
     //show the extra stats UI if the

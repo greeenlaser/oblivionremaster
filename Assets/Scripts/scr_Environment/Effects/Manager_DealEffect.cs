@@ -4,8 +4,17 @@ using UnityEngine;
 
 public class Manager_DealEffect : MonoBehaviour
 {
+    [Header("Scripts")]
+    [SerializeField] private GameObject thePlayer;
+
     //private variables
-    private Env_ReceiveEffect EffectScript;
+    private Env_Effect EffectScript;
+    private Player_Stats PlayerStatsScript;
+
+    private void Awake()
+    {
+        PlayerStatsScript = thePlayer.GetComponent<Player_Stats>();
+    }
 
     //deal the selected effect to the target
     public void DealEffect(GameObject dealer,
@@ -29,12 +38,12 @@ public class Manager_DealEffect : MonoBehaviour
                                         Quaternion.identity,
                                         receiver.transform);
 
-        effect.AddComponent<Env_ReceiveEffect>();
-        EffectScript = effect.GetComponent<Env_ReceiveEffect>();
-        EffectScript.UIReuseScript = GetComponent<Manager_UIReuse>();
+        effect.AddComponent<Env_Effect>();
+        EffectScript = effect.GetComponent<Env_Effect>();
         EffectScript.ReceiveEffect(effectName,
                                    effectValue,
                                    effectDuration);
+        PlayerStatsScript.activeEffects.Add(effect);
 
         Debug.Log("Info: " + dealerName + " dealt " + effectValue + " " + effectName + " to " + receiver.name + " for " + effectDuration + " seconds.");
     }

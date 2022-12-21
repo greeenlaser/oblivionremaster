@@ -41,6 +41,9 @@ public class Player_Stats : MonoBehaviour
     [HideInInspector] public Dictionary<string, int> Skills = new();
     [HideInInspector] public Dictionary<string, int> SkillPoints = new();
 
+    //active effects on player
+    [HideInInspector] public List<GameObject> activeEffects = new();
+
     [Header("Main player UI")]
     public Slider healthBar;
     public Slider staminaBar;

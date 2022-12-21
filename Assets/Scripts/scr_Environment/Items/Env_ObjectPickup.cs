@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Env_ObjectPickup : MonoBehaviour
 {
-    [Range(1f, 5f)]
-    public float maxDistance = 3f;
     [Range(10f, 30f)]
     [SerializeField] private float throwForce = 15f;
     [Range(1f, 10f)]

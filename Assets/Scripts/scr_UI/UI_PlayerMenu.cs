@@ -111,6 +111,7 @@ public class UI_PlayerMenu : MonoBehaviour
         PauseMenuScript.UnpauseGame();
     }
 
+    //all stats UI
     public void ShowStatsUI()
     {
         ResetAllUI();
@@ -128,6 +129,7 @@ public class UI_PlayerMenu : MonoBehaviour
         btn_ReusedButton4.GetComponentInChildren<TMP_Text>().text = "Factions";
         btn_ReusedButton5.GetComponentInChildren<TMP_Text>().text = "Accomplishments";
     }
+    //player inventory UI
     public void ShowInventoryUI()
     {
         ResetAllUI();
@@ -146,6 +148,7 @@ public class UI_PlayerMenu : MonoBehaviour
 
         PlayerInventoryScript.OpenInventory("inventory");
     }
+    //container-only UI
     public void ShowContainerUI()
     {
         ResetAllUI();
@@ -165,6 +168,7 @@ public class UI_PlayerMenu : MonoBehaviour
 
         PlayerInventoryScript.OpenInventory("container");
     }
+    //magicka-only UI
     public void ShowMagickaUI()
     {
         ResetAllUI();
@@ -182,6 +186,7 @@ public class UI_PlayerMenu : MonoBehaviour
 
         PlayerInventoryScript.OpenInventory("magic");
     }
+    //initial enchant UI
     public void ShowAltarOfEnchantingUI()
     {
         ResetAllUI();
@@ -204,6 +209,27 @@ public class UI_PlayerMenu : MonoBehaviour
 
         PlayerInventoryScript.OpenInventory("altar_of_enchanting");
     }
+    //shows all enchantments, allSoulGems inventory type 
+    //does not need a separate method
+    public void ShowEnchantments()
+    {
+        ResetAllUI();
+
+        UIReuseScript.par_Inventory.SetActive(true);
+        btn_ShowStatsUI.gameObject.SetActive(false);
+        btn_ShowInventoryUI.gameObject.SetActive(false);
+        btn_ShowMagickaUI.gameObject.SetActive(false);
+        btn_ShowQuestsAndMapsUI.gameObject.SetActive(false);
+
+        btn_ReusedButton1.gameObject.SetActive(false);
+        btn_ReusedButton2.gameObject.SetActive(false);
+        btn_ReusedButton3.gameObject.SetActive(false);
+        btn_ReusedButton4.gameObject.SetActive(false);
+        btn_ReusedButton5.gameObject.SetActive(false);
+
+        PlayerInventoryScript.OpenInventory("allEnchantments");
+    }
+    //all quests and maps UI
     public void ShowQuestsAndMapsUI()
     {
         ResetAllUI();
@@ -222,6 +248,7 @@ public class UI_PlayerMenu : MonoBehaviour
         btn_ReusedButton5.GetComponentInChildren<TMP_Text>().text = "Completed quests";
     }
 
+    //sets all UI to default values
     private void ResetAllUI()
     {
         par_StatsUI.SetActive(false);
@@ -249,6 +276,9 @@ public class UI_PlayerMenu : MonoBehaviour
         btn_ReusedButton2.transform.localPosition = new(-748.7f, -315, 0);
         btn_ReusedButton3.transform.localPosition = new(-619, -315, 0);
 
+        btn_ReusedButton1.gameObject.SetActive(true);
+        btn_ReusedButton2.gameObject.SetActive(true);
+        btn_ReusedButton3.gameObject.SetActive(true);
         btn_ReusedButton4.gameObject.SetActive(true);
         btn_ReusedButton5.gameObject.SetActive(true);
 

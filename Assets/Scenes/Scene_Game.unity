@@ -1086,6 +1086,7 @@ MonoBehaviour:
   invSpace: 0
   level: 0
   level_PointsToNextLevel: 0
+  activeEffects: []
   healthBar: {fileID: 1423982152}
   staminaBar: {fileID: 205754584}
   magickaBar: {fileID: 1336299210}
@@ -5489,12 +5490,12 @@ RectTransform:
   m_Children:
   - {fileID: 412869656157695917}
   - {fileID: 1027914984}
-  - {fileID: 1005760160}
   - {fileID: 1401807323}
   - {fileID: 2686419633429020059}
   - {fileID: 2411592829640228158}
   - {fileID: 4334180562051155851}
   - {fileID: 1880841099}
+  - {fileID: 1005760160}
   - {fileID: 696599275}
   - {fileID: 1485642244}
   - {fileID: 845193940}
@@ -20518,11 +20519,12 @@ GameObject:
   - component: {fileID: 919376845}
   - component: {fileID: 919376852}
   - component: {fileID: 919376843}
+  - component: {fileID: 919376859}
   - component: {fileID: 919376851}
-  - component: {fileID: 919376848}
-  - component: {fileID: 919376846}
   - component: {fileID: 919376847}
   - component: {fileID: 919376849}
+  - component: {fileID: 919376848}
+  - component: {fileID: 919376846}
   - component: {fileID: 919376855}
   - component: {fileID: 919376842}
   m_Layer: 0
@@ -21022,6 +21024,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3869c09311ea5ab4898f58324588874a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  thePlayer: {fileID: 43975270}
 --- !u!114 &919376858
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21035,7 +21038,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   par_ItemWheel: {fileID: 1880841098}
-  img_GrayRoundedEdgeSquare: {fileID: 2800000, guid: 49c3e473ddadce24b923781b9c508707, type: 3}
   slotScripts:
   - {fileID: 374856534}
   - {fileID: 286647787}
@@ -21047,6 +21049,66 @@ MonoBehaviour:
   - {fileID: 778895730}
   thePlayer: {fileID: 43975270}
   assignableItemName: 
+--- !u!114 &919376859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919376840}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ba5572aaea484e46b9c58a117a000e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  allEffects:
+  - fortifyHealth
+  - fortifyMagicka
+  - fortifyFatigue
+  - fortifyAttribute
+  - fortifySkill
+  - drainHealth
+  - drainMagicka
+  - drainFatigue
+  - damageAbility
+  - damageSkill
+  - addHealth
+  - addMagicka
+  - addFatigue
+  - cureDisease
+  - resistDisease
+  - fireShield
+  - frostShield
+  - shockShield
+  - fireDamage
+  - frostDamage
+  - shockDamage
+  - waterBreathing
+  - waterWalking
+  - resistParalysis
+  - paralyze
+  - resistElement
+  - resistPoison
+  - shield
+  - light
+  - nightEye
+  - feather
+  - chameleon
+  - detectLife
+  - silence
+  - disintegrateArmor
+  meleeEnchantments: []
+  rangedEnchantments: []
+  staffEnchantments: []
+  helmetEnchantments: []
+  cuirassEnchantments: []
+  greavesEnchantments: []
+  bootsEnchantments: []
+  necklaceEnchantments: []
+  ringEnchantments: []
+  spellEffects: []
+  potionEffects: []
+  playerUnlockedEnchantments: []
 --- !u!114 &922013609 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2607496534327689197, guid: 074b96c3524858349a136b830933d01f, type: 3}
@@ -23578,7 +23640,7 @@ RectTransform:
   - {fileID: 708507053}
   - {fileID: 457321322}
   m_Father: {fileID: 248737391}
-  m_RootOrder: 2
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -31442,7 +31504,7 @@ RectTransform:
   - {fileID: 1678039661}
   - {fileID: 1421921803}
   m_Father: {fileID: 248737391}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -42780,7 +42842,7 @@ RectTransform:
   - {fileID: 526089523}
   - {fileID: 985106869}
   m_Father: {fileID: 248737391}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -60048,7 +60110,7 @@ RectTransform:
   - {fileID: 2411592829795713250}
   - {fileID: 2411592830333878272}
   m_Father: {fileID: 248737391}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -64453,7 +64515,7 @@ RectTransform:
   - {fileID: 2686419632771042240}
   - {fileID: 2686419633565811638}
   m_Father: {fileID: 248737391}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -76319,7 +76381,7 @@ RectTransform:
   - {fileID: 949966067}
   - {fileID: 2116010693}
   m_Father: {fileID: 248737391}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}

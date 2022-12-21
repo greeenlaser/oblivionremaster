@@ -38,6 +38,7 @@ public class Item_Weapon : MonoBehaviour
     [HideInInspector] public GameObject instantiatedWeapon;
     [HideInInspector] public Anim_Weapon WeaponAnimationScript;
     [HideInInspector] public Animator weaponAnimator;
+    [HideInInspector] public Env_Effect AppliedEnchantmentScript;
 
     //current values
     [HideInInspector] public int damage_Current;
