@@ -8,7 +8,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using static Manager_Settings;
-using System.Text;
 
 public class Manager_Console : MonoBehaviour
 {
@@ -428,7 +427,7 @@ public class Manager_Console : MonoBehaviour
                     }
 
                     //list all item types
-                    else if (separatedWords[1] == "showspawnableitems"
+                    else if (separatedWords[1] == "showitemtypes"
                              && separatedWords.Count == 2)
                     {
                         Command_ShowAllItemTypes();
@@ -2043,7 +2042,7 @@ public class Manager_Console : MonoBehaviour
             }
             else
             {
-                CreateNewConsoleLine("Error: " + itemName + " is an invalid item name! Type player sait to sort through all spawnable item types.", "CONSOLE ERROR MESSAGE");
+                CreateNewConsoleLine("Error: " + itemName + " is an invalid item name! Type player showitemtypes to sort through all spawnable item types.", "CONSOLE ERROR MESSAGE");
             }
         }
         else
@@ -2128,7 +2127,7 @@ public class Manager_Console : MonoBehaviour
             }
             else
             {
-                CreateNewConsoleLine("Error: Did not find " + itemName + "(s) from player inventory! Type player show_allinventoryitems to list all player items.", "CONSOLE ERROR MESSAGE");
+                CreateNewConsoleLine("Error: Did not find " + itemName + "(s) from player inventory! Type player showinventoryitems to list all player items.", "CONSOLE ERROR MESSAGE");
             }
         }
         else
@@ -2165,7 +2164,7 @@ public class Manager_Console : MonoBehaviour
 
         if (targetPlayerItem == null)
         {
-            CreateNewConsoleLine("Error: Item position or name is invalid! Type player sapi to list all player items.", "CONSOLE ERROR MESSAGE");
+            CreateNewConsoleLine("Error: Item position or name is invalid! Type player showinventoryitems to list all player items.", "CONSOLE ERROR MESSAGE");
         }
         else
         {
@@ -2219,7 +2218,7 @@ public class Manager_Console : MonoBehaviour
 
         if (targetPlayerItem == null)
         {
-            CreateNewConsoleLine("Error: Item position or name is invalid! Type player sapi to list all player items.", "CONSOLE ERROR MESSAGE");
+            CreateNewConsoleLine("Error: Item position or name is invalid! Type player showinventoryitems to list all player items.", "CONSOLE ERROR MESSAGE");
         }
         else
         {
@@ -2238,7 +2237,7 @@ public class Manager_Console : MonoBehaviour
                 && ItemScript.itemType != Env_Item.ItemType.armor
                 && ItemScript.itemType != Env_Item.ItemType.shield)))
             {
-                CreateNewConsoleLine("Error: Stat name " + separatedWords[4] + " is invalid or not editable! Type player shis " + separatedWords[1] + " to list all stats for this item.", "CONSOLE ERROR MESSAGE");
+                CreateNewConsoleLine("Error: Stat name " + separatedWords[4] + " is invalid or not editable! Type player showitemstats " + separatedWords[1] + " to list all stats for this item.", "CONSOLE ERROR MESSAGE");
             }
             else
             {
