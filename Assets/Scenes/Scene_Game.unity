@@ -21097,7 +21097,10 @@ MonoBehaviour:
   - detectLife
   - silence
   - disintegrateArmor
-  meleeEnchantments: []
+  meleeEnchantments:
+  - fireDamage
+  - frostDamage
+  - shockDamage
   rangedEnchantments: []
   staffEnchantments: []
   helmetEnchantments: []

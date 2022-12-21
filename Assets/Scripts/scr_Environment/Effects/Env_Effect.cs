@@ -29,8 +29,10 @@ public class Env_Effect : MonoBehaviour
 
     private void Update()
     {
-        //a duration of -1 means this effect is permanent
-        //or active until force-disabled
+        //>= 0 - temporary effect applied to player or targets over time
+        //-1 - permanent effect dealt to player or targets over time
+        //-2 - enchantment or applied to all items except weapons, player and targets, enchantment/effect dealt once when added
+        //-3 - enchantment applied to weapons only, enchantment not dealt when added, effect only called from other script
         if (activateEffect)
         {
             if (!dealtFirstEffect
@@ -122,6 +124,27 @@ public class Env_Effect : MonoBehaviour
                 PlayerReceivedEffect(effectName,
                                      effectValue);
             }
+            //weapon received an enchantment
+            else if (target.GetComponent<Item_Weapon>() != null)
+            {
+                bool foundCorrectEnchantment = false;
+                foreach (string effect in EffectsScript.meleeEnchantments)
+                {
+                    if (effectName == effect)
+                    {
+                        foundCorrectEnchantment = true;
+                        break;
+                    }
+                }
+                if (!foundCorrectEnchantment)
+                {
+                    Debug.LogError("Error: Tried to apply invalid or incorrect enchantment " + effectName + " to melee weapon " + target.name + "!");
+                }
+                else
+                {
+                    ItemReceivedEnchantment(effectName, effectValue);
+                }
+            }
         }
     }
 
@@ -199,7 +222,7 @@ public class Env_Effect : MonoBehaviour
     }
 
     //an item successfully received an enchantment
-    private void ItemReceivedEnchantment(string effectName, string effectValue)
+    private void ItemReceivedEnchantment(string effectName, float effectValue)
     {
 
     }
