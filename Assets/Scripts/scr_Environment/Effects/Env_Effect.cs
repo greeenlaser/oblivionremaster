@@ -36,7 +36,8 @@ public class Env_Effect : MonoBehaviour
         if (activateEffect)
         {
             if (!dealtFirstEffect
-                && theEffectDuration != -1)
+                && (theEffectDuration > 0
+                || theEffectDuration == -2))
             {
                 DealEffect(theEffectName,
                            theEffectValue,
@@ -48,7 +49,8 @@ public class Env_Effect : MonoBehaviour
             {
                 activateEffect = false;
             }
-            else
+            else if (theEffectDuration > 0
+                     || theEffectDuration == -1)
             {
                 timer -= Time.deltaTime;
                 if (timer <= 0)
@@ -139,10 +141,16 @@ public class Env_Effect : MonoBehaviour
                 if (!foundCorrectEnchantment)
                 {
                     Debug.LogError("Error: Tried to apply invalid or incorrect enchantment " + effectName + " to melee weapon " + target.name + "!");
-                }
-                else
-                {
-                    ItemReceivedEnchantment(effectName, effectValue);
+                    for (int i = 0; i < PlayerStatsScript.activeEffects.Count; i++)
+                    {
+                        GameObject effect = PlayerStatsScript.activeEffects[i];
+                        if (effect == gameObject)
+                        {
+                            PlayerStatsScript.activeEffects.RemoveAt(i);
+                            break;
+                        }
+                    }
+                    Destroy(gameObject);
                 }
             }
         }
@@ -219,11 +227,5 @@ public class Env_Effect : MonoBehaviour
                 PlayerStatsScript.UpdateBar(PlayerStatsScript.staminaBar);
             }
         }
-    }
-
-    //an item successfully received an enchantment
-    private void ItemReceivedEnchantment(string effectName, float effectValue)
-    {
-
     }
 }
