@@ -8,6 +8,7 @@ using System.Collections;
 public class GameManager : MonoBehaviour
 {
     [Header("General")]
+    [Tooltip("What version is the game currently at.")]
     [SerializeField] private string gameVersion;
 
     [Header("Scripts")]

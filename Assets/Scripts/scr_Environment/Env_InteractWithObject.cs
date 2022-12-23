@@ -5,7 +5,9 @@ using UnityEngine;
 public class Env_InteractWithObject : MonoBehaviour
 {
     [Header("General assignables")]
+    [Tooltip("How fast does this object move?")]
     [SerializeField] private float moveSpeed;
+    [Tooltip("Is this object a button or a lever?")]
     [SerializeField] private ObjectType objectType;
     [SerializeField] private enum ObjectType
     {
@@ -14,11 +16,15 @@ public class Env_InteractWithObject : MonoBehaviour
     }
 
     [Header("Button")]
+    [Tooltip("The center of the button which controls its position.")]
     [SerializeField] private Transform par_ButtonCenter;
+    [Tooltip("Where is this button positioned when disabled?")]
     [SerializeField] private Transform pos_ButtonDisabled;
+    [Tooltip("Where is this button positioned when enabled?")]
     [SerializeField] private Transform pos_ButtonEnabled;
 
     [Header("Lever")]
+    [Tooltip("The center of the lever which controls its rotation.")]
     [SerializeField] private Transform par_RotationCenter;
 
     [Header("Scripts")]

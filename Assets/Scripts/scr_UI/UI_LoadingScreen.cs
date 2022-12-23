@@ -9,11 +9,15 @@ public class UI_LoadingScreen : MonoBehaviour
 {
     [Header("Loading screen UI")]
     public GameObject par_LoadingUI;
+    [Tooltip("The loading screen rawimage gameobject where the loading screen texture is placed onto.")]
     [SerializeField] private RawImage loadingImage;
+    [Tooltip("The text gameobject where the tip string is placed onto.")]
     [SerializeField] private TMP_Text txt_Tip;
     public TMP_Text txt_PressToContinue;
     [SerializeField] private Slider loadingSlider;
+    [Tooltip("What loading screen images can be displayed.")]
     [SerializeField] private List<Texture> loadingImages = new();
+    [Tooltip("What tips can be displayed.")]
     [SerializeField] private List<string> tips = new();
 
     [Header("Scripts")]

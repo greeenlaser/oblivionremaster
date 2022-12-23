@@ -5,7 +5,9 @@ using UnityEngine;
 public class Manager_ItemWheel : MonoBehaviour
 {
     [Header("Assignables")]
+    [Tooltip("The parent gameobject of the item wheel.")]
     [SerializeField] private GameObject par_ItemWheel;
+    [Tooltip("All item wheel slot scripts.")]
     public List<Slot_ItemWheel> slotScripts = new();
 
     [Header("Scripts")]

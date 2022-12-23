@@ -6,7 +6,9 @@ using UnityEngine;
 public class Trigger_Location : MonoBehaviour
 {
     [Header("General")]
+    [Tooltip("What is this cell called?")]
     public string cellName;
+    [Tooltip("What kind of a cell is this?")]
     public LocationType locationType;
     public enum LocationType
     {
@@ -15,11 +17,17 @@ public class Trigger_Location : MonoBehaviour
         dungeon,
         battle
     }
+    [Tooltip("How far should the cell logo turn on from?")]
     [SerializeField] private float maxDistanceToEnable;
+    [Tooltip("How far should the player be from this cell to mark it as discovered?")]
     public float maxDistanceToDiscover;
+    [Tooltip("Undiscovered cell logo.")] 
     [SerializeField] private GameObject location;
+    [Tooltip("Discovered cell logo.")]
     [SerializeField] private GameObject location_discovered;
+    [Tooltip("All cell containers.")]
     public List<GameObject> containers;
+    [Tooltip("All cell doors.")]
     public List<GameObject> doors;
 
     [Header("Scripts")]

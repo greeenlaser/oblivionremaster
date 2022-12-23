@@ -20,7 +20,9 @@ public class UI_PlayerMenu : MonoBehaviour
     public Button btn_ReusedButton3;
     public Button btn_ReusedButton4;
     public Button btn_ReusedButton5;
+    [Tooltip("The gameobject which holds all dropped items.")]
     public GameObject par_DroppedItems;
+    [Tooltip("All template items which are used to spawn in new items.")]
     public List<GameObject> templateItems = new();
 
     [Header("Scripts")]

@@ -5,9 +5,12 @@ using UnityEngine;
 
 public class Manager_DateAndTime : MonoBehaviour
 {
-    [Header("Assignables")]
+    [Header("Sun assignables")]
+    [Tooltip("The sun gameobject.")]
     [SerializeField] private GameObject sun;
+    [Tooltip("Where does the sun rotate from?")]
     [SerializeField] private GameObject par_RotationCenter;
+    [Tooltip("Where does the sun look at when rotating?")]
     [SerializeField] private GameObject par_SunLookAt;
 
     //public but hidden variables

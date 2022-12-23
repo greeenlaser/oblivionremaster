@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class Manager_GlobalAudio : MonoBehaviour
 {
     [Header("Assignables")]
+    [Tooltip("All scripts that play music in the game.")]
     [SerializeField] private List<Audio_PlayMusic> GlobalAudioPlayerScripts;
 
     //public but hidden variables

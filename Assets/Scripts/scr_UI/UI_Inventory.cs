@@ -7,8 +7,11 @@ using TMPro;
 public class UI_Inventory : MonoBehaviour
 {
     [Header("General assignables")]
+    [Tooltip("Where all player items are placed to.")]
     public GameObject par_PlayerItems;
+    [Tooltip("Where the equipped weapon is placed to.")]
     [SerializeField] private Transform pos_EquippedWeapon;
+    [Tooltip("What kind of a container is this?")]
     public ContainerType containerType = ContainerType.player;
     public enum ContainerType
     {
@@ -18,7 +21,9 @@ public class UI_Inventory : MonoBehaviour
     }
 
     [Header("Container assignables")]
+    [Tooltip("Where container items are placed to.")]
     public GameObject par_ContainerItems;
+    [Tooltip("What is this container called?")]
     public string containerName;
 
     [Header("Scripts")]

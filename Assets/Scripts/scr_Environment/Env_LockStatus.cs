@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class Env_LockStatus : MonoBehaviour
 {
-    [Header("Lock status")]
+    [Header("Is this lock meant to be locked at start?")]
     public bool lockedAtRestart;
+    [Tooltip("Does this lock need a key?")]
     public bool needsKey;
+    [Tooltip("Which key does this lock need?")]
     public GameObject key;
+    [Tooltip("How hard is this lock to pick?")]
     public LockDifficulty lockDifficulty = LockDifficulty.Apprentice;
     public enum LockDifficulty
     {

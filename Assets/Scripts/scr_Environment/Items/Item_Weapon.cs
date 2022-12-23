@@ -5,15 +5,18 @@ using UnityEngine;
 public class Item_Weapon : MonoBehaviour
 {
     [Header("Default values")]
+    [Tooltip("The base damage of this weapon.")]
     public int damage_Default;
 
     [Header("General")]
+    [Tooltip("Is this item meant to be held in one or two hands?")]
     public EquipType equipType;
     public enum EquipType
     {
         singleHanded,
         doubleHanded
     }
+    [Tooltip("Which weapon is this exactly?")]
     public WeaponType weaponType;
     public enum WeaponType
     {
@@ -24,8 +27,11 @@ public class Item_Weapon : MonoBehaviour
         bow,
         crossbow
     }
+    [Tooltip("The logo for this item which is displayed in all inventories, item wheel and equipped item slot.")]
     public Texture img_ItemLogo;
+    [Tooltip("The prefab which is spawned when this weapon is equipped.")]
     public GameObject templateAnimatedWeapon;
+    [Tooltip("Forces the spawned weapon to this rotation when spawned.")]
     [SerializeField] private Vector3 forcedRotation;
 
     //public but hidden variables

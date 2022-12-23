@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class Env_ObjectPickup : MonoBehaviour
 {
+    [Tooltip("Affects how far this item can be thrown.")]
     [Range(10f, 30f)]
     [SerializeField] private float throwForce = 15f;
+    [Tooltip("Affects max move speed of this item.")]
     [Range(1f, 10f)]
     public float speedLimit = 5;
 

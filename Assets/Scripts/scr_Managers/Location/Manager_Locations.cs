@@ -7,8 +7,9 @@ using static Manager_GlobalAudio;
 public class Manager_Locations : MonoBehaviour
 {
     [Header("Assignables")]
+    [Tooltip("All game locations.")]
     public List<GameObject> locations = new();
-
+    [Tooltip("All game loot tables.")]
     public List<GameObject> lootTables;
 
     //public but hidden variables

@@ -5,6 +5,7 @@ using UnityEngine;
 public class Env_LootTable : MonoBehaviour
 {
     [Header("General")]
+    [Tooltip("What items can be spawned in the world?")]
     [SerializeField] private List<GameObject> spawnableItems;
 
     [Header("Scripts")]

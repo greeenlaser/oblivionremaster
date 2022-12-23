@@ -5,7 +5,9 @@ using UnityEngine;
 public class Env_FollowTarget : MonoBehaviour
 {
     [Header("Assignables")]
+    [Tooltip("Is it only following target in y axis?")]
     [SerializeField] private bool followHeightOnly;
+    [Tooltip("Which target does this gameobject follow?")]
     [SerializeField] private GameObject target;
 
     private void Update()

@@ -16,16 +16,19 @@ public class Manager_KeyBindings : MonoBehaviour
     [Header("General key UI")]
     [SerializeField] private GameObject par_GeneralKeyBindingsParent;
     [SerializeField] private Button btn_ShowGeneralKeyBindings;
+    [Tooltip("All general key binds.")]
     public List<GameObject> generalKeyParents = new();
 
     [Header("Movement key UI")]
     [SerializeField] private GameObject par_MovementKeyBindingsParent;
     [SerializeField] private Button btn_ShowMovementKeyBindings;
+    [Tooltip("All movement key binds.")]
     public List<GameObject> movementKeyParents = new();
 
     [Header("Combat key UI")]
     [SerializeField] private GameObject par_CombatKeyBindingsParent;
     [SerializeField] private Button btn_ShowCombatKeyBindings;
+    [Tooltip("All combat key binds.")]
     public List<GameObject> combatKeyParents = new();
 
     //public but hidden variables

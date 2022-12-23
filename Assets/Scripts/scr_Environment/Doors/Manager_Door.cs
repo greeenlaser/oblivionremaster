@@ -5,8 +5,11 @@ using UnityEngine;
 public class Manager_Door : MonoBehaviour
 {
     [Header("General assignables")]
+    [Tooltip("What name this door will be referenced as in scripts.")]
     public string doorName;
+    [Tooltip("How fast will this door rotate.")]
     [SerializeField] private float moveSpeed;
+    [Tooltip("What type of a door is this?")]
     public DoorType doorType;
     public enum DoorType
     {

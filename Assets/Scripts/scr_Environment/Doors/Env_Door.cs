@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Env_Door : MonoBehaviour
 {
-    [Header("Assignables")]
+    [Header("Scripts")]
     public Manager_Door DoorManagerScript;
 
     //this is a child method of the real door interaction method

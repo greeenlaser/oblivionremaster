@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class Anim_Weapon : MonoBehaviour
 {
     //public but hidden variables
+    [Tooltip("The weapon that will be animated.")]
     [HideInInspector] public GameObject targetWeapon;
+    [Tooltip("The animation controller which handles the animations for the target weapon.")]
     [HideInInspector] public Animator targetController;
 
     //scripts

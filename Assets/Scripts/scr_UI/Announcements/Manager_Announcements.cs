@@ -6,8 +6,11 @@ using UnityEngine;
 public class Manager_Announcements : MonoBehaviour
 {
     [Header("Assignables")]
+    [Tooltip("The template which is spawned when a new announcement is called.")]
     [SerializeField] private GameObject par_TemplateAnnouncement;
+    [Tooltip("Where all announcements are held at.")]
     [SerializeField] private GameObject par_Announcements;
+    [Tooltip("Where the top announcement is placed at.")]
     [SerializeField] private Transform pos_FirstAnnouncement;
 
     //public but hidden variables

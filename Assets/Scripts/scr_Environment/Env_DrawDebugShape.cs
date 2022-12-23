@@ -5,7 +5,9 @@ using UnityEngine;
 public class Env_DrawDebugShape : MonoBehaviour
 {
     [Header("General")]
+    [Tooltip("Is this shape shown even if it is not selected?")]
     [SerializeField] private bool showAlways;
+    [Tooltip("One of the 6 base colors for the shape.")]
     [SerializeField] private UserDefined_Color color;
     [SerializeField] private enum UserDefined_Color
     {
@@ -16,6 +18,7 @@ public class Env_DrawDebugShape : MonoBehaviour
         white,
         black
     }
+    [Tooltip("One of the 6 available shapes.")]
     [SerializeField] private Shape shape;
     [SerializeField] private enum Shape
     {

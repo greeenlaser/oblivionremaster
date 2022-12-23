@@ -6,9 +6,14 @@ using UnityEngine.UI;
 public class Player_Raycast : MonoBehaviour
 {
     [Header("Assignables")]
+    [Tooltip("The cursor at the center of the screen.")]
     [SerializeField] private RawImage cursor;
+    [Tooltip("The logo which is displayed when the player hovers over an interactable item.")]
     [SerializeField] private RawImage interactIcon;
+    [Tooltip("Where held items are moved to.")]
     public Transform pos_HoldItem;
+
+    [Header("Scripts")]
     [SerializeField] private GameObject par_Managers;
 
     //public but hidden variables

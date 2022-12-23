@@ -5,6 +5,7 @@ using UnityEngine;
 public class Player_Movement : MonoBehaviour
 {
     [Header("Assignables")]
+    [Tooltip("The layer the player walks on.")]
     [SerializeField] private LayerMask groundMask;
 
     [Header("Scripts")]

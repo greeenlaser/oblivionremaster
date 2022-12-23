@@ -13,7 +13,6 @@ public class Env_Effect : MonoBehaviour
     //private variables
     private bool activateEffect;
     private bool dealtFirstEffect;
-
     private float timer;
 
     //scripts
