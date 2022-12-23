@@ -41,6 +41,7 @@ public class Env_Item : MonoBehaviour
     [HideInInspector] public bool isEquipped;
     [HideInInspector] public bool droppedObject;
     [HideInInspector] public int itemCurrentDurability;
+    [HideInInspector] public List<GameObject> activeEnchantments = new();
 
     private void Awake()
     {

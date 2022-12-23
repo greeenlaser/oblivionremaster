@@ -45,6 +45,6 @@ public class Manager_DealEffect : MonoBehaviour
                                    effectDuration);
         PlayerStatsScript.activeEffects.Add(effect);
 
-        Debug.Log("Info: " + dealerName + " dealt " + effectValue + " " + effectName + " to " + receiver.name + " for " + effectDuration + " seconds.");
+        Debug.Log("Info: " + dealerName + " added effect " + effectName + " with value " + effectValue + " to " + receiver.name + " for " + effectDuration + " seconds.");
     }
 }
