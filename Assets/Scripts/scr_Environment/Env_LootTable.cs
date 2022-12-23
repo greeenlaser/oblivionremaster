@@ -40,25 +40,6 @@ public class Env_LootTable : MonoBehaviour
                 {
                     int randomChance = 0;
 
-                    Env_Item itemScript = templateItem.GetComponent<Env_Item>();
-                    string itemQuality = itemScript.itemQuality.ToString();
-                    if (itemQuality == "trash")
-                    {
-                        randomChance = Random.Range(25, 60);
-                    }
-                    else if (itemQuality == "common")
-                    {
-                        randomChance = Random.Range(20, 50);
-                    }
-                    else if (itemQuality == "rare")
-                    {
-                        randomChance = Random.Range(15, 40);
-                    }
-                    else if (itemQuality == "legendary")
-                    {
-                        randomChance = Random.Range(10, 30);
-                    }
-
                     int luck = PlayerStatsScript.Attributes["Luck"];
                     int luckChance = 0;
                     if (luck <= 5)

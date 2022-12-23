@@ -6,7 +6,6 @@ public class Env_Item : MonoBehaviour
 {
     public bool isProtected;
     public bool isStackable;
-    public bool isEnchantable;
     public string itemName = "REPLACE_MY_NAME";
     public string itemDescription = "REPLACE_MY_DESCRIPTION";
     public int itemValue = 0;
@@ -14,7 +13,7 @@ public class Env_Item : MonoBehaviour
     public int itemWeight = 0;
     [Range(1, 1000000)]
     public int itemCount;
-    public int itemMaxDurability;
+
     public ItemType itemType = ItemType.misc;
     public enum ItemType
     {
@@ -28,14 +27,11 @@ public class Env_Item : MonoBehaviour
         enchantment,
         misc
     }
-    public ItemQuality itemQuality = ItemQuality.common;
-    public enum ItemQuality
-    {
-        trash,
-        common,
-        rare,
-        legendary
-    }
+
+    [Header("Special variables")]
+    public bool isEnchantable;
+    public int soulGemSize;
+    public int itemMaxDurability;
 
     //public but hidden variables
     [HideInInspector] public bool isEquipped;

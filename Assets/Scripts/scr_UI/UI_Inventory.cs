@@ -400,6 +400,7 @@ public class UI_Inventory : MonoBehaviour
                 {
                     Env_Item itemScript = item.GetComponent<Env_Item>();
 
+                    //player inventory
                     if (PlayerMenuScript.isPlayerInventoryOpen)
                     {
                         if ((targetInventory == "allItems"                           //list all regular items only
@@ -431,6 +432,7 @@ public class UI_Inventory : MonoBehaviour
                                 delegate { ShowSelectedItemInfo(item, newButton.GetComponent<Button>()); });
                         }
                     }
+                    //enchantable items in altar of enchanting
                     else if (PlayerMenuScript.isAltarOfEnchantingOpen)
                     {
                         //list all enchantable weapons

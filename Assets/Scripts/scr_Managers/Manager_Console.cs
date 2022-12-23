@@ -2153,7 +2153,6 @@ public class Manager_Console : MonoBehaviour
             CreateNewConsoleLine("isProtected: " + ItemScript.isProtected, MessageType.CONSOLE_INFO_MESSAGE.ToString());
             CreateNewConsoleLine("isStackable: " + ItemScript.isStackable, MessageType.CONSOLE_INFO_MESSAGE.ToString());
             CreateNewConsoleLine("type: " + ItemScript.itemType.ToString(), MessageType.CONSOLE_INFO_MESSAGE.ToString());
-            CreateNewConsoleLine("quality: " + ItemScript.itemQuality.ToString(), MessageType.CONSOLE_INFO_MESSAGE.ToString());
             CreateNewConsoleLine("value: " + ItemScript.itemValue, MessageType.CONSOLE_INFO_MESSAGE.ToString());
             CreateNewConsoleLine("weight: " + ItemScript.itemWeight, MessageType.CONSOLE_INFO_MESSAGE.ToString());
             CreateNewConsoleLine("count: " + ItemScript.itemCount, MessageType.CONSOLE_INFO_MESSAGE.ToString());
