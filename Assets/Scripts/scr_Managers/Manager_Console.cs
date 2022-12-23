@@ -12,8 +12,10 @@ using static Manager_Settings;
 
 //check if string only contains upper or lowercase english alphabet letters
 //Regex.IsMatch("", @"^[a-zA-Z]+$")
-//check if string only contains positive or negative non-decimal numbers
+//check if string only contains positive or negative ints
 //Regex.IsMatch("", @"-?\d+")
+//check if string only contains positive or negative ints or floats
+//Regex.IsMatch(input, @"-?\d*\.?\d*")
 
 public class Manager_Console : MonoBehaviour
 {
@@ -189,6 +191,7 @@ public class Manager_Console : MonoBehaviour
                 }
                 else
                 {
+                    //choose older typed command
                     if (Input.GetKeyDown(KeyCode.UpArrow))
                     {
                         if (isSelectingTarget)
@@ -207,6 +210,7 @@ public class Manager_Console : MonoBehaviour
                         UIReuseScript.consoleInputField.text = insertedCommands[currentSelectedInsertedCommand];
                         UIReuseScript.consoleInputField.MoveToEndOfLine(false, false);
                     }
+                    //choose newer typed command
                     else if (Input.GetKeyDown(KeyCode.DownArrow))
                     {
                         if (isSelectingTarget)
@@ -294,8 +298,7 @@ public class Manager_Console : MonoBehaviour
         //if inserted text was not empty and player pressed enter
         if (separatedWords.Count >= 1)
         {
-            bool isInt = int.TryParse(separatedWords[0], out _);
-            if (isInt)
+            if (Regex.IsMatch(separatedWords[0], @"-?\d+"))
             {
                 CreateNewConsoleLine("Error: Console command cannot start with a number!", MessageType.CONSOLE_ERROR_MESSAGE.ToString());
             }
@@ -684,19 +687,20 @@ public class Manager_Console : MonoBehaviour
     //list all game saves
     private void Command_ShowSaves()
     {
-        //default game saves path
         string path = GameManagerScript.savePath;
-
-        //if a directory was found at the path
-        if (Directory.Exists(path))
+        if (!Directory.Exists(path))
         {
-            //save all save files to 
+            CreateNewConsoleLine("Error: Cannot find game saves folder!", MessageType.CONSOLE_ERROR_MESSAGE.ToString());
+        }
+        else
+        {
             string[] saves = Directory.GetFiles(path);
-
-            //if any saves exist at path
-            if (saves.Length > 0)
+            if (saves.Length == 0)
             {
-                //display all save names without .txt
+                CreateNewConsoleLine("Error: Cannot list any saves because save folder at path " + path + " is empty!", MessageType.CONSOLE_INFO_MESSAGE.ToString());
+            }
+            else
+            {
                 foreach (string save in saves)
                 {
                     if (save.Contains(".txt"))
@@ -706,14 +710,6 @@ public class Manager_Console : MonoBehaviour
                     }
                 }
             }
-            else
-            {
-                CreateNewConsoleLine("Error: Cannot list any saves because save folder at path " + path + " is empty!", MessageType.CONSOLE_INFO_MESSAGE.ToString());
-            }
-        }
-        else
-        {
-            CreateNewConsoleLine("Error: Cannot find game saves folder!", MessageType.CONSOLE_ERROR_MESSAGE.ToString());
         }
     }
     //delete all game saves
@@ -722,8 +718,11 @@ public class Manager_Console : MonoBehaviour
         string path = GameManagerScript.savePath;
         DirectoryInfo di = new(path);
 
-        //deletes all save files
-        if (Directory.GetFiles(path).Length > 0)
+        if (Directory.GetFiles(path).Length == 0)
+        {
+            CreateNewConsoleLine("Error: " + path + " has no save files to delete!", MessageType.CONSOLE_ERROR_MESSAGE.ToString());
+        }
+        else
         {
             foreach (FileInfo file in di.EnumerateFiles())
             {
@@ -732,15 +731,10 @@ public class Manager_Console : MonoBehaviour
 
             CreateNewConsoleLine("Successfully deleted all save files from " + path + "!", MessageType.CONSOLE_SUCCESS_MESSAGE.ToString());
         }
-        else
-        {
-            CreateNewConsoleLine("Error: " + path + " has no save files to delete!", MessageType.CONSOLE_ERROR_MESSAGE.ToString());
-        }
     }
     //save game with name
     private void Command_SaveWithName()
     {
-        //save the potential save name
         string saveName = separatedWords[1];
         GameSavingScript.CreateSaveFile(saveName);
     }
@@ -748,13 +742,13 @@ public class Manager_Console : MonoBehaviour
     private void Command_LoadWithName()
     {
         string path = GameManagerScript.savePath;
-        if (File.Exists(path + @"\" + separatedWords[1] + ".txt"))
+        if (!File.Exists(path + @"\" + separatedWords[1] + ".txt"))
         {
-            GameSavingScript.CreateLoadFile(separatedWords[1] + ".txt");
+            CreateNewConsoleLine("Error: Save file " + separatedWords[1] + " does not exist!", MessageType.CONSOLE_ERROR_MESSAGE.ToString());
         }
         else
         {
-            CreateNewConsoleLine("Error: Save file " + separatedWords[1] + " does not exist!", MessageType.CONSOLE_ERROR_MESSAGE.ToString());
+            GameSavingScript.CreateLoadFile(separatedWords[1] + ".txt");
         }
     }
 
@@ -782,7 +776,6 @@ public class Manager_Console : MonoBehaviour
         KeyCode userValue = (KeyCode)Enum.Parse(typeof(KeyCode), separatedWords[2]);
 
         bool foundCorrectValue = false;
-
         foreach (KeyValuePair<string, KeyCode> dict in KeyBindingsScript.KeyBindings)
         {
             string key = dict.Key;
@@ -794,7 +787,11 @@ public class Manager_Console : MonoBehaviour
             }
         }
 
-        if (foundCorrectValue)
+        if (!foundCorrectValue)
+        {
+            CreateNewConsoleLine("Error: Inserted key binding name " + userKey + " or key binding value " + userValue.ToString().Replace("KeyCode.", "") + " does not exist! Type showkeybindings to list all key bindings.", MessageType.CONSOLE_ERROR_MESSAGE.ToString());
+        }
+        else
         {
             KeyBindingsScript.KeyBindings[userKey] = userValue;
 
@@ -839,10 +836,6 @@ public class Manager_Console : MonoBehaviour
                     break;
                 }
             }
-        }
-        else
-        {
-            CreateNewConsoleLine("Error: Inserted key binding name " + userKey + " or key binding value " + userValue.ToString().Replace("KeyCode.", "") + " does not exist! Type showkeybindings to list all key bindings.", MessageType.CONSOLE_ERROR_MESSAGE.ToString());
         }
     }
 
@@ -1458,7 +1451,6 @@ public class Manager_Console : MonoBehaviour
     {
         string loadFilePath = GameManagerScript.gamePath + @"\loadfile.txt";
 
-        //using a text editor to write text to the game save file in the saved file path
         using StreamWriter loadFile = File.CreateText(loadFilePath);
 
         loadFile.WriteLine("restart");
@@ -1484,9 +1476,9 @@ public class Manager_Console : MonoBehaviour
         string thirdWord = separatedWords[3];
         string fourthWord = separatedWords[4];
 
-        bool firstVecCorrect = Regex.IsMatch(secondWord, @"-?\d+(\.\d+)?");
-        bool secondVecCorrect = Regex.IsMatch(thirdWord, @"-?\d+(\.\d+)?");
-        bool thirdVecCorrect = Regex.IsMatch(fourthWord, @"-?\d+(\.\d+)?");
+        bool firstVecCorrect = Regex.IsMatch(secondWord, @"-?\d*\.?\d*");
+        bool secondVecCorrect = Regex.IsMatch(thirdWord, @"-?\d*\.?\d*");
+        bool thirdVecCorrect = Regex.IsMatch(fourthWord, @"-?\d*\.?\d*");
         if (!firstVecCorrect)
         {
             CreateNewConsoleLine("Error: Teleport coordinate first input must be a number!", MessageType.CONSOLE_ERROR_MESSAGE.ToString());
@@ -1610,8 +1602,7 @@ public class Manager_Console : MonoBehaviour
     {
         string statName = separatedWords[2];
 
-        bool isFloat = float.TryParse(separatedWords[3], out _);
-        if (!isFloat)
+        if (!Regex.IsMatch(separatedWords[3], @"-?\d*\.?\d*"))
         {
             CreateNewConsoleLine("Error: Inserted stat value must be a number!", MessageType.CONSOLE_ERROR_MESSAGE.ToString());
         }
@@ -2389,10 +2380,10 @@ public class Manager_Console : MonoBehaviour
             else
             {
                 EffectManagerScript.DealEffect(thePlayer,
-                               targetItem,
-                               effectName,
-                               value,
-                               duration);
+                                               targetItem,
+                                               effectName,
+                                               value,
+                                               duration);
                 CreateNewConsoleLine("Successfully added enchantment " + effectName + " with value " + value + " and duration " + duration + " to " + targetItem.name.Replace("_", " ") + ".", MessageType.CONSOLE_INFO_MESSAGE.ToString());
             }
         }
@@ -2510,8 +2501,7 @@ public class Manager_Console : MonoBehaviour
     private void Command_RemoveEffectFromPlayer()
     {
         //effect name
-        bool isEffectNameFloat = float.TryParse(separatedWords[2], out _);
-        if (isEffectNameFloat)
+        if (Regex.IsMatch(separatedWords[2], @"-?\d*\.?\d*")) //Regex.IsMatch(input, @"-?\d*\.?\d*")
         {
             CreateNewConsoleLine("Error: Effect name cannot be a number!", MessageType.CONSOLE_ERROR_MESSAGE.ToString());
         }
@@ -2761,14 +2751,10 @@ public class Manager_Console : MonoBehaviour
     public void ReadStringInput(string s)
     {
         input = s;
-
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            //check inserted text
             CheckInsertedText();
-            //clear inserted text
             UIReuseScript.consoleInputField.text = "";
-            //enable input field
             UIReuseScript.consoleInputField.ActivateInputField();
         }
     }
@@ -2806,9 +2792,7 @@ public class Manager_Console : MonoBehaviour
     {
         if (par_Managers != null)
         {
-            //create text object
             GameObject newConsoleText = Instantiate(UIReuseScript.txt_InsertedTextTemplate.gameObject);
-            //add created text object to list
             createdTexts.Add(newConsoleText);
 
             //check if createdTexts list is longer than limit
@@ -2826,7 +2810,6 @@ public class Manager_Console : MonoBehaviour
             newConsoleText.transform.SetParent(UIReuseScript.par_ConsoleContent.transform, false);
             newConsoleText.GetComponent<TMP_Text>().text = date + " " + message;
 
-            //using a text editor to write new text to new debug file in the debug file path
             using StreamWriter debugFile = File.AppendText(GameManagerScript.debugFilePath);
 
             if (message != "")
