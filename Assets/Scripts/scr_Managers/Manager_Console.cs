@@ -2369,12 +2369,32 @@ public class Manager_Console : MonoBehaviour
         //create a new enchantment gameobject onto target item if a duplicate was not found
         else
         {
-            EffectManagerScript.DealEffect(thePlayer,
-                                           targetItem,
-                                           effectName,
-                                           value,
-                                           duration);
-            CreateNewConsoleLine("Successfully added enchantment " + effectName + " with value " + value + " and duration " + duration + " to " + targetItem.name.Replace("_", " ") + ".", MessageType.CONSOLE_INFO_MESSAGE.ToString());
+            bool isEnchantmentValid = false;
+            //check if enchantment is allowed for weapons
+            if (targetItem.GetComponent<Env_Item>().itemType == Env_Item.ItemType.weapon)
+            {
+                foreach (string enchantment in AllowedEffectsScript.meleeEnchantments)
+                {
+                    if (effectName == enchantment)
+                    {
+                        isEnchantmentValid = true;
+                        break;
+                    }
+                }
+            }
+            if (!isEnchantmentValid)
+            {
+                CreateNewConsoleLine("Error: " + effectName + " enchantment is not allowed to be added to " + targetItem.name.Replace("_", " ") + "!", MessageType.CONSOLE_ERROR_MESSAGE.ToString());
+            }
+            else
+            {
+                EffectManagerScript.DealEffect(thePlayer,
+                               targetItem,
+                               effectName,
+                               value,
+                               duration);
+                CreateNewConsoleLine("Successfully added enchantment " + effectName + " with value " + value + " and duration " + duration + " to " + targetItem.name.Replace("_", " ") + ".", MessageType.CONSOLE_INFO_MESSAGE.ToString());
+            }
         }
     }
     //remove existing enchantment from item
