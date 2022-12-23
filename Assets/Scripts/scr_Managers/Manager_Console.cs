@@ -15,7 +15,7 @@ using static Manager_Settings;
 //check if string only contains positive or negative ints
 //Regex.IsMatch("", @"-?\d+")
 //check if string only contains positive or negative ints or floats
-//Regex.IsMatch(input, @"-?\d*\.?\d*")
+//Regex.IsMatch("", @"-?\d*\.?\d*")
 
 public class Manager_Console : MonoBehaviour
 {
@@ -38,12 +38,6 @@ public class Manager_Console : MonoBehaviour
     private readonly List<string> separatedWords = new();
     private readonly List<GameObject> createdTexts = new();
     private readonly List<string> insertedCommands = new();
-    private readonly char[] letters = new char[]
-    {
-        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 
-        'j', 'k' , 'l', 'm', 'n', 'o', 'p', 'q', 'r', 
-        's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
-    };
 
     //target selection
     private bool isSelectingTarget;
@@ -467,23 +461,13 @@ public class Manager_Console : MonoBehaviour
                              || separatedWords[1] == "shmi"))
                     {
                         char letter = separatedWords[2].ToCharArray()[0];
-                        bool foundLetter = false;
-                        foreach (char c in letters)
+                        if (!Regex.IsMatch(input, @"^[a-z]+$"))
                         {
-                            if (letter == c)
-                            {
-                                foundLetter = true;
-                                break;
-                            }
-                        }
-
-                        if (foundLetter)
-                        {
-                            Command_ShowItemTypeItems(separatedWords[1], letter);
+                            CreateNewConsoleLine("Error: Inserted item type first letter is invalid! It must be a lower-case english alphabet letter.", MessageType.CONSOLE_ERROR_MESSAGE.ToString());
                         }
                         else
                         {
-                            CreateNewConsoleLine("Error: Inserted item type first letter is invalid! It must be a lower-case english alphabet letter.", MessageType.CONSOLE_ERROR_MESSAGE.ToString());
+                            Command_ShowItemTypeItems(separatedWords[1], letter);
                         }
                     }
                     //list all player items, their counts and protected state
