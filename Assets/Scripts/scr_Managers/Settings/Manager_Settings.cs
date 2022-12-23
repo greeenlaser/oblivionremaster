@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Text.RegularExpressions;
 
 public class Manager_Settings : MonoBehaviour
 {
@@ -1016,8 +1017,7 @@ public class Manager_Settings : MonoBehaviour
                             {
                                 //TODO: assign difficulty
                                 int insertedValue;
-                                bool isInt = int.TryParse(value, out _);
-                                if (isInt)
+                                if (Regex.IsMatch(value, @"-?\d+"))
                                 {
                                     insertedValue = int.Parse(value);
                                     if (insertedValue >= -100
@@ -1040,8 +1040,7 @@ public class Manager_Settings : MonoBehaviour
                             else if (type == "MouseSpeed")
                             {
                                 int insertedValue;
-                                bool isInt = int.TryParse(value, out _);
-                                if (isInt)
+                                if (Regex.IsMatch(value, @"-?\d+"))
                                 {
                                     insertedValue = int.Parse(value);
                                     if (insertedValue >= 1
@@ -1164,8 +1163,7 @@ public class Manager_Settings : MonoBehaviour
                             else if (type == "FieldOfView")
                             {
                                 int insertedValue;
-                                bool isInt = int.TryParse(value, out _);
-                                if (isInt)
+                                if (Regex.IsMatch(value, @"-?\d+"))
                                 {
                                     insertedValue = int.Parse(value);
                                     if (insertedValue >= 70
@@ -1239,8 +1237,7 @@ public class Manager_Settings : MonoBehaviour
                                 //TODO: apply light distance
 
                                 int insertedValue;
-                                bool isInt = int.TryParse(value, out _);
-                                if (isInt)
+                                if (Regex.IsMatch(value, @"-?\d+"))
                                 {
                                     insertedValue = int.Parse(value);
                                     if (insertedValue >= 15
@@ -1265,8 +1262,7 @@ public class Manager_Settings : MonoBehaviour
                                 //TODO: apply shadow distance
 
                                 int insertedValue;
-                                bool isInt = int.TryParse(value, out _);
-                                if (isInt)
+                                if (Regex.IsMatch(value, @"-?\d+"))
                                 {
                                     insertedValue = int.Parse(value);
                                     if (insertedValue >= 15
@@ -1315,8 +1311,7 @@ public class Manager_Settings : MonoBehaviour
                                 //TODO: apply tree distance
 
                                 int insertedValue;
-                                bool isInt = int.TryParse(value, out _);
-                                if (isInt)
+                                if (Regex.IsMatch(value, @"-?\d+"))
                                 {
                                     insertedValue = int.Parse(value);
                                     if (insertedValue >= 15
@@ -1341,8 +1336,7 @@ public class Manager_Settings : MonoBehaviour
                                 //TODO: apply grass distance
 
                                 int insertedValue;
-                                bool isInt = int.TryParse(value, out _);
-                                if (isInt)
+                                if (Regex.IsMatch(value, @"-?\d+"))
                                 {
                                     insertedValue = int.Parse(value);
                                     if (insertedValue >= 15
@@ -1367,8 +1361,7 @@ public class Manager_Settings : MonoBehaviour
                                 //TODO: apply object distance
 
                                 int insertedValue;
-                                bool isInt = int.TryParse(value, out _);
-                                if (isInt)
+                                if (Regex.IsMatch(value, @"-?\d+"))
                                 {
                                     insertedValue = int.Parse(value);
                                     if (insertedValue >= 15
@@ -1393,8 +1386,7 @@ public class Manager_Settings : MonoBehaviour
                                 //TODO: apply item distance
 
                                 int insertedValue;
-                                bool isInt = int.TryParse(value, out _);
-                                if (isInt)
+                                if (Regex.IsMatch(value, @"-?\d+"))
                                 {
                                     insertedValue = int.Parse(value);
                                     if (insertedValue >= 15
@@ -1419,8 +1411,7 @@ public class Manager_Settings : MonoBehaviour
                                 //TODO: apply AI distance
 
                                 int insertedValue;
-                                bool isInt = int.TryParse(value, out _);
-                                if (isInt)
+                                if (Regex.IsMatch(value, @"-?\d+"))
                                 {
                                     insertedValue = int.Parse(value);
                                     if (insertedValue >= 15
@@ -1447,8 +1438,7 @@ public class Manager_Settings : MonoBehaviour
                                 //TODO: apply master volume
 
                                 int insertedValue;
-                                bool isInt = int.TryParse(value, out _);
-                                if (isInt)
+                                if (Regex.IsMatch(value, @"-?\d+"))
                                 {
                                     insertedValue = int.Parse(value);
                                     if (insertedValue >= 0
@@ -1473,8 +1463,7 @@ public class Manager_Settings : MonoBehaviour
                                 //TODO: apply music volume
 
                                 int insertedValue;
-                                bool isInt = int.TryParse(value, out _);
-                                if (isInt)
+                                if (Regex.IsMatch(value, @"-?\d+"))
                                 {
                                     insertedValue = int.Parse(value);
                                     if (insertedValue >= 0
@@ -1499,8 +1488,7 @@ public class Manager_Settings : MonoBehaviour
                                 //TODO: apply SFX volume
 
                                 int insertedValue;
-                                bool isInt = int.TryParse(value, out _);
-                                if (isInt)
+                                if (Regex.IsMatch(value, @"-?\d+"))
                                 {
                                     insertedValue = int.Parse(value);
                                     if (insertedValue >= 0
@@ -1525,8 +1513,7 @@ public class Manager_Settings : MonoBehaviour
                                 //TODO: apply NPC volume
 
                                 int insertedValue;
-                                bool isInt = int.TryParse(value, out _);
-                                if (isInt)
+                                if (Regex.IsMatch(value, @"-?\d+"))
                                 {
                                     insertedValue = int.Parse(value);
                                     if (insertedValue >= 0

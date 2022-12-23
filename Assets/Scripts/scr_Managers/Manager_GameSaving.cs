@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 public class Manager_GameSaving : MonoBehaviour
 {
@@ -729,8 +730,7 @@ public class Manager_GameSaving : MonoBehaviour
                     {
                         //minute
                         int min = 0;
-                        bool isMinInt = int.TryParse(values[0], out _);
-                        if (isMinInt)
+                        if (Regex.IsMatch(values[0], @"-?\d+"))
                         {
                             if (int.Parse(values[0]) >= 0
                                 && int.Parse(values[0]) <= 59)
@@ -751,8 +751,7 @@ public class Manager_GameSaving : MonoBehaviour
 
                         //hour
                         int hr = 0;
-                        bool isHourInt = int.TryParse(values[1], out _);
-                        if (isHourInt)
+                        if (Regex.IsMatch(values[1], @"-?\d+"))
                         {
                             if (int.Parse(values[1]) >= 0 
                                 && int.Parse(values[1]) <= 23)
@@ -861,13 +860,9 @@ public class Manager_GameSaving : MonoBehaviour
                     //load player position and rotation
                     else if (type == "PlayerPosition")
                     {
-                        bool isFirstFloat = float.TryParse(values[0], out _);
-                        bool isSecondFloat = float.TryParse(values[1], out _);
-                        bool isThirdFloat = float.TryParse(values[2], out _);
-
-                        if (isFirstFloat
-                            && isSecondFloat
-                            && isThirdFloat)
+                        if (Regex.IsMatch(values[0], @"-?\d*\.?\d*")
+                            && Regex.IsMatch(values[0], @"-?\d*\.?\d*")
+                            && Regex.IsMatch(values[0], @"-?\d*\.?\d*"))
                         {
                             thePlayer.transform.position = new(float.Parse(values[0]), 
                                                                float.Parse(values[1]), 
@@ -881,13 +876,9 @@ public class Manager_GameSaving : MonoBehaviour
                     }
                     else if (type == "PlayerRotation")
                     {
-                        bool isFirstFloat = float.TryParse(values[0], out _);
-                        bool isSecondFloat = float.TryParse(values[1], out _);
-                        bool isThirdFloat = float.TryParse(values[2], out _);
-
-                        if (isFirstFloat
-                            && isSecondFloat
-                            && isThirdFloat)
+                        if (Regex.IsMatch(values[0], @"-?\d*\.?\d*")
+                            && Regex.IsMatch(values[1], @"-?\d*\.?\d*")
+                            && Regex.IsMatch(values[2], @"-?\d*\.?\d*"))
                         {
                             Vector3 rot = new(float.Parse(values[0]), 
                                               float.Parse(values[1]), 
@@ -902,13 +893,9 @@ public class Manager_GameSaving : MonoBehaviour
                     }
                     else if (type == "PlayerCameraRotation")
                     {
-                        bool isFirstFloat = float.TryParse(values[0], out _);
-                        bool isSecondFloat = float.TryParse(values[1], out _);
-                        bool isThirdFloat = float.TryParse(values[2], out _);
-
-                        if (isFirstFloat
-                            && isSecondFloat
-                            && isThirdFloat)
+                        if (Regex.IsMatch(values[0], @"-?\d*\.?\d*") 
+                            && Regex.IsMatch(values[1], @"-?\d*\.?\d*") 
+                            && Regex.IsMatch(values[2], @"-?\d*\.?\d*"))
                         {
                             Vector3 camRot = new(float.Parse(values[0]), 
                                                  float.Parse(values[1]), 
@@ -960,8 +947,7 @@ public class Manager_GameSaving : MonoBehaviour
                     {
                         float insertedValue = 1;
 
-                        bool isFloat = float.TryParse(values[0], out _);
-                        if (isFloat)
+                        if (Regex.IsMatch(values[0], @"-?\d*\.?\d*"))
                         {
                             insertedValue = float.Parse(values[0]);
                         }
@@ -1058,8 +1044,7 @@ public class Manager_GameSaving : MonoBehaviour
                         }
 
                         int insertedValue = 1;
-                        bool isInt = int.TryParse(values[0], out _);
-                        if (isInt)
+                        if (Regex.IsMatch(values[0], @"-?\d+"))
                         {
                             insertedValue = int.Parse(values[0]);
                             if (insertedValue < 1
@@ -1111,8 +1096,7 @@ public class Manager_GameSaving : MonoBehaviour
                     {
                         //skill level
                         int insertedSkillLevel = 1;
-                        bool isInt = int.TryParse(values[0], out _);
-                        if (isInt)
+                        if (Regex.IsMatch(values[0], @"-?\d+"))
                         {
                             insertedSkillLevel = int.Parse(values[0]);
                             if (insertedSkillLevel < 1
@@ -1148,8 +1132,7 @@ public class Manager_GameSaving : MonoBehaviour
 
                         //skillpoints count
                         int insertedSkillpoints = 0;
-                        bool isInt2 = int.TryParse(values[0], out _);
-                        if (isInt2)
+                        if (Regex.IsMatch(values[0], @"-?\d+"))
                         {
                             insertedSkillpoints = int.Parse(values[0]);
                             if (insertedSkillpoints < 0
@@ -1213,9 +1196,8 @@ public class Manager_GameSaving : MonoBehaviour
 
                             //checking if saved item count is valid
                             Env_Item targetItemScript = spawnedItem.GetComponent<Env_Item>();
-                            bool isInt = int.TryParse(values[0], out _);
-                            if (!isInt
-                                || (isInt
+                            if (!Regex.IsMatch(values[0], @"-?\d+")
+                                || (Regex.IsMatch(values[0], @"-?\d+")
                                 && !templateItem.GetComponent<Env_Item>().isStackable
                                 && int.Parse(values[0]) > 1))
                             {
@@ -1251,8 +1233,7 @@ public class Manager_GameSaving : MonoBehaviour
                                 || targetItemScript.itemType == Env_Item.ItemType.shield)
                             {
                                 //checking if weapon/armor/shield current durability value is valid
-                                bool isInt2 = int.TryParse(values[1], out _);
-                                if (!isInt2)
+                                if (!Regex.IsMatch(values[1], @"-?\d+"))
                                 {
                                     Debug.LogError("Incorrect value: Item durability for " + spawnedItem.name + " in game save " + saveFileName + " is invalid! Resetting to max durability.");
                                     targetItemScript.itemCurrentDurability = targetItemScript.itemMaxDurability;
@@ -1275,8 +1256,7 @@ public class Manager_GameSaving : MonoBehaviour
                                 //checking if weapon damage value is valid
                                 if (targetItemScript.itemType == Env_Item.ItemType.weapon)
                                 {
-                                    bool isInt3 = int.TryParse(values[2], out _);
-                                    if (!isInt3)
+                                    if (!Regex.IsMatch(values[2], @"-?\d+"))
                                     {
                                         Debug.LogError("Incorrect value: Item damage for " + spawnedItem.name + " in game save " + saveFileName + " is invalid! Resetting to default value.");
                                         templateItem.GetComponent<Item_Weapon>().damage_Current = templateItem.GetComponent<Item_Weapon>().damage_Default;
@@ -1317,8 +1297,7 @@ public class Manager_GameSaving : MonoBehaviour
                                 //load restart timer for cell
                                 if (type.Contains(cellName + "_RestartTimer"))
                                 {
-                                    bool isFloat = float.TryParse(values[0], out _);
-                                    if (isFloat)
+                                    if (Regex.IsMatch(values[0], @"-?\d*\.?\d*"))
                                     {
                                         float value = float.Parse(values[0]);
                                         if (value <= 8640
@@ -1392,9 +1371,8 @@ public class Manager_GameSaving : MonoBehaviour
 
                                                 //checking if saved item count is valid
                                                 Env_Item targetItemScript = spawnedItem.GetComponent<Env_Item>();
-                                                bool isInt = int.TryParse(values[0], out _);
-                                                if (!isInt
-                                                    || (isInt
+                                                if (!Regex.IsMatch(values[0], @"-?\d+")
+                                                    || (Regex.IsMatch(values[0], @"-?\d+")
                                                     && !templateItem.GetComponent<Env_Item>().isStackable))
                                                 {
                                                     Debug.LogError("Incorrect value: Item count for " + spawnedItem.name + " in game save " + saveFileName + " in container " + cellName + "_" + containerName + " is invalid or this item is not stackable and its count cannot go over 1! Resetting to 1.");
@@ -1422,8 +1400,7 @@ public class Manager_GameSaving : MonoBehaviour
                                                 }
 
                                                 //checking if weapon/armor/shield current durability value is valid
-                                                bool isInt2 = int.TryParse(values[1], out _);
-                                                if (!isInt2
+                                                if (!Regex.IsMatch(values[1], @"-?\d+")
                                                     && (targetItemScript.itemType == Env_Item.ItemType.weapon
                                                     || targetItemScript.itemType == Env_Item.ItemType.armor
                                                     || targetItemScript.itemType == Env_Item.ItemType.shield))
@@ -1449,8 +1426,7 @@ public class Manager_GameSaving : MonoBehaviour
                                                 //checking if weapon damage value is valid
                                                 if (targetItemScript.itemType == Env_Item.ItemType.weapon)
                                                 {
-                                                    bool isInt3 = int.TryParse(values[2], out _);
-                                                    if (!isInt3)
+                                                    if (!Regex.IsMatch(values[2], @"-?\d+"))
                                                     {
                                                         Debug.LogError("Incorrect value: Item damage for " + spawnedItem.name + " in game save " + saveFileName + " is invalid! Resetting to default value.");
                                                         templateItem.GetComponent<Item_Weapon>().damage_Current = templateItem.GetComponent<Item_Weapon>().damage_Default;
