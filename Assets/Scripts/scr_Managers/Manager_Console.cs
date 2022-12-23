@@ -315,13 +315,13 @@ public class Manager_Console : MonoBehaviour
                 else if (separatedWords[0] == "showsaves"
                          && separatedWords.Count == 1)
                 {
-                    Command_ShowAllSaves();
+                    Command_ShowSaves();
                 }
                 //delete all saves
                 else if (separatedWords[0] == "deletesaves"
                          && separatedWords.Count == 1)
                 {
-                    Command_DeleteAllSaves();
+                    Command_DeleteSaves();
                 }
                 //save with save name
                 else if (separatedWords[0] == "save"
@@ -342,19 +342,19 @@ public class Manager_Console : MonoBehaviour
                 else if (separatedWords[0] == "resetkeybinds"
                          && separatedWords.Count == 1)
                 {
-                    Command_ResetAllKeyBindings();
+                    Command_ResetKeyBinds();
                 }
                 //list all key bindings and their values
                 else if (separatedWords[0] == "showkeybinds"
                          && separatedWords.Count == 1)
                 {
-                    Command_ShowAllKeyBindings();
+                    Command_ShowKeyBinds();
                 }
                 //set keybindingname to keybindingvalue
                 else if (separatedWords[0] == "setkeybind"
                          && separatedWords.Count == 3)
                 {
-                    Command_SetKeyBinding();
+                    Command_SetKeyBind();
                 }
 
                 //reset all settings to default values
@@ -362,21 +362,21 @@ public class Manager_Console : MonoBehaviour
                          && separatedWords.Count == 1
                          && currentScene == 1)
                 {
-                    Command_ResetAllSettings();
+                    Command_ResetSettings();
                 }
                 //list all settings and their values
                 else if (separatedWords[0] == "showsettings"
                          && separatedWords.Count == 1
                          && currentScene == 1)
                 {
-                    Command_ShowAllSettings();
+                    Command_ShowSettings();
                 }
                 //set settingsname to settingsvalue
                 else if (separatedWords[0] == "setsetting"
                          && separatedWords.Count == 3
                          && currentScene == 1)
                 {
-                    Command_SetSettings();
+                    Command_SetSetting();
                 }
 
                 //restart game from the beginning
@@ -430,7 +430,7 @@ public class Manager_Console : MonoBehaviour
                     else if (separatedWords[1] == "showitemtypes"
                              && separatedWords.Count == 2)
                     {
-                        Command_ShowAllItemTypes();
+                        Command_ShowItemTypes();
                     }
                     //list all items of the selected item type that start with the selected english alphabet letter
                     else if (separatedWords.Count == 3
@@ -502,13 +502,13 @@ public class Manager_Console : MonoBehaviour
                     else if (separatedWords[1] == "showalleffects"
                              && separatedWords.Count == 2)
                     {
-                        Command_ShowAvailablePlayerEffects();
+                        Command_ShowAllEffects();
                     }
                     //show effects that are active on player
                     else if (separatedWords[1] == "showactiveeffects"
                              && separatedWords.Count == 2)
                     {
-                        Command_ShowPlayerEffects();
+                        Command_ShowActiveEffects();
                     }
                     //add effect with value and duration to player
                     else if (separatedWords[1] == "addeffect"
@@ -643,7 +643,7 @@ public class Manager_Console : MonoBehaviour
     }
 
     //list all game saves
-    private void Command_ShowAllSaves()
+    private void Command_ShowSaves()
     {
         //default game saves path
         string path = GameManagerScript.savePath;
@@ -678,7 +678,7 @@ public class Manager_Console : MonoBehaviour
         }
     }
     //delete all game saves
-    private void Command_DeleteAllSaves()
+    private void Command_DeleteSaves()
     {
         string path = GameManagerScript.savePath;
         DirectoryInfo di = new(path);
@@ -720,13 +720,13 @@ public class Manager_Console : MonoBehaviour
     }
 
     //reset all key bindings to default values
-    private void Command_ResetAllKeyBindings()
+    private void Command_ResetKeyBinds()
     {
         KeyBindingsScript.ResetKeyBindings(true);
         CreateNewConsoleLine("Successfully reset " + KeyBindingsScript.KeyBindings.Count + " key bindings!", "CONSOLE SUCCESS MESSAGE");
     }
     //list all key bindings and their values
-    private void Command_ShowAllKeyBindings()
+    private void Command_ShowKeyBinds()
     {
         CreateNewConsoleLine("---KEY BINDINGS---", "CONSOLE INFO MESSAGE");
         foreach (KeyValuePair<string, KeyCode> dict in KeyBindingsScript.KeyBindings)
@@ -737,7 +737,7 @@ public class Manager_Console : MonoBehaviour
         }
     }
     //set keybindingname to keybindingvalue
-    private void Command_SetKeyBinding()
+    private void Command_SetKeyBind()
     {
         string userKey = separatedWords[1];
         KeyCode userValue = (KeyCode)Enum.Parse(typeof(KeyCode), separatedWords[2]);
@@ -808,13 +808,13 @@ public class Manager_Console : MonoBehaviour
     }
 
     //reset all settings to default values
-    private void Command_ResetAllSettings()
+    private void Command_ResetSettings()
     {
         SettingsScript.ResetSettings(true);
         CreateNewConsoleLine("Successfully reset all settings to default values!", "CONSOLE SUCCESS MESSAGE");
     }
     //list all settings and their values
-    private void Command_ShowAllSettings()
+    private void Command_ShowSettings()
     {
         List<Transform> parents = new();
         foreach (GameObject par in UIReuseScript.generalSettingsParents)
@@ -922,7 +922,7 @@ public class Manager_Console : MonoBehaviour
         }
     }
     //set settingsname to settingsvalue
-    private void Command_SetSettings()
+    private void Command_SetSetting()
     {
         string type = separatedWords[1];
         string value = separatedWords[2];
@@ -1824,7 +1824,7 @@ public class Manager_Console : MonoBehaviour
     }
 
     //list all spawnable item types
-    private void Command_ShowAllItemTypes()
+    private void Command_ShowItemTypes()
     {
         CreateNewConsoleLine("shwe - show all weapons", "CONSOLE INFO MESSAGE");
         CreateNewConsoleLine("shar - show all armor", "CONSOLE INFO MESSAGE");
@@ -2342,7 +2342,7 @@ public class Manager_Console : MonoBehaviour
     }
 
     //show all effects that can be added to player
-    private void Command_ShowAvailablePlayerEffects()
+    private void Command_ShowAllEffects()
     {
         foreach (string effect in AllowedEffectsScript.allEffects)
         {
@@ -2350,7 +2350,7 @@ public class Manager_Console : MonoBehaviour
         }
     }
     //show all effects that are added to player
-    private void Command_ShowPlayerEffects()
+    private void Command_ShowActiveEffects()
     {
         if (PlayerStatsScript.activeEffects.Count == 0)
         {
