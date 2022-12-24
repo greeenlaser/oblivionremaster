@@ -28,7 +28,7 @@ public class Env_Effect : MonoBehaviour
 
     private void Update()
     {
-        //>= 0 - temporary effect applied to player or targets over time
+        //>= 1 - temporary effect applied to player or targets over time
         //-1 - permanent effect dealt to player or targets over time
         //-2 - enchantment applied to all items except weapons, player and targets, enchantment/effect dealt once when added
         //-3 - enchantment applied to weapons only, enchantment not dealt when added, effect only called from other script

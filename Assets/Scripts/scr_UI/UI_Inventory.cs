@@ -447,8 +447,7 @@ public class UI_Inventory : MonoBehaviour
                             && itemScript.itemType != Env_Item.ItemType.ammo
                             && itemScript.itemType != Env_Item.ItemType.misc
                             && itemScript.itemType != Env_Item.ItemType.spell)
-                            || targetInventory == "armor"                            //list weapons
-                            || targetInventory == "weapon")                          //list armor
+                            || itemScript.itemType.ToString() == targetInventory)    //list specific item type (weapon or armor)
                         {
                             GameObject newButton = Instantiate(UIReuseScript.btn_ItemTemplateButton.gameObject,
                                                                UIReuseScript.inventoryContent.transform.position,
@@ -469,8 +468,7 @@ public class UI_Inventory : MonoBehaviour
                         }
 
                         //list all enchantments
-                        else if (targetInventory == "allEnchantments"
-                                 && itemScript.itemType == Env_Item.ItemType.enchantment)
+                        else if (targetInventory == "allEnchantments")
                         {
                             
                         }

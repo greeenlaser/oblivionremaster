@@ -29,7 +29,6 @@ public class Env_Item : MonoBehaviour
         alchemyIngredient,
         spell,
         ammo,
-        enchantment,
         misc
     }
 
