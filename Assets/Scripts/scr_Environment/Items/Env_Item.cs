@@ -11,13 +11,14 @@ public class Env_Item : MonoBehaviour
     [Tooltip("How this item will be referenced as and displayed in the game.")]
     public string itemName = "REPLACE_MY_NAME";
     [Tooltip("A longer description of this item.")]
+    [TextArea(1, 15)]
     public string itemDescription = "REPLACE_MY_DESCRIPTION";
     [Tooltip("Base value of this item.")]
     public int itemValue = 0;
     [Tooltip("How much space will this item take in player inventory.")]
     [Range(0, 100)]
     public int itemWeight = 0;
-
+    [Tooltip("What type of an item is this?")]
     public ItemType itemType = ItemType.misc;
     public enum ItemType
     {
@@ -33,8 +34,11 @@ public class Env_Item : MonoBehaviour
     }
 
     [Header("Special variables")]
+    [Tooltip("Can this item be enchanted?")]
     public bool isEnchantable;
+    [Tooltip("Item durability at max condition.")]
     public int itemMaxDurability;
+    [Tooltip("How big is this soul gem?")]
     public int soulGemSize;
 
     //public but hidden variables
